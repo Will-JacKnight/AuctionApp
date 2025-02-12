@@ -12,4 +12,4 @@ services:
   user-service:
     build: ./services/user-service
     ports:
-      - "5004:5004" 
+      - "6000:6000"

@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 
 # Microservices URLs
-USER_SERVICE_URL = "http://localhost:5001"
+USER_SERVICE_URL = "http://user-service:6000"
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -19,4 +19,4 @@ def login():
     return jsonify(response.json()), response.status_code
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
