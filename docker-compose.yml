@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: auction-app/api-gateway
+    ports:
+      - "5000:5000"
+    depends_on:
+      - user-service
+      - auction-service
+
+  user-service:
+    build: auction-app/services/user-service
+    ports:
+      - "5001:5001"
+
+  auction-service:
+    build: auction-app/services/auction-service
+    ports:
+      - "5002:5002"
+
+  payment-service:
+    build: ./services/payment-service
+    ports:
+      - "5003:5003"
+
+  notification-service:
+    build: ./services/notification-service
+    ports:
+      - "5004:5004" 
