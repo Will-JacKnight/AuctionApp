@@ -52,7 +52,7 @@ const SignupPage = () => {
                 <input type="tel" placeholder="Phone Number" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                 <button type="submit">Sign Up</button>
             </form>
-            <p>Already have an account? <a href="/login">Log in</a></p>
+            <p>Already have an account? <a href="/">Log in</a></p>
         </div>
     );
 };
