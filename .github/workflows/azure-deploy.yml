@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Each Microservice
         run: |
-          services=("user-service" "api-gateway")  # Replace with actual services
+          services=("user-service" "api-gateway" "frontend")  # Replace with actual services
           for service in "${services[@]}"; do
             echo "Building $service..."
             docker build -t $service ./services/$service
@@ -57,7 +57,7 @@ jobs:
 
       - name: Push Each Microservice Image
         run: |
-          services=("user-service" "api-gateway")
+          services=("user-service" "api-gateway" "frontend")
           for service in "${services[@]}"; do
             IMAGE_NAME=ghcr.io/$GHCR_USERNAME/$service:latest
             echo "Building and pushing $IMAGE_NAME..."
