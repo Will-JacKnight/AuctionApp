@@ -20,7 +20,6 @@ jwt = JWTManager(app)
 
 # Supabase Setting
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-print(SUPABASE_URL)
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 

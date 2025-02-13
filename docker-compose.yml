@@ -14,4 +14,4 @@ services:
     env_file:
       - ./services/user-service/.env
     ports:
-      - "6000:6000"
+      - "8080:8080"
