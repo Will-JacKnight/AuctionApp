@@ -2,21 +2,37 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
  
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
  
-  const handleLogin = (e) => {
+  const handleLogin = async(e) => {
     e.preventDefault();
     setLoading(true);
  
-    // Mock login logic, you can replace it with actual API logic
-    if (email === 'user@example.com' && password === 'password123') {
-      navigate('/dashboard');
-    } else {
-      alert('Invalid credentials');
-    }
+    try {
+      const response = await fetch("http://127.0.0.1:8080/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+          console.log(data.access_token)
+          alert("Signup successful! Please log in.");
+          navigate("/login"); // Redirect to login page
+      } else {
+          setError(data.error || "Signup failed");
+      }
+  } catch (err) {
+      console.log(err)
+      setError("Network error. Please try again.");
+  }
  
     setLoading(false);
   };
@@ -29,14 +45,14 @@ function Login() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
         />
         <button type="submit" disabled={loading}>
