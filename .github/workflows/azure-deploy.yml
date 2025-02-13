@@ -1,0 +1,102 @@
+name: Deploy to Azure App Service via GHCR
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual deployment
+
+env:
+  GHCR_REGISTRY: ghcr.io
+  GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+  GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+#  AZURE_APP_NAME: ${{ secrets.AZURE_APP_NAME }}
+
+jobs:
+  build-test:
+    name: Build & Test Microservices
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & Test Each Microservice
+        run: |
+          services=("user-service" "api-gateway")  # Replace with your actual services
+          for service in "${services[@]}"; do
+            echo "Building and testing $service..."
+            docker build --target test -t test-image ./$service
+            docker run --rm test-image pytest
+          done
+
+  push-images:
+    name: Push Docker Images to GHCR
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
+
+      - name: Push Each Microservice Image
+        run: |
+          services=("user-service" "api-gateway")
+          for service in "${services[@]}"; do
+            IMAGE_NAME=ghcr.io/$GHCR_USERNAME/$service:latest
+            echo "Building and pushing $IMAGE_NAME..."
+            docker build -t $IMAGE_NAME ./$service
+            docker push $IMAGE_NAME
+          done
+
+#  deploy:
+#    name: Deploy to Azure App Service
+#    needs: push-images
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Log in to Azure
+#        uses: azure/login@v1
+#        with:
+#          creds: ${{ secrets.AZURE_CREDENTIALS }}
+#
+#      - name: Create Web Apps if They Don't Exist & Deploy Containers
+#        run: |
+#          RESOURCE_GROUP="YOUR_RESOURCE_GROUP"
+#          APP_SERVICE_PLAN="YOUR_APP_SERVICE_PLAN"
+#
+#          services=("user-service" "api-gateway")  # Update this with actual services
+#          for service in "${services[@]}"; do
+#            WEB_APP_NAME="$AZURE_APP_NAME-$service"
+#            IMAGE_NAME="ghcr.io/$GHCR_USERNAME/$service:latest"
+#
+#            # Check if Web App already exists
+#            if ! az webapp show --name $WEB_APP_NAME --resource-group $RESOURCE_GROUP &>/dev/null; then
+#              echo "Web App $WEB_APP_NAME does not exist. Creating it..."
+#              az webapp create \
+#                --name $WEB_APP_NAME \
+#                --resource-group $RESOURCE_GROUP \
+#                --plan $APP_SERVICE_PLAN \
+#                --deployment-container-image-name $IMAGE_NAME
+#            else
+#              echo "Web App $WEB_APP_NAME already exists. Skipping creation."
+#            fi
+#
+#            echo "Deploying $service to Azure..."
+#            az webapp config container set \
+#              --name $WEB_APP_NAME \
+#              --resource-group $RESOURCE_GROUP \
+#              --docker-custom-image-name $IMAGE_NAME \
+#              --docker-registry-server-url https://ghcr.io \
+#              --docker-registry-server-user $GHCR_USERNAME \
+#              --docker-registry-server-password $GHCR_TOKEN
+#          done
