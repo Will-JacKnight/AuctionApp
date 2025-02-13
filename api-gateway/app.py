@@ -6,7 +6,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 # Microservices URLs
-USER_SERVICE_URL = "http://localhost:8080"
+USER_SERVICE_URL = "http://user-service:8080"
 
 @app.route('/signup', methods=['POST'])
 def register():
@@ -21,4 +21,4 @@ def login():
     return jsonify(response.json()), response.status_code
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=4000, debug=True)

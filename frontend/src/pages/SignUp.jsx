@@ -20,7 +20,7 @@ const SignupPage = () => {
         setError(null); // Clear previous errors
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/signup", {
+            const response = await fetch("http:/api-gateway:4000/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -54,7 +54,7 @@ const SignupPage = () => {
                 <input type="tel" placeholder="Phone Number" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                 <button type="submit">Sign Up</button>
             </form>
-            <p>Already have an account? <a href="/frontend/public">Log in</a></p>
+            <p>Already have an account? <a href="/login">Log in</a></p>
         </div>
     );
 };
