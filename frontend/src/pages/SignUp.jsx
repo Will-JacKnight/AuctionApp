@@ -20,7 +20,7 @@ const SignupPage = () => {
         setError(null); // Clear previous errors
 
         try {
-            const response = await fetch("http:/api-gateway:4000/signup", {
+            const response = await fetch("/api-gateway/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

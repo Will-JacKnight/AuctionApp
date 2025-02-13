@@ -7,6 +7,8 @@ services:
       - "4000:4000"
     depends_on:
       - user-service
+    networks:
+      - auction-network
 
 
   user-service:
@@ -15,6 +17,8 @@ services:
       - ./services/user-service/.env
     ports:
       - "8080:8080"
+    networks:
+      - auction-network
 
   frontend:
     build: ./frontend
@@ -22,3 +26,9 @@ services:
       - "80:80"
     volumes:
       - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - auction-network
+
+networks:
+  auction-network:
+    driver: bridge
