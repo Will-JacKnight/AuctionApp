@@ -6,11 +6,12 @@ import bcrypt
 import datetime
 from functools import wraps
 from dotenv import load_dotenv
-
+from flask_cors import CORS
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Configure JWT settings
 app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")  # Retrieve the secret key from environment variables
@@ -57,7 +58,7 @@ def signup():
         "phone": phone,
         "surname": surname,
         "firstname": firstname,
-        "created_at": datetime.datetime.utcnow()
+        "created_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }).execute()
 
     return jsonify({"message": "User registered successfully. Please log in."}), 201
@@ -108,4 +109,4 @@ def protected():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6000, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
