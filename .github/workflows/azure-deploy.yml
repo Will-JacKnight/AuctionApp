@@ -29,7 +29,7 @@ jobs:
           services=("user-service" "api-gateway")  # Replace with your actual services
           for service in "${services[@]}"; do
             echo "Building and testing $service..."
-            docker build --target test -t test-image ./$service
+            docker build --target test -t test-image ./services/$service
             docker run --rm test-image pytest
           done
 
@@ -54,7 +54,7 @@ jobs:
           for service in "${services[@]}"; do
             IMAGE_NAME=ghcr.io/$GHCR_USERNAME/$service:latest
             echo "Building and pushing $IMAGE_NAME..."
-            docker build -t $IMAGE_NAME ./$service
+            docker build -t $IMAGE_NAME ./services/$service
             docker push $IMAGE_NAME
           done
 
