@@ -28,12 +28,14 @@ const SignupPage = () => {
 
             const data = await response.json();
             if (response.ok) {
+                console.log(data.token)
                 alert("Signup successful! Please log in.");
                 navigate("/login"); // Redirect to login page
             } else {
                 setError(data.error || "Signup failed");
             }
         } catch (err) {
+            console.log(err)
             setError("Network error. Please try again.");
         }
     };
