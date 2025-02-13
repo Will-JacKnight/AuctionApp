@@ -24,7 +24,6 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-"""
 ### **User Registration API **
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -110,4 +109,3 @@ def protected():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=6000, debug=True)
-    """

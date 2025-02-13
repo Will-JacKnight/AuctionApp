@@ -11,5 +11,7 @@ services:
 
   user-service:
     build: ./services/user-service
+    env_file:
+      - ./services/user-service/.env
     ports:
       - "6000:6000"

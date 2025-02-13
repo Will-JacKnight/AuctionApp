@@ -1,5 +1,4 @@
 Flask==3.1.0
-Flask-Cors==5.0.0
 Flask-JWT-Extended==4.7.1
 supabase==2.13.0
 bcrypt==4.2.1
