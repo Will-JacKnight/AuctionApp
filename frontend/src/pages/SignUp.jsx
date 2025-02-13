@@ -14,6 +14,7 @@ const SignupPage = () => {
     });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [usernameError, setUsernameError] = useState(null); 
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -32,7 +33,12 @@ const SignupPage = () => {
                 alert("Signup successful! Please log in.");
                 navigate("/login"); // Redirect to login page
             } else {
+                if (data.error === "Username already exists") {
+                    setUsernameError(data.error);
+                }
+                else {
                 setError(data.error || "Signup failed");
+            }
             }
         } catch (err) {
             console.log(err)
@@ -45,6 +51,7 @@ const SignupPage = () => {
             <h2>Sign Up</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSignup}>
+                {usernameError && <p className="error-message">{usernameError}</p>} {/* Display Username Error */}
                 <input type="email" placeholder="Email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 <input type="text" placeholder="Username" required value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
                 <input type="password" placeholder="Password" required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />

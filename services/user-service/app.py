@@ -40,6 +40,11 @@ def signup():
     if not email or not password or not username:
         return jsonify({"error": "Missing required fields"}), 400
 
+# Check if username exists using Supabase
+    existing_user = supabase.table("users").select("*").eq("username", username).execute()
+    if existing_user.data:
+        return jsonify({"error": "Username already exists"}), 400
+    
     # Check if the email already exists
     existing_user = supabase.table("users").select("*").eq("email", email).execute()
     if existing_user.data:
