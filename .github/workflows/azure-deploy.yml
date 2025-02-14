@@ -26,6 +26,7 @@ jobs:
 
       - name: Build Microservices with Docker Compose
         run: |
+          export GHCR_PREFIX="ghcr.io/$GHCR_USERNAME"
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
           
