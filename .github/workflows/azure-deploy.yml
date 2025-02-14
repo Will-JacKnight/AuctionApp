@@ -13,8 +13,8 @@ env:
 #  AZURE_APP_NAME: ${{ secrets.AZURE_APP_NAME }}
 
 jobs:
-  build-test:
-    name: Build & Test Microservices
+  build:
+    name: Build Microservices
     runs-on: ubuntu-latest
 
     steps:
@@ -24,15 +24,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Each Microservice
+      - name: Build Microservices with Docker Compose
         run: |
-          services=("user-service" "api-gateway" "frontend")  # Replace with actual services
-          for service in "${services[@]}"; do
-            echo "Building $service..."
-            docker build -t $service ./services/$service
-          done
+          echo "Building microservices..."
+          docker-compose -f docker-compose.yml build
+          
 
-#      - name: Run Tests
+#  test:
+#    name: Test Microservices
+#    needs: build
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Run Tests for Each Microservice
 #        run: |
 #          services=("user-service" "api-gateway")
 #          for service in "${services[@]}"; do
@@ -42,7 +46,7 @@ jobs:
 
   push-images:
     name: Push Docker Images to GHCR
-    needs: build-test
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -55,13 +59,17 @@ jobs:
       - name: Log in to GitHub Container Registry (GHCR)
         run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
 
-      - name: Push Each Microservice Image
+      - name: Build Images
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Extract Services Dynamically and Push Images to GHCR
         run: |
-          services=("user-service" "api-gateway" "frontend")
-          for service in "${services[@]}"; do
-            IMAGE_NAME=ghcr.io/$GHCR_USERNAME/$service:latest
-            echo "Building and pushing $IMAGE_NAME..."
-            docker build -t $IMAGE_NAME ./services/$service
+          export GHCR_PREFIX="ghcr.io/$GHCR_USERNAME"
+          services=("api-gateway" "user-service" "frontend")
+          for service in $services; do
+            IMAGE_NAME="$GHCR_PREFIX/$service:latest"
+            echo "Tagging and pushing $service as $IMAGE_NAME..."
+            docker tag $service $IMAGE_NAME
             docker push $IMAGE_NAME
           done
 

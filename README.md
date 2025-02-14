@@ -19,4 +19,7 @@
 │  
 ├── **.github/**                 # GitHub Actions for CI/CD  
 ├── `docker-compose.yml`       # Local setup for all services  
-└── `README.md`  
+└── `README.md`
+
+### Local Docker-compose Test
+`docker-compose up --build`
