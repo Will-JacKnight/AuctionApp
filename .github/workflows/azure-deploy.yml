@@ -59,19 +59,11 @@ jobs:
       - name: Log in to GitHub Container Registry (GHCR)
         run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
 
-      - name: Build Images
-        run: docker compose -f docker-compose.yml build
-
-      - name: Tag and Push Images to GHCR
+      - name: Build and Push Images
         run: |
           export GHCR_PREFIX="ghcr.io/$GHCR_USERNAME"
-          services=("api-gateway" "user-service" "frontend")
-          for service in $services; do
-            IMAGE_NAME="$GHCR_PREFIX/$service:latest"
-            echo "Tagging and pushing $service as $IMAGE_NAME..."
-            docker tag $service $IMAGE_NAME
-            docker push $IMAGE_NAME
-          done
+          docker compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml push
 
 #  deploy:
 #    name: Deploy to Azure App Service

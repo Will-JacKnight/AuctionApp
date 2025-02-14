@@ -3,6 +3,7 @@ version: '3.8'
 services:
   api-gateway:
     build: ./services/api-gateway
+    image: ${GHCR_PREFIX}/api-gateway:latest
     ports:
       - "4000:4000"
     depends_on:
@@ -13,6 +14,7 @@ services:
 
   user-service:
     build: ./services/user-service
+    image: ${GHCR_PREFIX}/user-service:latest
     env_file:
       - ./services/user-service/.env
     ports:
@@ -22,6 +24,7 @@ services:
 
   frontend:
     build: ./services/frontend
+    image: ${GHCR_PREFIX}/frontend:latest
     ports:
       - "80:80"
     volumes:
