@@ -27,7 +27,7 @@ jobs:
       - name: Build Microservices with Docker Compose
         run: |
           echo "Building microservices..."
-          docker-compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml build
           
 
 #  test:
@@ -62,7 +62,7 @@ jobs:
       - name: Build Images
         run: docker-compose -f docker-compose.yml build
 
-      - name: Extract Services Dynamically and Push Images to GHCR
+      - name: Tag and Push Images to GHCR
         run: |
           export GHCR_PREFIX="ghcr.io/$GHCR_USERNAME"
           services=("api-gateway" "user-service" "frontend")
