@@ -60,7 +60,7 @@ jobs:
         run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
 
       - name: Build Images
-        run: docker-compose -f docker-compose.yml build
+        run: docker compose -f docker-compose.yml build
 
       - name: Tag and Push Images to GHCR
         run: |
