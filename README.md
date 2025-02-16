@@ -21,5 +21,8 @@
 ├── `docker-compose.yml`       # Local setup for all services  
 └── `README.md`
 
+### Local Docker-compose Build
+`docker compose --env-file .env up -d --build`
+
 ### Local Docker-compose Test
-`docker-compose up --build`
+`docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit`

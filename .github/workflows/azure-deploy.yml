@@ -13,7 +13,7 @@ env:
 #  AZURE_APP_NAME: ${{ secrets.AZURE_APP_NAME }}
 
 jobs:
-  build:
+  build-and-test:
     name: Build Microservices
     runs-on: ubuntu-latest
 
@@ -29,25 +29,19 @@ jobs:
           export GHCR_PREFIX="ghcr.io/$GHCR_USERNAME"
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
-          
+      
+      - name: Run Tests
+        run: |
+          export GHCR_PREFIX="ghcr.io/$GHCR_USERNAME"
+          echo "Running tests for each microservices..."
+          docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit
 
-#  test:
-#    name: Test Microservices
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Run Tests for Each Microservice
-#        run: |
-#          services=("user-service" "api-gateway")
-#          for service in "${services[@]}"; do
-#            echo "Running tests for $service..."
-#            docker run --rm $service pytest  # Adjust this to run tests correctly
-#          done
+      - name: Stop and Clean Up After Testing
+        run: docker compose -f docker-compose.yml down -v
 
   push-images:
     name: Push Docker Images to GHCR
-    needs: build
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
