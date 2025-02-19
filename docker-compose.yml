@@ -17,6 +17,10 @@ services:
     image: ${CR_PREFIX}/user-service:latest
     env_file:
       - ./services/user-service/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_KEY=${DATABASE_KEY}
+      - SECRET_KEY=${JWT_KEY}
     ports:
       - "8080:8080"
     networks:
