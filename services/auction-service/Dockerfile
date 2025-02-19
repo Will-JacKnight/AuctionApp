@@ -16,10 +16,7 @@ COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app.py
-COPY ./app.py .
-COPY ./mainPage.py .
-COPY ./supabase_client.py .
-COPY ./.env .
+COPY . .
 
 # Expose the port the app runs on
 EXPOSE 7070
