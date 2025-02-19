@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../index.css"; // Import global styles
+import "../styles/index.css"; // Import global styles
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({

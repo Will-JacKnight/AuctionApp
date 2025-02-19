@@ -1,0 +1,61 @@
+/* MainPage.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 15px;
+    color: white;
+  }
+  
+  .navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .navbar ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .search-container {
+    margin: 20px;
+    text-align: center;
+  }
+  
+  .search-container input {
+    padding: 8px;
+    width: 250px;
+  }
+  
+  .search-container button {
+    padding: 8px 15px;
+    margin-left: 5px;
+  }
+  
+  .popular-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .item-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .item-card button {
+    margin-top: 10px;
+    padding: 8px;
+    cursor: pointer;
+  }
+  
