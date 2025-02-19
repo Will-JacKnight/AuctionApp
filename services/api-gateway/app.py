@@ -6,6 +6,7 @@ import os
 import uuid
 from dotenv import load_dotenv
 from supabase import create_client
+import logging
 
 # Load environment variables
 load_dotenv()
@@ -19,6 +20,7 @@ AUCTION_SERVICE_URL = "http://auction-service:7070"
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
+print(SUPABASE_URL)
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -47,6 +49,27 @@ def login():
     """ Forward login request to User Service """
     response = requests.post(f"{USER_SERVICE_URL}/login", json=request.json)
     return jsonify(response.json()), response.status_code
+
+@app.route('/listing', methods=['POST'])
+def listing():
+    try:
+        data = request.json
+        logging.debug(f"🔍 Received data: {data}") 
+
+        if not data:
+            return jsonify({"error": "No JSON data received"}), 400
+
+        
+        if "starting_price" not in data or data["starting_price"] is None:
+            return jsonify({"error": "Missing required field: starting_price"}), 400
+
+        result = supabase.table("auctions").insert(data).execute()
+        logging.debug(f"📌 Supabase Response: {result}")
+
+        return jsonify({"message": "Auction created successfully"}), 201
+    except Exception as e:
+        logging.error(f"❌ Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 # def allowed_file(filename):
 #     return "." in filename and filename.rsplit(".", 1)[1].lower() in {"png", "jpg", "jpeg", "gif"}
