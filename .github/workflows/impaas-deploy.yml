@@ -39,7 +39,7 @@ jobs:
       - name: Build Microservices with Docker Compose
         run: |
           echo "Building microservices..."
-          docker compose --env-file .env -f docker-compose.yml build
+          docker compose -f docker-compose.yml build
 
       - name: Run Tests
         run: |
