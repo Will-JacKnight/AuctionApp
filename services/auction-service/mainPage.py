@@ -11,23 +11,26 @@ from supabase_client import supabase # need to modify
 mainPage = Blueprint("mainPage", __name__)
 
 # Define a route for searching items with keyword
-@mainPage.route('/search', methods=['GET'])
+@mainPage.route('/search', methods=['GET', 'POST'])
 def search_item():
     # Get keyword from query parameter
-    keyword = request.args.get('keyword', '')
+    data = request.get_json()
+    keyword = data.get("query", "")
+    print(keyword)
 
     # Query auctions table with filtering
-    response = supabase.table('auctions').select('*').ilike('item_name', f"%{keyword}%").execute()
+    response = supabase.table('auctions').select('item_name', 'starting_price', 'image_url').ilike('item_name', f"%{keyword}%").execute()
 
     # Return JSON response
+
     return jsonify(response.data), 200
 
 # Define a route for displaying default items on the mainpage
-@mainPage.route('/display_mainPage')
+@mainPage.route('/display_mainPage', methods=['GET'])
 def display_item():
     
     # Fetch all matching products from Supabase
-    response = supabase.table('auctions').select('*').execute()
+    response = supabase.table('auctions').select('item_name', 'starting_price', 'image_url').execute()
 
     items = response.data  # List of items
 

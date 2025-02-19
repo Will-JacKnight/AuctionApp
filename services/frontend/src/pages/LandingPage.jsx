@@ -1,20 +1,78 @@
-import { useState } from 'react';
-import "./../styles/landingPage.css";
+import { useEffect, useState } from 'react'
+import "./../styles/landingPage.css"
 import Card from "./../components/Card"
 
  
 function LandingPage()  {
-  const [searchQuery, setSearchQuery] = useState("");
-  const popularItems = [
-    { id: 1, name: "Vintage Watch", currentBid: "$120", img: "/images/watch1.jpg" },
-    { id: 2, name: "Classic Painting", currentBid: "$450", img: "/images/car1.jpg" },
-    { id: 3, name: "Antique Vase", currentBid: "$200", img: "/images/watch1.jpg" },
-    { id: 4, name: "Limited Edition Sneakers", currentBid: "$300", img: "/images/shoe1.jpg" },
-    { id: 1, name: "Vintage Watch", currentBid: "$120", img: "/images/hat1.jpg" },
-    { id: 2, name: "Classic Painting", currentBid: "$450", img: "/images/watch2.jpg" },
-    { id: 3, name: "Antique Vase", currentBid: "$200", img: "/images/bike1.jpg" },
-    { id: 4, name: "Limited Edition Sneakers", currentBid: "$300", img: "/images/watch1.jpg" }
-  ];
+  const [searchQuery, setSearchQuery] = useState("")
+  const [data, setData] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    async function getData() {
+        try {
+          // const response = await fetch(("/api-gateway/display_mainPage", {
+          const response = await fetch("http://localhost:7070/display_mainPage", {
+            method: "GET",
+            // headers: { "Content-Type": "application/json" },
+            })
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+              throw new Error("Received non-JSON response. Check API response.");
+            }
+            console.log(response)
+            const data = await response.json()
+            setData(data)
+            console.log(data)
+
+        }
+        catch (err) {
+            console.log(`Following error occured when fetching data: ${err}`)
+            setError(err)
+        }
+    }
+    getData()
+
+  }, [])
+
+  const  handleKeyDown = async (event) => {
+    console.log(searchQuery)
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevents form submission reloading the page
+      try {
+        const response = await fetch("http://localhost:7070/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({"query": searchQuery})
+          })
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Received non-JSON response. Check API response.");
+          }
+          const data = await response.json()
+          setData(data)
+
+      }
+      catch (err) {
+          console.log(`Following error occured when fetching data: ${err}`)
+          setError(err)
+      }
+
+      
+    }
+  };
 
   return (
     <div>
@@ -35,13 +93,14 @@ function LandingPage()  {
           placeholder="Search for an item..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         {/* <button>Search</button> */}
       </div>
 
       {/* Popular Items Grid */}
       <div className="popular-items">
-        {popularItems.map((item, i) => (
+        {data && data.map((item, i) => (
           <Card data={item} key={i}/>
         ))}
 

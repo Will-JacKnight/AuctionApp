@@ -1,5 +1,9 @@
 from flask import Flask
 from mainPage import mainPage  # Import the Blueprint
+from flask_cors import CORS
+from supabase_client import supabase # need to modify
+
+
 # from .app_create_project import create_bp
 # from .app_manage_project import manage_bp
 # from .app_profile import profile_bp
@@ -8,6 +12,7 @@ from mainPage import mainPage  # Import the Blueprint
 
 # Create an instance of the Flask class for the web application
 app = Flask(__name__)
+CORS(app)
 
 # Register blueprints to modularize the application
 # Each blueprint corresponds to a specific set of routes and functionality
