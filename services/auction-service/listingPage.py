@@ -32,6 +32,7 @@ def create_item():
         starting_price = data.get('starting_price')
         start_date = data.get('start_date')
         start_time = data.get('start_time')
+        end_date = data.get('end_date')
         end_time = data.get('end_time')
         image_url = data.get("image_url")  # Get image file from request
 
@@ -83,6 +84,7 @@ def create_item():
             "starting_price": starting_price,
             'start_date': start_date,
             "start_time": start_time.strftime('%H:%M'),
+            "end_date": end_date,
             "end_time": end_time.strftime('%H:%M'),
             "auction_type": "English",
             "image_url": image_url,  # Store image URL in the database

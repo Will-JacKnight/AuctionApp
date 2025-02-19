@@ -3,37 +3,30 @@ import requests
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
+import uuid
+from dotenv import load_dotenv
+from supabase import create_client
 
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
 # Microservices URLs
 USER_SERVICE_URL = "http://user-service:8080"
 AUCTION_SERVICE_URL = "http://auction-service:7070"
 
-# Configure Upload Folder
-UPLOAD_FOLDER = "uploads"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# Supabase Settings
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# Storage Bucket Name
+BUCKET_NAME = "product_images"
 
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# App route
-@app.route('/signup', methods=['POST'])
-def register():
-    """ Forward registration request to User Service """
-    response = requests.post(f"{USER_SERVICE_URL}/signup", json=request.json)
-    return jsonify(response.json()), response.status_code
-
-@app.route('/login', methods=['POST'])
-def login():
-    """ Forward login request to User Service """
-    response = requests.post(f"{USER_SERVICE_URL}/login", json=request.json)
-    return jsonify(response.json()), response.status_code
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {"png", "jpg", "jpeg", "gif"}
 
 @app.route('/listing', methods=['POST'])
 def listing():
@@ -46,14 +39,27 @@ def listing():
         return jsonify({"error": "No selected file"}), 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(file_path)
+        # Generate a secure file name
+        file_extension = file.filename.rsplit(".", 1)[1].lower()
+        file_name = f"{uuid.uuid4()}.{file_extension}"
         
+        # Upload image to Supabase Storage
+        response = supabase.storage.from_(BUCKET_NAME).upload(file_name, file.stream, content_type=f"image/{file_extension}")
+        
+        if "error" in response:
+            return jsonify({"error": response["error"]["message"]}), 500
+
+        # Retrieve the public access `image_url` from Supabase
+        image_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{file_name}"
+
+        # Retrieve form data and add Supabase `image_url`
         data = {key: request.form[key] for key in request.form}
-        data["image_url"] = f"/uploads/{filename}"
-        response = requests.post(f"{AUCTION_SERVICE_URL}/upload-auction", json=data)
-        return jsonify(response.json()), response.status_code
+        data["image_url"] = image_url
+        
+        # Insert into `auctions` table
+        new_item = supabase.table("auctions").insert(data).execute()
+        
+        return jsonify({"message": "Auction created successfully", "item_id": new_item.data[0]["id"], "image_url": image_url}), 201
 
     return jsonify({"error": "Invalid file type"}), 400
 
