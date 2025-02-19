@@ -25,6 +25,29 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 # Storage Bucket Name
 BUCKET_NAME = "product_images"
 
+# Configure Upload Folder
+UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/signup', methods=['POST'])
+def register():
+    """ Forward registration request to User Service """
+    response = requests.post(f"{USER_SERVICE_URL}/signup", json=request.json)
+    return jsonify(response.json()), response.status_code
+
+@app.route('/login', methods=['POST'])
+def login():
+    """ Forward login request to User Service """
+    response = requests.post(f"{USER_SERVICE_URL}/login", json=request.json)
+    return jsonify(response.json()), response.status_code
+
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in {"png", "jpg", "jpeg", "gif"}
 
@@ -58,9 +81,10 @@ def listing():
         
         # Insert into `auctions` table
         new_item = supabase.table("auctions").insert(data).execute()
-        
-        return jsonify({"message": "Auction created successfully", "item_id": new_item.data[0]["id"], "image_url": image_url}), 201
 
+        response = requests.post(f"{AUCTION_SERVICE_URL}/upload-auction", json=data)
+        return jsonify(response.json()), response.status_code
+        
     return jsonify({"error": "Invalid file type"}), 400
 
 if __name__ == '__main__':
