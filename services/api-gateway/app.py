@@ -64,11 +64,11 @@ def listing():
             return jsonify({"error": "Missing required field: starting_price"}), 400
 
         result = supabase.table("auctions").insert(data).execute()
-        logging.debug(f"📌 Supabase Response: {result}")
+        logging.debug(f"Supabase Response: {result}")
 
         return jsonify({"message": "Auction created successfully"}), 201
     except Exception as e:
-        logging.error(f"❌ Error: {str(e)}")
+        logging.error(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # def allowed_file(filename):
