@@ -79,6 +79,7 @@ function AuctionUpload() {
           <label>Product Image</label>
           <input
             type="file"
+            name = "image"
             accept="image/*"
             onChange={handleFileChange}
             required
