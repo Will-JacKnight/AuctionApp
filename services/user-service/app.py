@@ -11,7 +11,7 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app) # Allow cross-origin request between frontend and backend
 
 # Configure JWT settings
 app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")  # Retrieve the secret key from environment variables

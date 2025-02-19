@@ -26,7 +26,7 @@ function Login() {
       if (response.ok) {
           console.log(data.access_token)
           alert("Login Successfull!");
-          print(data.access_token)
+          console.log(data.access_token)
           navigate("/"); // Redirect to login page
       } else {
           setError(data.error || "Signup failed");
