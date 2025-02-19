@@ -27,7 +27,7 @@ jobs:
     name: Build and Test Microservices
     runs-on: ubuntu-latest
     env:
-      CR_PREFIX: "local"
+      CR_PREFIX: ""
 
     steps:
       - name: Checkout Code
@@ -67,7 +67,7 @@ jobs:
 
       - name: Build and Push Images to GHCR
         run: |
-          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}"
+          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
           docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml push
 

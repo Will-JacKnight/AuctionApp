@@ -3,7 +3,7 @@ version: '3.8'
 services:
   api-gateway:
     build: ./services/api-gateway
-    image: ${CR_PREFIX}/api-gateway:latest
+    image: ${CR_PREFIX}api-gateway:latest
     ports:
       - "4000:4000"
     depends_on:
@@ -14,7 +14,7 @@ services:
 
   user-service:
     build: ./services/user-service
-    image: ${CR_PREFIX}/user-service:latest
+    image: ${CR_PREFIX}user-service:latest
     env_file:
       - ./services/user-service/.env
     environment:
@@ -28,7 +28,7 @@ services:
 
   frontend:
     build: ./services/frontend
-    image: ${CR_PREFIX}/frontend:latest
+    image: ${CR_PREFIX}frontend:latest
     ports:
       - "80:80"
     volumes:
