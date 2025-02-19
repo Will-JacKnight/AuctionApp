@@ -29,14 +29,20 @@ def display_item():
     # Fetch all matching products from Supabase
     response = supabase.table('auctions').select('*').execute()
 
-    # Shuffle and pick 12 random items (or return all if less than 12)
-    random_items = random.sample(response.data, min(len(response.data), 12))
+    items = response.data  # List of items
+
+    if not items:
+        return jsonify([])  # Return an empty list if no items
+
+    # Duplicate items until we have at least 12
+    while len(items) < 12:
+        items += items[:12 - len(items)]  # Add copies of existing items
+
+    # Shuffle and pick exactly 12 random items
+    random_items = random.sample(items, 12)
 
     return jsonify(random_items)
 
 
-# Run the app if this is the main module
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=7070)
     
 
