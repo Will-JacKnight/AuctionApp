@@ -4,14 +4,15 @@ import "./../styles/listing.css";
 
 function AuctionUpload() {
     const [formData, setFormData] = useState({
-      productName: "",
+      name: "",
       productImage: null,
-      tag: "electronics",
+      catagory: "electronics",
       description: "",
-      startingPrice: "",
-      auctionStartDate: "",
-      auctionStartTime: "",
-      auctionEndTime: "",
+      starting_price: "",
+      start_date: "",
+      start_time: "",
+      end_date: "", 
+      end_time: "",
     });
   
     const navigate = useNavigate();
@@ -125,6 +126,15 @@ function AuctionUpload() {
             type="time"
             name="start_time"
             value={formData.auctionStartTime}
+            onChange={handleChange}
+            required
+          />
+                  
+        <label>Auction End Date</label>
+          <input
+            type="date"
+            name="end_date"
+            value={formData.end_date}
             onChange={handleChange}
             required
           />
