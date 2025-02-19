@@ -13,7 +13,7 @@ function LandingPage()  {
     async function getData() {
         try {
           // const response = await fetch(("/api-gateway/display_mainPage", {
-          const response = await fetch("http://localhost:7070/display_mainPage", {
+          const response = await fetch("api-gateway/display_mainPage", {
             method: "GET",
             // headers: { "Content-Type": "application/json" },
             })
@@ -47,7 +47,7 @@ function LandingPage()  {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevents form submission reloading the page
       try {
-        const response = await fetch("http://localhost:7070/search", {
+        const response = await fetch("api-gateway/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({"query": searchQuery})
