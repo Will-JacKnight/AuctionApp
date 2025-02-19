@@ -1,0 +1,44 @@
+.item-card {
+    padding: 5px;
+    text-align: center;
+    max-width: 330px;
+    max-height: 400px;
+    /* background-color: blue; */
+}
+
+.item-card-img {
+width: 330px;
+height: 330px;
+object-fit: cover;
+}
+
+.item-card-description {
+    font-family: "inter", "safari";
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 7px;
+}
+
+.item-card-description * {
+    margin: 0;
+    padding: 0;
+    /* margin-left: 10px; */
+}
+
+.item-card-price-time {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    /* background-color: red; */
+}   
+
+.smaller-font {
+    font-size: 14px;
+    font-family: "Open Sans", serif;
+}
+
+.grey-text {
+    color: #B4BABC;
+}
