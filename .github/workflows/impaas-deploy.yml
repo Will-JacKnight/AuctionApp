@@ -1,4 +1,4 @@
-name: Deploy to Azure Container App via ACR
+name: Deploy to Impaas via GHCR
 
 on:
   push:
