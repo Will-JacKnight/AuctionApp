@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   api-gateway:
@@ -10,3 +10,8 @@ services:
     volumes:
       - ./services/user-service/tests:/app/tests  # Mount test files
     command: ["pytest", "tests/test_user_service.py"]
+
+  auction-service:
+    volumes:
+      - ./services/auction-service/tests:/app/tests  # Mount test files
+    command: [ "pytest", "tests/test_auction_service.py" ]

@@ -1,68 +1,13 @@
 # version: '3.8'
 
-# services:
-#   api-gateway:
-#     build: ./services/api-gateway
-#     image: ${CR_PREFIX}api-gateway:latest
-#     ports:
-#       - "4000:4000"
-#     depends_on:
-#       - user-service
-#     networks:
-#       - auction-network
-
-
-#   user-service:
-#     build: ./services/user-service
-#     image: ${CR_PREFIX}user-service:latest
-#     env_file:
-#       - ./services/user-service/.env
-#     environment:
-#       - DATABASE_URL=${DATABASE_URL}
-#       - DATABASE_KEY=${DATABASE_KEY}
-#       - SECRET_KEY=${JWT_KEY}
-#     ports:
-#       - "8080:8080"
-#     networks:
-#       - auction-network
-
-#   frontend:
-#     build: ./services/frontend
-#     image: ${CR_PREFIX}frontend:latest
-#     ports:
-#       - "80:80"
-#     volumes:
-#       - ./services/frontend/nginx.conf:/etc/nginx/nginx.conf:ro
-#     depends_on:
-#       - api-gateway
-#     networks:
-#       - auction-network
-
-#   auction-service:
-#     build: ./services/auction-service
-#     image: ${CR_PREFIX}auction-service:latest
-#     env_file:
-#       - ./services/auction-service/.env
-#     ports:
-#       - "7070:7070"
-#     environment:
-#       - DATABASE_URL=${DATABASE_URL}
-#       - DATABASE_KEY=${DATABASE_KEY}
-#       - SECRET_KEY=${JWT_KEY}
-#     networks:
-#       - auction-network
-    
-
-# networks:
-#   auction-network:
-#     driver: bridge
-
 services:
   api-gateway:
     build: ./services/api-gateway
     image: ${CR_PREFIX}api-gateway:latest
-    env_file:
-      - ./services/api-gateway/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_KEY=${DATABASE_KEY}
+      - SECRET_KEY=${JWT_KEY}
     ports:
       - "4000:4000"
     depends_on:
@@ -74,8 +19,10 @@ services:
   auction-service:
     build: ./services/auction-service
     image: ${CR_PREFIX}auction-service:latest
-    env_file:
-      - ./services/auction-service/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_KEY=${DATABASE_KEY}
+      - SECRET_KEY=${JWT_KEY}
     ports:
       - "7070:7070"
     networks:
@@ -84,8 +31,6 @@ services:
   user-service:
     build: ./services/user-service
     image: ${CR_PREFIX}user-service:latest
-    env_file:
-      - ./services/user-service/.env
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - DATABASE_KEY=${DATABASE_KEY}
