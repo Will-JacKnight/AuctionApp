@@ -2,7 +2,6 @@ from flask import Flask
 from mainPage import mainPage  # Import the Blueprint
 from listingPage import listingPage
 from flask_cors import CORS
-from supabase_client import supabase # need to modify
 
 
 # from .app_create_project import create_bp

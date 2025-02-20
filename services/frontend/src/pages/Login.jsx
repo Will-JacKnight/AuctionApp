@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
  
+
+const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
+  ? import.meta.env.VITE_API_DOCKER_API_URL
+  : import.meta.env.VITE_API_LOCAL_API_URL;
+
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
@@ -16,7 +21,7 @@ function Login() {
     setLoading(true);
  
     try {
-      const response = await fetch("/api-gateway/login", {
+      const response = await fetch(`${API_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)

@@ -16,6 +16,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Microservices URLs
+
 USER_SERVICE_URL = "http://user-service:8080"
 AUCTION_SERVICE_URL = "http://auction-service:7070"
 
@@ -23,7 +24,7 @@ MODE = os.getenv("RUN_MODE")
 if MODE == "local":
     AUCTION_SERVICE_URL = "http://127.0.0.1:7070"
     USER_SERVICE_URL = "http://127.0.0.1:8080"
-    
+
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 print(SUPABASE_URL)
