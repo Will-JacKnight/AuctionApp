@@ -21,7 +21,7 @@
 ├── `docker-compose.yml`       # Local setup for all services  
 └── `README.md`
 
-### Local Docker-compose Build
+### Local Docker-compose Build (test only)
 #### builds with .env in root by default
 `docker compose up -d --build`
 

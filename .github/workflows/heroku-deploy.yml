@@ -1,0 +1,94 @@
+name: Deploy to Impaas via GHCR
+
+on:
+  push:
+    branches:
+      - main
+#      - deployment-test
+  workflow_dispatch:  # Allows manual deployment
+
+env:
+
+  CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+  CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
+  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
+  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
+
+  DATABASE_URL: ${{secrets.DATABASE_URL}}
+  DATABASE_KEY: ${{secrets.DATABASE_API_KEY}}
+  JWT_KEY: ${{secrets.JWT_KEY}}
+
+jobs:
+  build-and-test:
+    name: Build and Test Microservices
+    runs-on: ubuntu-latest
+    env:
+      CR_PREFIX: ""
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+
+      - name: Build Microservices with Docker Compose
+        run: |
+          echo "Building microservices..."
+          docker compose -f docker-compose.yml build
+
+      - name: Run Tests
+        run: |
+          echo "Running tests for each microservices..."
+          docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit
+
+      - name: Stop and Clean Up After Testing
+        run: |
+          docker compose -f docker-compose.yml down -v
+
+  deploy-to-heroku:
+    name: deploy Images to Heroku
+    runs-on: ubuntu-latest
+    env:
+      CR_PREFIX: ""
+      HEROKU_REGISTRY_PREFIX: "registry.heroku.com/auction-app-sse"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Heroku CLI
+        uses: akshnz/heroku-cli-action@v0.5.4
+
+      - name: Log in to Heroku
+        uses: heroku/actions/setup@v1
+        with:
+          api_key: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Build Microservices with Docker Compose
+        run: |
+          echo "Building microservices..."
+          docker compose -f docker-compose.yml build
+
+      - name: Tag Images with Process_type
+        run: |
+          docker tag frontend $HEROKU_REGISTRY_PREFIX/frontend
+          docker tag api-gateway $HEROKU_REGISTRY_PREFIX/api-gateway
+          docker tag user-service $HEROKU_REGISTRY_PREFIX/user-service
+          docker tag auction-service $HEROKU_REGISTRY_PREFIX/auction-service
+
+      - name: Push Images to Heroku Registry
+        run: |
+          docker push $HEROKU_REGISTRY_PREFIX/frontend
+          docker push $HEROKU_REGISTRY_PREFIX/api-gateway
+          docker push $HEROKU_REGISTRY_PREFIX/user-service
+          docker push $HEROKU_REGISTRY_PREFIX/auction-service
+
+      - name: Deploy to Heroku
+        run: |
+          heroku container:login
+          heroku container:release frontend -a auction-app-sse
+          heroku container:release api-gateway -a auction-app-sse
+          heroku container:release user-service -a auction-app-sse
+          heroku container:release auction-service -a auction-app-sse
