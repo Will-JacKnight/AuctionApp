@@ -7,10 +7,6 @@ on:
   workflow_dispatch:  # Allows manual deployment
 
 env:
-#  CR_USERNAME: ${{ secrets.ACR_USERNAME }}
-#  CR_TOKEN: ${{ secrets.ACR_PASSWORD }}
-#  CR_PREFIX: ${{ secrets.ACR_LOGIN_SERVER }}
-
   CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
   CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
   IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
@@ -32,9 +28,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
-
       - name: Build Microservices with Docker Compose
         run: |
           echo "Building microservices..."
@@ -49,29 +42,8 @@ jobs:
         run: |
           docker compose -f docker-compose.yml down -v
 
-  push-images:
-    name: Push Docker Images to GHCR
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry (GHCR)
-        run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
-
-      - name: Build and Push Images to GHCR
-        run: |
-          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
-          docker compose -f docker-compose.yml build
-          docker compose -f docker-compose.yml push
-
 #  push-images:
-#    name: Push Docker Images to ACR
+#    name: Push Docker Images to GHCR
 #    needs: build-and-test
 #    runs-on: ubuntu-latest
 #
@@ -79,49 +51,18 @@ jobs:
 #      - name: Checkout Code
 #        uses: actions/checkout@v4
 #
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
-#
-#      - name: Log in to Azure Container Registry (ACR)
-#        run: |
-#          echo ${{ env.CR_TOKEN }} | docker login ${{ env.CR_PREFIX }} --username ${{ env.CR_USERNAME }} --password-stdin
-#
-#
-#      - name: Build and Push Images to ACR
-#        run: |
-#          export CR_PREFIX=${{ env.CR_PREFIX }}
-#          docker compose -f docker-compose.yml build
-#          docker compose -f docker-compose.yml push
-
-#  deploy-to-impaas:
-#    name: Deploy App Containers to Impaas
-#    needs: push-images
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
 #      - name: Log in to GitHub Container Registry (GHCR)
 #        run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
 #
-#      - name: Install Tsuru CLI
+#      - name: Build and Push Images to GHCR
 #        run: |
-#          curl -fsSL "https://tsuru.io/get" | bash
-#          tsuru target add default ${{ env.TSURU_TARGET }} --set-current
-#
-#      - name: Deploy multiple services to Tsuru
-#        env:
-#          TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
-#        run: |
-#          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}"
-#          tsuru app deploy -a auction \
-#            --image $CR_PREFIX/frontend:latest \
-#            --image $CR_PREFIX/api-gateway:latest \
-#            --image $CR_PREFIX/user-service:latest \
+#          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
+#          docker compose -f docker-compose.yml build
+#          docker compose -f docker-compose.yml push
+
   deploy-to-heroku:
     name: deploy Images to Heroku
-    needs: push-images
+#    needs: push-images
     runs-on: ubuntu-latest
     env:
       CR_PREFIX: ""
@@ -135,10 +76,12 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Log in to Heroku
-        uses: heroku/actions/setup@v1
+      - uses: akhileshns/heroku-deploy@v3.14.15 # This is the action
         with:
-          api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "auction-app-sse" #Must be unique in Heroku
+          heroku_email: "jw1524@ic.ac.uk"
+          usedocker: true
 
       - name: Pull Docker image from GHCR
         run: |
@@ -156,6 +99,5 @@ jobs:
 
       - name: Deploy to Heroku
         run: |
-          heroku container:login
           docker push registry.heroku.com/auction-app-sse/frontend
           heroku container:release frontend -a auction-app-sse
