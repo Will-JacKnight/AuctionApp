@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./../styles/listing.css";
 
+const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
+  ? import.meta.env.VITE_API_DOCKER_API_URL
+  : import.meta.env.VITE_API_LOCAL_API_URL;
+
+
 function AuctionUpload() {
   const [formData, setFormData] = useState({
     name: "",
@@ -49,7 +54,7 @@ function AuctionUpload() {
           formDataToSend.append("productImage", image); 
         }
 
-        const response = await fetch("/api-gateway/listing", {
+        const response = await fetch(`${API_URL}/listing`, {
             method: "POST",
             // headers: {
             //     "Content-Type": "application/json"

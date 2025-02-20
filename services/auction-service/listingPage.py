@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from supabase import create_client, Client
 import os
 import datetime
@@ -8,11 +8,10 @@ from flask_cors import CORS
 import traceback
 
 # Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), "../.env")  # Adjust this path as needed
+dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 load_dotenv(dotenv_path)
 
-app = Flask(__name__)
-CORS(app)
+listingPage = Blueprint("listingPage", __name__)
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -29,7 +28,7 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/listing', methods=['POST'])
+@listingPage.route('/listing', methods=['POST'])
 def create_item():
     try:
         # Extract form-data fields
@@ -40,9 +39,6 @@ def create_item():
         required_fields = ["name", "category", "description", "starting_price", "start_date", "start_time", "end_date", "end_time"]
         if not all(field in data and data[field].strip() for field in required_fields):
             return jsonify({"error": "Missing required fields"}), 400
-        data = request.json
-        if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
 
         try:
             data["starting_price"] = float(data["starting_price"])
@@ -71,12 +67,16 @@ def create_item():
                 file_extension = file.filename.rsplit(".", 1)[1].lower()
                 file_name = f"{uuid.uuid4()}.{file_extension}"
 
-                # Upload to Supabase Storage
-                response = supabase.storage.from_(BUCKET_NAME).upload(file_name, file.stream, content_type=f"image/{file_extension}")
+                # Read file as bytes
+                file_bytes = file.read()
 
-                if "error" in response:
-                    return jsonify({"error": response["error"]["message"]}), 500
-                
+                # Upload to Supabase Storage (using bytes data)
+                response = supabase.storage.from_(BUCKET_NAME).upload(file_name, file_bytes)
+
+                # Ensure upload was successful
+                if not response:
+                    return jsonify({"error": "Failed to upload image to Supabase"}), 500
+
                 # Construct public URL
                 image_url = f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{file_name}"
                 data["image_url"] = image_url
@@ -104,9 +104,7 @@ def create_item():
  
     except Exception as e:
         traceback.print_exc()
-        print(e)
         return jsonify({"error": str(e)}), 500
-
 
                 
 
@@ -170,5 +168,3 @@ def create_item():
 #         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7070, debug=True)
