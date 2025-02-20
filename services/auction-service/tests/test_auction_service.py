@@ -51,42 +51,42 @@ class TestMainPageAPI(unittest.TestCase):
         self.assertTrue(len(data) > 0)  # Check if items are returned
     
 
-# class TestListingPageAPI(unittest.TestCase):
+class TestListingPageAPI(unittest.TestCase):
 
-#     def setUp(self):
-#         """Setup the test client."""
-#         self.app = app
-#         self.client = self.app.test_client()
+    def setUp(self):
+        """Setup the test client."""
+        self.app = app
+        self.client = self.app.test_client()
 
-#     @patch('listingPage.supabase')  # Patch Supabase in the listingPage module
-#     def test_create_listing(self, mock_supabase):
-#         """Test the /listing POST route."""
+    @patch('listingPage.supabase')  # Patch Supabase in the listingPage module
+    def test_create_listing(self, mock_supabase):
+        """Test the /listing POST route."""
         
-#         # Mock Supabase table insert response
-#         mock_insert_response = MagicMock()
-#         mock_insert_response.execute.return_value.data = [{"id": 123}]
+        # Mock Supabase table insert response
+        mock_insert_response = MagicMock()
+        mock_insert_response.execute.return_value.data = [{"id": 123}]
         
-#         mock_supabase.table.return_value.insert.return_value.execute = mock_insert_response.execute
+        mock_supabase.table.return_value.insert.return_value.execute = mock_insert_response.execute
 
-#         # Simulate a POST request to create a new listing
-#         payload = {
-#             "name": "Test Item",
-#             "category": "electronics",
-#             "description": "A test item for auction",
-#             "starting_price": 50,
-#             "start_date": "2025-05-01",
-#             "start_time": "09:00",
-#             "end_date": "2025-05-02",
-#             "end_time": "10:00",
-#             "image_url": "http://someexample.com"
-#         }
-#         response = self.client.post('/listing', data=payload, content_type='multipart/form-data')
+        # Simulate a POST request to create a new listing
+        payload = {
+            "name": "Test Item",
+            "category": "electronics",
+            "description": "A test item for auction",
+            "starting_price": 50,
+            "start_date": "2025-05-01",
+            "start_time": "09:00",
+            "end_date": "2025-05-02",
+            "end_time": "10:00",
+            "image_url": "http://someexample.com"
+        }
+        response = self.client.post('/listing', data=payload, content_type='multipart/form-data')
 
-#         # Assert response
-#         self.assertEqual(response.status_code, 201)
-#         data = response.get_json()
-#         print("Mocked response:", data)
-#         self.assertEqual(data["item_id"], 123)  # Should match the mocked ID
+        # Assert response
+        self.assertEqual(response.status_code, 201)
+        data = response.get_json()
+        print("Mocked response:", data)
+        self.assertEqual(data["item_id"], 123)  # Should match the mocked ID
 
 if __name__ == '__main__':
     unittest.main()
