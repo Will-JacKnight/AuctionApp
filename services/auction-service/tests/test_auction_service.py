@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock
 import unittest
 from flask import Flask
 from app import app  # Import the Flask app instance
+import io
 
 
 class TestMainPageAPI(unittest.TestCase):
@@ -87,6 +88,42 @@ class TestListingPageAPI(unittest.TestCase):
         data = response.get_json()
         print("Mocked response:", data)
         self.assertEqual(data["item_id"], 123)  # Should match the mocked ID
+
+    @patch('listingPage.supabase')  # Mock Supabase
+    def test_create_listing_with_image(self, mock_supabase):
+        """ Testing listing POST request with jpg file"""
+
+        # Mock Supabase Storage upload
+        mock_supabase.storage.from_.return_value.upload.return_value = True
+        
+        # Mock Supabase table insert
+        mock_insert_response = MagicMock()
+        mock_insert_response.execute.return_value.data = [{"id": 456}]
+        mock_supabase.table.return_value.insert.return_value.execute = mock_insert_response.execute
+
+        payload = {
+            "name": "Test Item with Image",
+            "category": "electronics",
+            "description": "A test item for auction with image",
+            "starting_price": "100",
+            "start_date": "2025-06-01",
+            "start_time": "12:00",
+            "end_date": "2025-06-02",
+            "end_time": "13:00"
+        }
+
+        # Simulate image upload
+        image = (io.BytesIO(b"fake image data"), "test-image.jpg")
+
+        # Dend request
+        response = self.client.post('/listing', data={**payload, "productImage": image}, content_type='multipart/form-data')
+
+        # Validate respond
+        self.assertEqual(response.status_code, 201)
+        data = response.get_json()
+        print("Mocked response with image:", data)
+        self.assertEqual(data["item_id"], 456)
+        self.assertIn("image_url", data) 
 
 if __name__ == '__main__':
     unittest.main()

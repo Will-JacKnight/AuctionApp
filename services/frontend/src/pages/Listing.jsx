@@ -56,10 +56,6 @@ function AuctionUpload() {
 
         const response = await fetch(`${API_URL}/listing`, {
             method: "POST",
-            // headers: {
-            //     "Content-Type": "application/json"
-            // },
-            // body: JSON.stringify(formDataToSend)
             body: formDataToSend
         });
 
@@ -92,7 +88,6 @@ function AuctionUpload() {
           required
         />
 
-        
         <label>Product Image</label>
         <input
           type="file"
@@ -101,7 +96,6 @@ function AuctionUpload() {
           onChange={handleFileChange}
           required
         />
-       
 
         {/* Tag (category) */}
         <label>Tag</label>
