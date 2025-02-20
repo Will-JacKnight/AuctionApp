@@ -60,23 +60,41 @@ def login():
 @app.route('/listing', methods=['POST'])
 def listing():
     try:
-        data = request.json
-        logging.debug(f"🔍 Received data: {data}") 
+        if "productImage" not in request.files:
+            return jsonify({"error": "No file part"}), 400
 
-        if not data:
-            return jsonify({"error": "No JSON data received"}), 400
+        file = request.files["productImage"]
+        if file.filename == "":
+            return jsonify({"error": "No selected file"}), 400
+        
+        form_data = {key: request.form[key] for key in request.form}
+ 
+        files = {"productImage": (file.filename, file.stream, file.content_type)}
+ 
+        response = requests.post(f"{AUCTION_SERVICE_URL}/listing", files=files, data=form_data)
+        return jsonify(response.json()), response.status_code
+ 
+    except Exception as e:
+        logging.error(f"Error forwarding request: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+        
+    #     data = request.json
+    #     logging.debug(f"🔍 Received data: {data}") 
+
+    #     if not data:
+    #         return jsonify({"error": "No JSON data received"}), 400
 
         
-        if "starting_price" not in data or data["starting_price"] is None:
-            return jsonify({"error": "Missing required field: starting_price"}), 400
+    #     if "starting_price" not in data or data["starting_price"] is None:
+    #         return jsonify({"error": "Missing required field: starting_price"}), 400
 
-        result = supabase.table("auctions").insert(data).execute()
-        logging.debug(f"Supabase Response: {result}")
+    #     result = supabase.table("auctions").insert(data).execute()
+    #     logging.debug(f"Supabase Response: {result}")
 
-        return jsonify({"message": "Auction created successfully"}), 201
-    except Exception as e:
-        logging.error(f"Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+    #     return jsonify({"message": "Auction created successfully"}), 201
+    # except Exception as e:
+    #     logging.error(f"Error: {str(e)}")
+    #     return jsonify({"error": str(e)}), 500
 
 # def allowed_file(filename):
 #     return "." in filename and filename.rsplit(".", 1)[1].lower() in {"png", "jpg", "jpeg", "gif"}
