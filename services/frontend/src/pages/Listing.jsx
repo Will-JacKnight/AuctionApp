@@ -5,7 +5,6 @@ import "./../styles/listing.css";
 function AuctionUpload() {
   const [formData, setFormData] = useState({
     name: "",
-    // productImage: null,
     category: "electronics",
     description: "",
     starting_price: "",
@@ -15,6 +14,7 @@ function AuctionUpload() {
     end_time: "",
   });
 
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,11 +31,9 @@ function AuctionUpload() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  /*
   const handleFileChange = (e) => {
-    setFormData((prev) => ({ ...prev, productImage: e.target.files[0] }));
+    setImage(e.target.files[0]);
   };
-  */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,12 +41,21 @@ function AuctionUpload() {
     setError("");
 
     try {
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach((key) => {  
+          formDataToSend.append(key, formData[key]);       
+        });
+        if (image) {
+          formDataToSend.append("productImage", image); 
+        }
+
         const response = await fetch("/api-gateway/listing", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
+            // headers: {
+            //     "Content-Type": "application/json"
+            // },
+            // body: JSON.stringify(formDataToSend)
+            body: formDataToSend
         });
 
         const data = await response.json();
@@ -80,16 +87,16 @@ function AuctionUpload() {
           required
         />
 
-        {/* 
+        
         <label>Product Image</label>
         <input
           type="file"
-          name="image"
+          name="productImage"
           accept="image/*"
           onChange={handleFileChange}
           required
         />
-        */}
+       
 
         {/* Tag (category) */}
         <label>Tag</label>
