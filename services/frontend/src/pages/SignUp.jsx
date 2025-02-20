@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/index.css"; // Import global styles
 
+const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
+  ? import.meta.env.VITE_API_DOCKER_API_URL
+  : import.meta.env.VITE_API_LOCAL_API_URL;
+
 const SignupPage = () => {
     const [formData, setFormData] = useState({
         email: "",
@@ -21,7 +25,7 @@ const SignupPage = () => {
         setError(null); // Clear previous errors
 
         try {
-            const response = await fetch("/api-gateway/signup", {
+            const response = await fetch(`${API_URL}/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

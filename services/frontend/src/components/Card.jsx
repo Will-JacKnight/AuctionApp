@@ -9,7 +9,7 @@ function Card({data}) {
             <div className="item-card-description">
                 <p>{data.item_name}</p>
                 <div className="item-card-price-time">
-                    <p className="smaller-font">Current Bid: {data.starting_price}</p>
+                    <p className="smaller-font">Current Bid: £{data.starting_price}</p>
                     <p className="grey-text">2 Days</p>
                 </div>
                 

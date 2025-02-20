@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import "./../styles/landingPage.css"
 import Card from "./../components/Card"
 
+const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
+  ? import.meta.env.VITE_API_DOCKER_API_URL
+  : import.meta.env.VITE_API_LOCAL_API_URL;
+
  
 function LandingPage()  {
   const [searchQuery, setSearchQuery] = useState("")
@@ -13,7 +17,7 @@ function LandingPage()  {
     async function getData() {
         try {
           // const response = await fetch(("/api-gateway/display_mainPage", {
-          const response = await fetch("api-gateway/display_mainPage", {
+          const response = await fetch(`${API_URL}/display_mainPage`, {
             method: "GET",
             // headers: { "Content-Type": "application/json" },
             })
@@ -47,7 +51,7 @@ function LandingPage()  {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevents form submission reloading the page
       try {
-        const response = await fetch("api-gateway/search", {
+        const response = await fetch(`${API_URL}/search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({"query": searchQuery})
