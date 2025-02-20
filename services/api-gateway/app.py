@@ -9,7 +9,8 @@ from supabase import create_client
 import logging
 
 # Load environment variables
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 CORS(app)
