@@ -23,7 +23,7 @@
 
 ### Local Docker-compose Build (test only)
 #### builds with .env in root by default
-`docker compose up -d --build`
+`docker compose -f docker-compose-local up -d --build`
 
 ### Local Docker-compose Test
-`docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit`
+`docker compose -f docker-compose-local.yml -f docker-compose-test.yml up --abort-on-container-exit`

@@ -4,10 +4,8 @@ services:
   api-gateway:
     build: ./services/api-gateway
     image: ${CR_PREFIX}api-gateway:latest
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_KEY=${DATABASE_KEY}
-      - SECRET_KEY=${JWT_KEY}
+    env_file:
+      - ./.env
     ports:
       - "4000:4000"
     depends_on:
@@ -19,10 +17,8 @@ services:
   auction-service:
     build: ./services/auction-service
     image: ${CR_PREFIX}auction-service:latest
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_KEY=${DATABASE_KEY}
-      - SECRET_KEY=${JWT_KEY}
+    env_file:
+      - ./.env
     ports:
       - "7070:7070"
     networks:
@@ -31,10 +27,8 @@ services:
   user-service:
     build: ./services/user-service
     image: ${CR_PREFIX}user-service:latest
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_KEY=${DATABASE_KEY}
-      - SECRET_KEY=${JWT_KEY}
+    env_file:
+      - ./.env
     ports:
       - "8080:8080"
     networks:

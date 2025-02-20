@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-#      - deployment-test
   workflow_dispatch:  # Allows manual deployment
 
 env:
