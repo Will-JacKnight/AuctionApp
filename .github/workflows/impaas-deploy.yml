@@ -42,30 +42,30 @@ jobs:
         run: |
           docker compose -f docker-compose.yml down -v
 
-#  push-images:
-#    name: Push Docker Images to GHCR
-#    needs: build-and-test
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout Code
-#        uses: actions/checkout@v4
-#
-#      - name: Log in to GitHub Container Registry (GHCR)
-#        run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
-#
-#      - name: Build and Push Images to GHCR
-#        run: |
-#          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
-#          docker compose -f docker-compose.yml build
-#          docker compose -f docker-compose.yml push
+  push-images:
+    name: Push Docker Images to GHCR
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
+
+      - name: Build and Push Images to GHCR
+        run: |
+          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
+          docker compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml push
 
   deploy-to-heroku:
     name: deploy Images to Heroku
-#    needs: push-images
+    needs: build-and-test
     runs-on: ubuntu-latest
     env:
-      CR_PREFIX: ""
+#      CR_PREFIX: ""
       HEROKU_REGISTRY_PREFIX: "registry.heroku.com/auction-app-sse"
 
     steps:
@@ -76,28 +76,44 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
+      - name: Build, Tag and push Microservices
+        run: |
+          echo "Building microservices..."
+          docker compose -f docker-compose.yml build
+          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/frontend
+          docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
+          docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
+          docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
+          docker push ${HEROKU_REGISTRY_PREFIX}/frontend
+          docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
+          docker push ${HEROKU_REGISTRY_PREFIX}/user-service
+          docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
+
       - uses: akhileshns/heroku-deploy@v3.14.15 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "auction-app-sse" #Must be unique in Heroku
           heroku_email: "jw1524@ic.ac.uk"
           usedocker: true
+          justlogin: 'true'
 
-      - name: Pull Docker image from GHCR
-        run: |
-          docker pull ghcr.io/${{env.CR_USERNAME}}/frontend:latest
-#          docker pull ghcr.io/${{env.CR_USERNAME}}/api-gateway:latest
-#          docker pull ghcr.io/${{env.CR_USERNAME}}/user-service:latest
-#          docker pull ghcr.io/${{env.CR_USERNAME}}/auction-service:latest
+#      - name: Pull Docker image from GHCR
+#        run: |
+#          docker pull ghcr.io/${{env.CR_USERNAME}}/frontend:latest
+##          docker pull ghcr.io/${{env.CR_USERNAME}}/api-gateway:latest
+##          docker pull ghcr.io/${{env.CR_USERNAME}}/user-service:latest
+##          docker pull ghcr.io/${{env.CR_USERNAME}}/auction-service:latest
 
-      - name: Tag Images with Process_type
-        run: |
-          docker tag ghcr.io/${{env.CR_USERNAME}}/frontend registry.heroku.com/auction-app-sse/frontend
-#          docker tag ghcr.io/${{env.CR_USERNAME}}/api-gateway registry.heroku.com/auction-app-sse/web
-#          docker tag ghcr.io/${{env.CR_USERNAME}}/user-service registry.heroku.com/auction-app-sse/web
-#          docker tag ghcr.io/${{env.CR_USERNAME}}/auction-service registry.heroku.com/auction-app-sse/web
+#      - name: Tag Images with Process_type
+#        run: |
+#          docker tag ghcr.io/${{env.CR_USERNAME}}/frontend registry.heroku.com/auction-app-sse/frontend
+##          docker tag ghcr.io/${{env.CR_USERNAME}}/api-gateway registry.heroku.com/auction-app-sse/web
+##          docker tag ghcr.io/${{env.CR_USERNAME}}/user-service registry.heroku.com/auction-app-sse/web
+##          docker tag ghcr.io/${{env.CR_USERNAME}}/auction-service registry.heroku.com/auction-app-sse/web
 
       - name: Deploy to Heroku
         run: |
-          docker push registry.heroku.com/auction-app-sse/frontend
           heroku container:release frontend -a auction-app-sse
+          heroku container:release api-gateway -a auction-app-sse
+          heroku container:release user-service -a auction-app-sse
+          heroku container:release auction-service -a auction-app-sse
