@@ -1,56 +1,49 @@
-import pytest
-import requests
+import sys
+import os
+import unittest
+from unittest.mock import patch, MagicMock
+from flask import json
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
+from app import app
 
-# BASE_URL = "http://localhost:80"  # Adjust the port if necessary
+class TestUserLogin(unittest.TestCase):
 
-def test_connection_of_login_service():
-    # response = requests.get(f"{BASE_URL}/login")
-    # assert response.status_code == 200
-    assert True
+    def setUp(self):
+        """Setup the test client."""
+        self.app = app.test_client()
+        self.headers = {"Content-Type": "application/json"}
 
-# def test_signup_success():
-#     payload = {
-#         "email": "test@example.com",
-#         "password": "1234",
-#         "username": "testuser"
-#     }
-#     response = requests.post(f"{BASE_URL}/signup", json=payload)
-#     assert response.status_code == 201
-#     assert response.json().get("message") == "User registered successfully. Please log in."
-#
-# def test_signup_missing_fields():
-#     payload = {
-#         "email": "test@example.com",
-#         "username": "testuser"
-#         # Missing password
-#     }
-#     response = requests.post(f"{BASE_URL}/signup", json=payload)
-#     assert response.status_code == 400
-#     assert response.json().get("error") == "Missing required fields"
-#
-# def test_login_success():
-#     payload = {
-#         "email": "test@example.com",
-#         "password": "1234"
-#     }
-#     response = requests.post(f"{BASE_URL}/login", json=payload)
-#     assert response.status_code == 200
-#     assert "access_token" in response.json()
-#
-# def test_login_invalid_credentials():
-#     payload = {
-#         "email": "test@example.com",
-#         "password": "wrongpassword"
-#     }
-#     response = requests.post(f"{BASE_URL}/login", json=payload)
-#     assert response.status_code == 401
-#     assert response.json().get("error") == "Invalid password"
-#
-# def test_login_user_not_found():
-#     payload = {
-#         "email": "nonexistent@example.com",
-#         "password": "1234"
-#     }
-#     response = requests.post(f"{BASE_URL}/login", json=payload)
-#     assert response.status_code == 404
-#     assert response.json().get("error") == "User not found"
+    @patch("app.supabase")
+    def test_invalid_password(self, mock_supabase):
+        mock_user = {
+            "id": 1,
+            "password": "$2b$12$e7i5k6W5aT36uZAcXOTYMeWiO3JX8N5eX6cOSXzW5OjU2xYFNffP6",  # bcrypt hash
+            "username": "testuser"
+        }
+
+        mock_response = MagicMock()
+        mock_response.data = [mock_user]
+        mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_response
+
+        payload = json.dumps({"email": "test@example.com", "password": "wrongpassword"})
+        response = self.app.post("/login", data=payload, headers=self.headers)
+
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "Invalid password")
+
+    @patch("app.supabase")
+    def test_user_not_found(self, mock_supabase):
+        mock_response = MagicMock()
+        mock_response.data = []
+        mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_response
+
+        payload = json.dumps({"email": "nonexistent@example.com", "password": "password123"})
+        response = self.app.post("/login", data=payload, headers=self.headers)
+
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "User not found")
+
+if __name__ == '__main__':
+    unittest.main()

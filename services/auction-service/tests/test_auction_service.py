@@ -1,6 +1,9 @@
+import sys
+import os
 from unittest.mock import patch, MagicMock
 import unittest
 from flask import Flask
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
 from app import app  # Import the Flask app instance
 import io
 
@@ -115,7 +118,7 @@ class TestListingPageAPI(unittest.TestCase):
         # Simulate image upload
         image = (io.BytesIO(b"fake image data"), "test-image.jpg")
 
-        # Dend request
+        # Send request
         response = self.client.post('/listing', data={**payload, "productImage": image}, content_type='multipart/form-data')
 
         # Validate respond
