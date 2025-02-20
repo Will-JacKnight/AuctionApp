@@ -1,10 +1,9 @@
-name: Deploy to Impaas via GHCR
+name: Deployment to Heroku
 
 on:
   push:
     branches:
       - main
-#      - deployment-test
   workflow_dispatch:  # Allows manual deployment
 
 env:
@@ -49,6 +48,7 @@ jobs:
 
   deploy-to-heroku:
     name: deploy Images to Heroku
+    needs: build-and-test
     runs-on: ubuntu-latest
     env:
       CR_PREFIX: ""
