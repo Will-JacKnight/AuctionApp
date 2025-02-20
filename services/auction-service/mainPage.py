@@ -19,7 +19,7 @@ def search_item():
     print(keyword)
 
     # Query auctions table with filtering
-    response = supabase.table('auctions').select('item_name', 'starting_price', 'image_url').ilike('item_name', f"%{keyword}%").execute()
+    response = supabase.table('auctions').select('name', 'starting_price', 'image_url').ilike('name', f"%{keyword}%").execute()
 
     # Return JSON response
 
@@ -30,7 +30,7 @@ def search_item():
 def display_item():
     
     # Fetch all matching products from Supabase
-    response = supabase.table('auctions').select('item_name', 'starting_price', 'image_url').execute()
+    response = supabase.table('auctions').select('name', 'starting_price', 'image_url').execute()
 
     items = response.data  # List of items
 
