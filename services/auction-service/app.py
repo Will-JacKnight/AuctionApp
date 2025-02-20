@@ -18,7 +18,6 @@ CORS(app)
 # Each blueprint corresponds to a specific set of routes and functionality
 # Register the Blueprint for mainPage
 app.register_blueprint(mainPage)
-app.register_blueprint(listingPage)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7070)

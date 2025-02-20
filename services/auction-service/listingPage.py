@@ -83,7 +83,7 @@ def create_item():
 
         # Insert into `auctions` table
         new_item = supabase.table("auctions").insert({
-            "item_name": data["name"],
+            "name": data["name"],
             "category": data["category"],
             "description": data["description"],
             "starting_price": data["starting_price"],
