@@ -59,35 +59,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Heroku CLI
-        uses: akshnz/heroku-cli-action@v0.5.4
-
-      - name: Log in to Heroku
         uses: heroku/actions/setup@v1
         with:
-          api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Log in to Heroku Container Registry
+        run: heroku container:login
 
       - name: Build Microservices with Docker Compose
         run: |
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
 
-      - name: Tag Images with Process_type
+      - name: Tag and Push Images to Heroku Registry
         run: |
           docker tag frontend $HEROKU_REGISTRY_PREFIX/frontend
           docker tag api-gateway $HEROKU_REGISTRY_PREFIX/api-gateway
           docker tag user-service $HEROKU_REGISTRY_PREFIX/user-service
           docker tag auction-service $HEROKU_REGISTRY_PREFIX/auction-service
-
-      - name: Push Images to Heroku Registry
-        run: |
           docker push $HEROKU_REGISTRY_PREFIX/frontend
           docker push $HEROKU_REGISTRY_PREFIX/api-gateway
           docker push $HEROKU_REGISTRY_PREFIX/user-service
           docker push $HEROKU_REGISTRY_PREFIX/auction-service
 
-      - name: Deploy to Heroku
+      - name: Release to Heroku
         run: |
-          heroku container:login
           heroku container:release frontend -a auction-app-sse
           heroku container:release api-gateway -a auction-app-sse
           heroku container:release user-service -a auction-app-sse
