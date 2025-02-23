@@ -9,12 +9,12 @@ on:
 env:
   CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
   CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
-  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
-  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
+  #  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
+  #  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
+  #  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
 
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  DATABASE_KEY: ${{secrets.DATABASE_API_KEY}}
+  SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+  SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
 
 jobs:
@@ -77,7 +77,7 @@ jobs:
 
       - name: Login to Heroku
         run: |
-           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
 
       - name: Build, Tag and push Microservices
         run: |
@@ -93,9 +93,18 @@ jobs:
           docker push ${HEROKU_REGISTRY_PREFIX}/user-service
           docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
-#      - name: Deploy to Heroku
-#        run: |
-#          heroku container:release frontend -a auction-app-sse
-#          heroku container:release api-gateway -a auction-app-sse
-#          heroku container:release user-service -a auction-app-sse
-#          heroku container:release auction-service -a auction-app-sse
+      - name: Set Heroku Environment Variables
+        run: |
+          heroku config:set -a auction-app-sse \
+                            SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+                            SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+                            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+                            API_GATEWAY_URL=${{secrets.API_GATEWAY_URL}}
+
+      - name: Release pushed images to Heroku
+        run: |
+          heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse
+
+      - name: Scale dynos
+        run: |
+          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
