@@ -16,6 +16,7 @@ env:
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
+  API_GATEWAY_URL: ${{secrets.API_GATEWAY_URL}}
 
 jobs:
   build-and-test:
