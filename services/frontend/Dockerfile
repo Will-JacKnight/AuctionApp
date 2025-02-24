@@ -19,7 +19,8 @@ RUN npm run build
 # Step 7: Use a lighter image to serve the React app
 FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Step 8: Copy the build folder to the nginx server directory
 COPY --from=build /app/dist /usr/share/nginx/html
@@ -29,4 +30,5 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # Step 10: Run nginx
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
+CMD envsubst '$API_GATEWAY_URL' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'
