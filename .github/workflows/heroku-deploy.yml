@@ -1,9 +1,9 @@
-name: Deploy to Impaas via GHCR
+name: Build, Test and Deploy to Heroku
 
 on:
   push:
     branches:
-      - deployment-test
+      - main
   workflow_dispatch:  # Allows manual deployment
 
 env:
@@ -106,6 +106,6 @@ jobs:
         run: |
           heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse
 
-      - name: Scale dynos
-        run: |
-          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
+#      - name: Scale dynos
+#        run: |
+#          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
