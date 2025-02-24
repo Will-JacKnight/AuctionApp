@@ -3,23 +3,20 @@ name: Deploy to Impaas via GHCR
 on:
   push:
     branches:
-      - main
+      - deployment-test
   workflow_dispatch:  # Allows manual deployment
 
 env:
-#  CR_USERNAME: ${{ secrets.ACR_USERNAME }}
-#  CR_TOKEN: ${{ secrets.ACR_PASSWORD }}
-#  CR_PREFIX: ${{ secrets.ACR_LOGIN_SERVER }}
-
   CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
   CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
-  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
-  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
+  #  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
+  #  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
+  #  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
 
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  DATABASE_KEY: ${{secrets.DATABASE_API_KEY}}
+  SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+  SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
+  API_GATEWAY_URL: ${{secrets.API_GATEWAY_URL}}
 
 jobs:
   build-and-test:
@@ -31,9 +28,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
 
       - name: Build Microservices with Docker Compose
         run: |
@@ -58,9 +52,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
-
       - name: Log in to GitHub Container Registry (GHCR)
         run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
 
@@ -70,89 +61,51 @@ jobs:
           docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml push
 
-#  push-images:
-#    name: Push Docker Images to ACR
-#    needs: build-and-test
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout Code
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v3
-#
-#      - name: Log in to Azure Container Registry (ACR)
-#        run: |
-#          echo ${{ env.CR_TOKEN }} | docker login ${{ env.CR_PREFIX }} --username ${{ env.CR_USERNAME }} --password-stdin
-#
-#
-#      - name: Build and Push Images to ACR
-#        run: |
-#          export CR_PREFIX=${{ env.CR_PREFIX }}
-#          docker compose -f docker-compose.yml build
-#          docker compose -f docker-compose.yml push
+  deploy-to-heroku:
+    name: deploy Images to Heroku
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_REGISTRY_PREFIX: "registry.heroku.com/auction-app-sse"
 
-#  deploy-to-impaas:
-#    name: Deploy App Containers to Impaas
-#    needs: push-images
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: Log in to GitHub Container Registry (GHCR)
-#        run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
-#
-#      - name: Install Tsuru CLI
-#        run: |
-#          curl -fsSL "https://tsuru.io/get" | bash
-#          tsuru target add default ${{ env.TSURU_TARGET }} --set-current
-#
-#      - name: Deploy multiple services to Tsuru
-#        env:
-#          TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
-#        run: |
-#          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}"
-#          tsuru app deploy -a auction \
-#            --image $CR_PREFIX/frontend:latest \
-#            --image $CR_PREFIX/api-gateway:latest \
-#            --image $CR_PREFIX/user-service:latest \
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-#  deploy-to-heroku:
-#    name: deploy Images to Heroku
-#    needs: push-images
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout Code
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Heroku CLI
-#        uses: akshnz/heroku-cli-action@v0.5.4
-#
-#      - name: Log in to Heroku
-#        uses: heroku/actions/setup@v1
-#        with:
-#          api_key: ${{ secrets.HEROKU_API_KEY }}
-#
-#      - name: Pull Docker image from GHCR
-#        run: |
-#          docker pull ghcr.io/${{env.CR_USERNAME}}/frontend:latest
-##          docker pull ghcr.io/${{env.CR_USERNAME}}/api-gateway:latest
-##          docker pull ghcr.io/${{env.CR_USERNAME}}/user-service:latest
-##          docker pull ghcr.io/${{env.CR_USERNAME}}/auction-service:latest
-#
-#      - name: Tag Images with Process_type
-#        run: |
-#          docker tag ghcr.io/${{env.CR_USERNAME}}/frontend registry.heroku.com/auction-app-sse/frontend
-##          docker tag ghcr.io/${{env.CR_USERNAME}}/api-gateway registry.heroku.com/auction-app-sse/web
-##          docker tag ghcr.io/${{env.CR_USERNAME}}/user-service registry.heroku.com/auction-app-sse/web
-##          docker tag ghcr.io/${{env.CR_USERNAME}}/auction-service registry.heroku.com/auction-app-sse/web
-#
-#      - name: Deploy to Heroku
-#        run: |
-#          heroku container:login
-#          docker push registry.heroku.com/auction-app-sse/frontend
-#          heroku container:release web -a auction-app-sse
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Login to Heroku
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
+
+      - name: Build, Tag and push Microservices
+        run: |
+          echo "Building microservices..."
+          docker compose -f docker-compose.yml build
+          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/frontend
+          docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
+          docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
+          docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
+          
+          docker push ${HEROKU_REGISTRY_PREFIX}/frontend
+          docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
+          docker push ${HEROKU_REGISTRY_PREFIX}/user-service
+          docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
+
+      - name: Set Heroku Environment Variables
+        run: |
+          heroku config:set -a auction-app-sse \
+                            SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+                            SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+                            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+                            API_GATEWAY_URL=${{secrets.API_GATEWAY_URL}}
+
+      - name: Release pushed images to Heroku
+        run: |
+          heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse
+
+      - name: Scale dynos
+        run: |
+          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
