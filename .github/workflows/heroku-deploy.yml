@@ -82,9 +82,13 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Login to Heroku
+      - name: Login to docker
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
+
+      - name: Login to Heroku
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
 
       - name: Build, Tag and push Microservices
         run: |
