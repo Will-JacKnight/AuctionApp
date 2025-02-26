@@ -72,7 +72,7 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     env:
-      HEROKU_REGISTRY_PREFIX: "registry.heroku.com/auction-app-sse"
+      HEROKU_REGISTRY_PREFIX: "registry.heroku.com/bidding-app-sse"
       RUN_MODE: docker
     steps:
       - name: Checkout Code
@@ -106,7 +106,7 @@ jobs:
 
       - name: Set Heroku Environment Variables
         run: |
-          heroku config:set -a auction-app-sse \
+          heroku config:set -a bidding-app-sse \
                             SUPABASE_URL=${{secrets.SUPABASE_URL}} \
                             SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
                             JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
@@ -116,8 +116,8 @@ jobs:
 
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse
+          heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse
 
       - name: Scale dynos
         run: |
-          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
+          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse

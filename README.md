@@ -35,7 +35,7 @@
 
 ## Heroku Deployment
 ### Run shell in Heroku
-`heroku run sh -a auction-app-sse`
+`heroku run sh -a bidding-app-sse`
 
 ### Heroku app release
-`heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse`
+`heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse`
