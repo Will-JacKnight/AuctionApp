@@ -69,7 +69,7 @@ jobs:
 
   deploy-to-heroku:
     name: deploy Images to Heroku
-    needs: build-and-test
+    # needs: build-and-test
     runs-on: ubuntu-latest
     env:
       HEROKU_REGISTRY_PREFIX: "registry.heroku.com/bidding-app-sse"
