@@ -7,9 +7,9 @@
 }
 
 .item-card-img {
-width: 330px;
-height: 330px;
-object-fit: cover;
+    width: 330px;
+    height: 330px;
+    object-fit: cover;
 }
 
 .item-card-description {
