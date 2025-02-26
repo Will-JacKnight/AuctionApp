@@ -2,9 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/index.css"; // Import global styles
 
-const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
-  ? import.meta.env.VITE_API_DOCKER_API_URL
-  : import.meta.env.VITE_API_LOCAL_API_URL;
+const API_URL =
+  import.meta.env.RUN_MODE === "docker"
+    ? import.meta.env.API_GATEWAY_DOCKER_URL
+    : import.meta.env.RUN_MODE === "heroku"
+    ? import.meta.env.API_GATEWAY_HEROKU_URL
+    : import.meta.env.API_GATEWAY_LOCAL_URL;
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({
