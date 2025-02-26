@@ -104,20 +104,20 @@ jobs:
           docker push ${HEROKU_REGISTRY_PREFIX}/user-service
           docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
-      - name: Set Heroku Environment Variables
-        run: |
-          heroku config:set -a auction-app-sse \
-                            SUPABASE_URL=${{secrets.SUPABASE_URL}} \
-                            SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
-                            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
-                            API_GATEWAY_URL=${{secrets.API_GATEWAY_URL}} \
-                            RUN_MODE=heroku \
+#      - name: Set Heroku Environment Variables
+#        run: |
+#          heroku config:set -a auction-app-sse \
+#                            SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+#                            SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+#                            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+#                            API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
+#                            RUN_MODE=heroku \
                             
 
       - name: Release pushed images to Heroku
         run: |
           heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse
 
-      - name: Scale dynos
-        run: |
-          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
+#      - name: Scale dynos
+#        run: |
+#          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
