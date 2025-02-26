@@ -1,0 +1,127 @@
+/* biddingPage.css */
+.bidding-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* Ensure both sections have equal height */
+    min-height: 90vh;
+    gap: 20px; /* Reduce spacing to balance layout */
+    padding: 40px;
+    width: 70%; /* Scale down overall section size */
+    margin: 0 auto; /* Center the section */
+    background-color: #d9e8f7; /* Lighten background for better contrast */
+}
+
+.auction-info {
+    width: 55%; /* Reduce left section width */
+    padding: 15px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Center content vertically */
+    height: auto; /* Adjust section height based on content */
+    min-height: 100%; /* Ensure both sections have equal height */
+}
+
+.auction-image {
+    width: 100%; /* Scale down image to prevent oversizing */
+    max-height: 550px; /* Adjust image size for better balance */
+    object-fit: contain; /* Ensure full image is displayed without cropping */
+    border-radius: 10px;
+    margin-bottom: 20px; /* Add spacing below the image for better alignment */
+}
+
+.bidding-section {
+    width: 45%; /* Reduce right section width */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: auto; /* Adjust section height based on content */
+    min-height: 100%; /* Ensure both sections have equal height */
+}
+
+.price-date-container {
+    width: 90%;
+    padding: 15px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.bid-info {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 0px; /* Further reduce space between Starting Price and Current Price */
+    margin-bottom: 0px; /* Further decrease the spacing */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.product-details {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    font-size: 16px;
+    color: #333;
+}
+
+.product-name {
+    font-size: 28px; /* Adjust font size for product name */
+    font-weight: bold;
+    color: #1a237e; /* Change color of product name */
+    text-align: center;
+    font-size: 40px;
+}
+
+.bid-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff2f00; /* Set bidding price text color */
+    text-align: center;
+    margin-bottom: 0px; /* Completely remove space below Current Price */
+}
+
+.bid-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.bid-input input {
+    width: 85%; /* Reduce input width */
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #bbb;
+    font-size: 14px;
+}
+
+.bid-input button {
+    width: 85%; /* Match button width to input */
+    padding: 10px 12px;
+    background-color: #073d77;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 30px;
+}
+
+.bid-input button:hover {
+    background-color: #073f7b;
+}
