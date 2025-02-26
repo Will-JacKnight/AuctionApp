@@ -16,7 +16,11 @@ env:
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
-  API_GATEWAY_URL: ${{secrets.API_GATEWAY_URL}}
+  AUCTION_SERVICE_HEROKU_URL: ${{secrets.AUCTION_SERVICE_HEROKU_URL}}
+  USER_SERVICE_HEROKU_URL: ${{secrets.USER_SERVICE_HEROKU_URL}}
+  API_GATEWAY_HEROKU_URL: ${{secrets.API_GATEWAY_HEROKU_URL}}
+  
+  
 
 jobs:
   build-and-test:
@@ -110,6 +114,6 @@ jobs:
         run: |
           heroku container:release frontend api-gateway user-service auction-service -a auction-app-sse
 
-#      - name: Scale dynos
-#        run: |
-#          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
+      - name: Scale dynos
+        run: |
+          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a auction-app-sse
