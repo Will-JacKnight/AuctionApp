@@ -92,6 +92,7 @@ jobs:
           echo "machine git.heroku.com login jw1524@ic.ac.uk password ${{ secrets.HEROKU_API_KEY }}" >> ~/.netrc
           chmod 600 ~/.netrc
           heroku auth:token
+          heroku auth:whoami
 
       # - name: Login to Heroku
       #   run: |
