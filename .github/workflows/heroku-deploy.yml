@@ -129,10 +129,10 @@ jobs:
           echo "Building microservices using heroku..."
           echo "Debug, List Files Before Heroku Push"
           docker images
-          heroku container:push web --app bidding-app-sse
-          heroku container:push api-gateway --app bidding-app-sse
-          heroku container:push user-service --app bidding-app-sse
-          heroku container:push auction-service --app bidding-app-sse
+          heroku container:push ${HEROKU_REGISTRY_PREFIX}/web --app bidding-app-sse
+          heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway --app bidding-app-sse
+          heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service --app bidding-app-sse
+          heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service --app bidding-app-sse
 
 
       # - name: Set Heroku Environment Variables
