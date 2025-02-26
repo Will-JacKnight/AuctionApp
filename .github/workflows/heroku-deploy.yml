@@ -86,6 +86,11 @@ jobs:
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
 
+      - name: Authenticate with Heroku
+        run: |
+          export HEROKU_API_KEY=${{ secrets.HEROKU_API_KEY }}
+          heroku container:login
+
       # - name: Login to Heroku
       #   run: |
       #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
