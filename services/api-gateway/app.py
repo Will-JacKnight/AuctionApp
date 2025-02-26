@@ -75,5 +75,26 @@ def serach():
     response = requests.post(f"{AUCTION_SERVICE_URL}/search", json=request.json)
     return jsonify(response.json()), response.status_code
 
+
+@app.route('/product', methods=['GET'])
+def display():
+
+    response = requests.get(f"{AUCTION_SERVICE_URL}/product")
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/dashboard_sell', methods=['GET'])
+def display():
+
+    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell")
+    return jsonify(response.json()), response.status_code
+
+
+@app.route('/dashboard_bid', methods=['GET'])
+def display():
+
+    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid")
+    return jsonify(response.json()), response.status_code
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=4000, debug=True)
