@@ -23,49 +23,49 @@ env:
   
 
 jobs:
-  build-and-test:
-    name: Build and Test Microservices
-    runs-on: ubuntu-latest
-    env:
-      CR_PREFIX: ""
-      RUN_MODE: docker
+  # build-and-test:
+  #   name: Build and Test Microservices
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     CR_PREFIX: ""
+  #     RUN_MODE: docker
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Build Microservices with Docker Compose
-        run: |
-          echo "Building microservices..."
-          docker compose -f docker-compose.yml build
+  #     - name: Build Microservices with Docker Compose
+  #       run: |
+  #         echo "Building microservices..."
+  #         docker compose -f docker-compose.yml build
 
-      - name: Run Tests
-        run: |
-          echo "Running tests for each microservices..."
-          docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit
+  #     - name: Run Tests
+  #       run: |
+  #         echo "Running tests for each microservices..."
+  #         docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit
 
-      - name: Stop and Clean Up After Testing
-        run: |
-          docker compose -f docker-compose.yml down -v
+  #     - name: Stop and Clean Up After Testing
+  #       run: |
+  #         docker compose -f docker-compose.yml down -v
 
-  push-images:
-    name: Push Docker Images to GHCR
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    env:
-      RUN_MODE: docker
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # push-images:
+  #   name: Push Docker Images to GHCR
+  #   needs: build-and-test
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     RUN_MODE: docker
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry (GHCR)
-        run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
+  #     - name: Log in to GitHub Container Registry (GHCR)
+  #       run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
 
-      - name: Build and Push Images to GHCR
-        run: |
-          export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
-          docker compose -f docker-compose.yml build
-          docker compose -f docker-compose.yml push
+  #     - name: Build and Push Images to GHCR
+  #       run: |
+  #         export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
+  #         docker compose -f docker-compose.yml build
+  #         docker compose -f docker-compose.yml push
 
   deploy-to-heroku:
     name: deploy Images to Heroku
@@ -90,33 +90,49 @@ jobs:
       #   run: |
       #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
 
-      - name: Build, Tag and push Microservices
-        run: |
-          echo "Building microservices..."
-          docker compose -f docker-compose.yml build
-          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/frontend
-          docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
-          docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
-          docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
+      # - name: Build, Tag and push Microservices
+      #   run: |
+      #     echo "Building microservices..."
+      #     docker compose -f docker-compose.yml build
+      #     docker tag frontend ${HEROKU_REGISTRY_PREFIX}/frontend
+      #     docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
+      #     docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
+      #     docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
           
-          docker push ${HEROKU_REGISTRY_PREFIX}/frontend
-          docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
-          docker push ${HEROKU_REGISTRY_PREFIX}/user-service
-          docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
+      #     docker push ${HEROKU_REGISTRY_PREFIX}/frontend
+      #     docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
+      #     docker push ${HEROKU_REGISTRY_PREFIX}/user-service
+      #     docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
-      - name: Set Heroku Environment Variables
+      - name: Build, Tag and push Microservices using heroku 
         run: |
-          heroku config:set -a bidding-app-sse \
-                            SUPABASE_URL=${{secrets.SUPABASE_URL}} \
-                            SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
-                            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
-                            API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
-                            RUN_MODE=heroku \
+          echo "Building microservices using heroku..."
+          heroku container:push web --app bidding-app-sse --context-path ./services/frontend
+          heroku container:push api-gateway --app bidding-app-sse --context-path ./services/api-gateway
+          heroku container:push user-service --app bidding-app-sse --context-path ./services/user-service
+          heroku container:push auction-service --app bidding-app-sse --context-path ./services/auction-service
+
+
+      # - name: Set Heroku Environment Variables
+      #   run: |
+      #     heroku config:set -a bidding-app-sse \
+      #                       SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+      #                       SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+      #                       JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+      #                       API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
+      #                       RUN_MODE=heroku \
                             
+
+      # - name: Release pushed images to Heroku
+      #   run: |
+      #     heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse
 
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse
+          heroku container:release web --app bidding-app-sse
+          heroku container:release api-gateway --app bidding-app-sse
+          heroku container:release user-service --app bidding-app-sse
+          heroku container:release auction-service --app bidding-app-sse
 
       - name: Scale dynos
         run: |
