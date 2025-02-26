@@ -98,36 +98,39 @@ jobs:
       #   run: |
       #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
 
-      # - name: Build, Tag and push Microservices
-      #   run: |
-      #     echo "Building microservices..."
-      #     docker compose -f docker-compose.yml build
-      #     docker tag frontend ${HEROKU_REGISTRY_PREFIX}/frontend
-      #     docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
-      #     docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
-      #     docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
-          
-      #     docker push ${HEROKU_REGISTRY_PREFIX}/frontend
-      #     docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
-      #     docker push ${HEROKU_REGISTRY_PREFIX}/user-service
-      #     docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
-
-
-      - name: Debug, List Files Before Heroku Push
+      # build frontend service as web
+      - name: Build, Tag and push Microservices
         run: |
-          echo "Checking files before Heroku push..."
-          ls -l ./services/frontend
-          ls -l ./services/api-gateway
-          ls -l ./services/user-service
-          ls -l ./services/auction-service
+          echo "Building microservices..."
+          docker compose -f docker-compose.yml build
+
+          echo "Retag images..."
+          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/web 
+          docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
+          docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
+          docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
+          
+        # echo "Push images..."
+        # docker push ${HEROKU_REGISTRY_PREFIX}/web
+        # docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
+        # docker push ${HEROKU_REGISTRY_PREFIX}/user-service
+        # docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
+
+      # - name: Debug, List Files Before Heroku Push
+      #   run: |
+      #     echo "Checking files before Heroku push..."
+      #     ls -l ./services/frontend
+      #     ls -l ./services/api-gateway
+      #     ls -l ./services/user-service
+      #     ls -l ./services/auction-service
 
       - name: Build, Tag and push Microservices using heroku 
         run: |
           echo "Building microservices using heroku..."
-          heroku container:push web --app bidding-app-sse --context-path ./services/frontend
-          heroku container:push api-gateway --app bidding-app-sse --context-path ./services/api-gateway
-          heroku container:push user-service --app bidding-app-sse --context-path ./services/user-service
-          heroku container:push auction-service --app bidding-app-sse --context-path ./services/auction-service
+          heroku container:push web --app bidding-app-sse
+          heroku container:push api-gateway --app bidding-app-sse
+          heroku container:push user-service --app bidding-app-sse
+          heroku container:push auction-service --app bidding-app-sse
 
 
       # - name: Set Heroku Environment Variables
