@@ -127,6 +127,8 @@ jobs:
       - name: Build, Tag and push Microservices using heroku 
         run: |
           echo "Building microservices using heroku..."
+          echo "Debug, List Files Before Heroku Push"
+          docker images
           heroku container:push web --app bidding-app-sse
           heroku container:push api-gateway --app bidding-app-sse
           heroku container:push user-service --app bidding-app-sse
