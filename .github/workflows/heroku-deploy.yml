@@ -110,7 +110,7 @@ jobs:
                             SUPABASE_URL=${{secrets.SUPABASE_URL}} \
                             SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
                             JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
-                            API_GATEWAY_URL=${{secrets.API_GATEWAY_URL}} \
+                            API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
                             RUN_MODE=heroku \
                             
 
