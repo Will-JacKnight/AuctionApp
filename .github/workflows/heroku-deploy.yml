@@ -112,6 +112,15 @@ jobs:
       #     docker push ${HEROKU_REGISTRY_PREFIX}/user-service
       #     docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
+
+      - name: Debug, List Files Before Heroku Push
+        run: |
+          echo "Checking files before Heroku push..."
+          ls -l ./services/frontend
+          ls -l ./services/api-gateway
+          ls -l ./services/user-service
+          ls -l ./services/auction-service
+
       - name: Build, Tag and push Microservices using heroku 
         run: |
           echo "Building microservices using heroku..."
