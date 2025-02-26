@@ -20,10 +20,10 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-app = Flask(__name__)
-CORS(app)
+# app = Flask(__name__)
+# CORS(app)
 
-@app.route('/dashboard_sell', methods=['GET'])
+@dashboard.route('/dashboard_sell', methods=['GET'])
 def dashboard_sell():
     # data = request.json
     # seller_id = data.get('seller_id')
@@ -73,7 +73,7 @@ def dashboard_sell():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/dashboard_bid', methods=['GET'])
+@dashboard.route('/dashboard_bid', methods=['GET'])
 def dashboard_bid():
     # data = request.json
     # seller_id = data.get('seller_id')
@@ -114,12 +114,12 @@ def dashboard_bid():
         bids_list = [{name: history} for name, history in auction_bids.items()]
         print(bids_list, flush=True)
 
-        return jsonify({'bids': bids_list}), 200
+        return jsonify(bids_list), 200
 
     except Exception as e:
         print("Error:", e, flush=True)
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
