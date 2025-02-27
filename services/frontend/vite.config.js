@@ -16,9 +16,4 @@ export default defineConfig({
       "bidding-app-sse-6fcb4edfed53.herokuapp.com" // Allow your Heroku domain
     ],
   },
-<<<<<<< HEAD
 });
- 
-=======
-});
->>>>>>> 0ca238e (feat/merge version1)
