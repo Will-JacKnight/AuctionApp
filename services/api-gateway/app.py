@@ -76,22 +76,22 @@ def serach():
     return jsonify(response.json()), response.status_code
 
 
-@app.route('/product', methods=['GET'])
-def display():
+# @app.route('/product', methods=['GET'])
+# def display():
 
-    response = requests.get(f"{AUCTION_SERVICE_URL}/product")
-    return jsonify(response.json()), response.status_code
+#     response = requests.get(f"{AUCTION_SERVICE_URL}/product")
+#     return jsonify(response.json()), response.status_code
 
 
 @app.route('/dashboard_sell', methods=['GET'])
-def display():
+def sell_items():
 
     response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell")
     return jsonify(response.json()), response.status_code
 
 
 @app.route('/dashboard_bid', methods=['GET'])
-def display():
+def bid_items():
 
     response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid")
     return jsonify(response.json()), response.status_code

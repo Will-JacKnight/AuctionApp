@@ -109,7 +109,8 @@ def dashboard_bid():
             auction_bids[auction_name].append({
                 "bid_amount": bid["bid_amount"],
                 "created_at": bid["created_at"],
-                "status": bid["auctions"]["status"]
+                "status": bid["auctions"]["status"],
+                "item_name": bid['auctions']['name']
             })
         bids_list = [{name: history} for name, history in auction_bids.items()]
         print(bids_list, flush=True)

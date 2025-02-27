@@ -52,9 +52,9 @@
   color: red;
 }
 
-  /* Hover Effect */
-  /* .order-table tbody tr:hover {
-    background-color: #f4f4f4;
-  } */
+.order-table tbody tr:hover {
+  background-color: #d0e2ff;
+  cursor: pointer;
+}
   
   

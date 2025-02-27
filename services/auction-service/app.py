@@ -3,7 +3,7 @@ from mainPage import mainPage  # Import the Blueprint
 from listingPage import listingPage
 from dashboard import dashboard
 from flask_cors import CORS
-from productPage import productPage
+# from productPage import productPage
 
 # from .app_create_project import create_bp
 # from .app_manage_project import manage_bp
@@ -21,7 +21,7 @@ CORS(app)
 app.register_blueprint(mainPage)
 app.register_blueprint(listingPage)
 app.register_blueprint(dashboard)
-app.register_blueprint(productPage)
+# app.register_blueprint(productPage)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7070)

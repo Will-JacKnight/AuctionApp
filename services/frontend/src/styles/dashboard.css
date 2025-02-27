@@ -82,6 +82,7 @@
     flex-direction: column;
     justify-content: center;
     position: relative;
+    width: 100%;
   }
   
   .item-name {
@@ -108,20 +109,7 @@
     top: 27px;
     right: 20px;
     font-family: "Kiwi Maru", serif;
-
   }
 
-/* 
-  .city {
-    font-family: "Kiwi Maru", serif;
-  }
-  
-  .dates {
-    color: #232e60;
-  }
-  
-  .description {
-    font-size: 1.2rem;
-  } */
 
 
