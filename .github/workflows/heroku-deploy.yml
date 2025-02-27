@@ -86,32 +86,63 @@ jobs:
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
 
+      - name: Authenticate with Heroku
+        run: |
+          echo "machine api.heroku.com login jw1524@ic.ac.uk password ${{ secrets.HEROKU_API_KEY }}" > ~/.netrc
+          echo "machine git.heroku.com login jw1524@ic.ac.uk password ${{ secrets.HEROKU_API_KEY }}" >> ~/.netrc
+          chmod 600 ~/.netrc
+          heroku auth:token
+          heroku auth:whoami
+
       # - name: Login to Heroku
       #   run: |
       #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
 
+      # build frontend service as web
       - name: Build, Tag and push Microservices
         run: |
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
-          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/frontend
+
+          echo "Retag images..."
+          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/web 
           docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
           docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
           docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
           
-          docker push ${HEROKU_REGISTRY_PREFIX}/frontend
+          echo "Push images..."
+          docker push ${HEROKU_REGISTRY_PREFIX}/web
           docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
           docker push ${HEROKU_REGISTRY_PREFIX}/user-service
           docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
-#      - name: Set Heroku Environment Variables
-#        run: |
-#          heroku config:set -a bidding-app-sse \
-#                            SUPABASE_URL=${{secrets.SUPABASE_URL}} \
-#                            SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
-#                            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
-#                            API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
-#                            RUN_MODE=heroku \
+      # - name: Debug, List Files Before Heroku Push
+      #   run: |
+      #     echo "Checking files before Heroku push..."
+      #     ls -l ./services/frontend
+      #     ls -l ./services/api-gateway
+      #     ls -l ./services/user-service
+      #     ls -l ./services/auction-service
+
+      # - name: Build, Tag and push Microservices using heroku
+      #   run: |
+      #     echo "Building microservices using heroku..."
+      #     echo "Debug, List Files Before Heroku Push"
+      #     docker images
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/web --app bidding-app-sse
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway --app bidding-app-sse
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service --app bidding-app-sse
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service --app bidding-app-sse
+
+
+      # - name: Set Heroku Environment Variables
+      #   run: |
+      #     heroku config:set -a bidding-app-sse \
+      #                       SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+      #                       SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+      #                       JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+      #                       API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
+      #                       RUN_MODE=heroku \
                             
 
       - name: Release pushed images to Heroku
@@ -120,4 +151,4 @@ jobs:
 
       - name: Scale dynos
         run: |
-          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse
+          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse

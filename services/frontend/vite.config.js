@@ -9,5 +9,12 @@ export default defineConfig({
     },
   },
   plugins: [react()],
+  server: {
+    port: process.env.PORT || 5173, // Use Heroku's dynamic $PORT or default to 5173 for local development
+    host: '0.0.0.0', // Ensure Vite listens on all network interfaces
+    allowedHosts: [
+      "bidding-app-sse-6fcb4edfed53.herokuapp.com" // Allow your Heroku domain
+    ],
+  },
 });
  
