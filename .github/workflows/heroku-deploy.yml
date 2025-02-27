@@ -147,7 +147,7 @@ jobs:
 
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse
+          heroku container:release web api-gateway user-service auction-service -a bidding-app-sse
 
       - name: Scale dynos
         run: |
