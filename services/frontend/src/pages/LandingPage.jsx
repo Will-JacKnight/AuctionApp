@@ -74,10 +74,34 @@ function LandingPage()  {
           console.log(`Following error occured when fetching data: ${err}`)
           setError(err)
       }
-
-      
     }
   };
+
+  const handleSearchClick =  async (e) => {
+    try {
+      const response = await fetch(`${API_URL}/search`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({"query": searchQuery})
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Received non-JSON response. Check API response.");
+        }
+        const data = await response.json()
+        setData(data)
+
+    }
+    catch (err) {
+        console.log(`Following error occured when fetching data: ${err}`)
+        setError(err)
+    }
+  }
 
   return (
     <div>
@@ -86,14 +110,16 @@ function LandingPage()  {
 
       {/* Search Bar */}
       <div className="search-container">
-        <input
+        <div className='relative'>
+          <img src="/images/search2.png" className='search-icon' onClick={handleSearchClick}></img>
+          <input
           type="text"
           placeholder="Search for an item..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        {/* <button>Search</button> */}
+          onKeyDown={handleKeyDown}>
+          </input>
+        </div>
       </div>
 
       {/* Popular Items Grid */}

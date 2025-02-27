@@ -20,10 +20,25 @@ body {
     padding: 8px;
     width: 400px;
     height: 40px;
-    text-indent: 8px;
     border-radius: 10px;
     font-size: 15px;
     font-family: "Inter", serif;
+    background-color: transparent;
+    outline: none;
+    text-indent: 35px;
+    border: 2px solid black;
+  }
+
+  .relative {
+    position: relative;
+    width: 400px;
+  }
+  .search-icon {
+    width: 55px;
+    position: absolute;
+    transform: translateY(15%);
+    left: -3px;
+    top: -3px;
   }
   
   .search-container button {
@@ -37,4 +52,5 @@ body {
     padding: 20px;
   }
   
+
   
