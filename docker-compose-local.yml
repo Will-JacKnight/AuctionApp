@@ -8,9 +8,6 @@ services:
       - ./services/api-gateway/.env
     ports:
       - "4000:4000"
-    depends_on:
-      - user-service
-      - auction-service
     networks:
       - auction-network
 
@@ -21,6 +18,8 @@ services:
       - ./services/auction-service/.env
     ports:
       - "7070:7070"
+    depends_on:
+      - api-gateway
     networks:
       - auction-network
 
@@ -31,6 +30,8 @@ services:
       - ./services/user-service/.env
     ports:
       - "8080:8080"
+    depends_on:
+      - api-gateway
     networks:
       - auction-network
 

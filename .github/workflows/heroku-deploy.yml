@@ -3,25 +3,17 @@ name: Build, Test and Deploy to Heroku
 on:
   push:
     branches:
-#      - deployment-test
+      - main
   workflow_dispatch:  # Allows manual deployment
  
 env:
-  CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
-  CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-  #  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
-  #  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
-  #  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
- 
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
   AUCTION_SERVICE_HEROKU_URL: ${{secrets.AUCTION_SERVICE_HEROKU_URL}}
   USER_SERVICE_HEROKU_URL: ${{secrets.USER_SERVICE_HEROKU_URL}}
   API_GATEWAY_HEROKU_URL: ${{secrets.API_GATEWAY_HEROKU_URL}}
-  
-  
- 
+
 jobs:
   build-and-test:
     name: Build and Test Microservices
@@ -54,13 +46,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RUN_MODE: docker
+      CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+      CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
- 
+
       - name: Log in to GitHub Container Registry (GHCR)
         run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
- 
+
       - name: Build and Push Images to GHCR
         run: |
           export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
@@ -72,7 +66,11 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     env:
-      HEROKU_REGISTRY_PREFIX: "registry.heroku.com/bidding-app-sse"
+      HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+      HEROKU_APP_NAME: ${{secrets.HEROKU_APP_NAME}}
+      HEROKU_USERNAME: ${{secrets.HEROKU_USERNAME}}
+      HEROKU_REGISTRY_PREFIX: registry.heroku.com/${{env.HEROKU_APP_NAME}}
+
       RUN_MODE: docker
     steps:
       - name: Checkout Code
@@ -84,19 +82,15 @@ jobs:
  
       - name: Login to docker
         run: |
-          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
+          echo ${{ env.HEROKU_API_KEY }} | docker login --username ${{env.HEROKU_USERNAME}} --password-stdin registry.heroku.com
  
       - name: Authenticate with Heroku
         run: |
-          echo "machine api.heroku.com login jw1524@ic.ac.uk password ${{ secrets.HEROKU_API_KEY }}" > ~/.netrc
-          echo "machine git.heroku.com login jw1524@ic.ac.uk password ${{ secrets.HEROKU_API_KEY }}" >> ~/.netrc
+          echo "machine api.heroku.com login ${{env.HEROKU_USERNAME}} password ${{ env.HEROKU_API_KEY }}" > ~/.netrc
+          echo "machine git.heroku.com login ${{env.HEROKU_USERNAME}} password ${{ env.HEROKU_API_KEY }}" >> ~/.netrc
           chmod 600 ~/.netrc
           heroku auth:token
           heroku auth:whoami
- 
-      # - name: Login to Heroku
-      #   run: |
-      #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
  
       # build frontend service as web
       - name: Build, Tag and push Microservices
@@ -123,21 +117,21 @@ jobs:
       #     ls -l ./services/api-gateway
       #     ls -l ./services/user-service
       #     ls -l ./services/auction-service
- 
+
       # - name: Build, Tag and push Microservices using heroku
       #   run: |
       #     echo "Building microservices using heroku..."
       #     echo "Debug, List Files Before Heroku Push"
       #     docker images
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/web --app bidding-app-sse
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway --app bidding-app-sse
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service --app bidding-app-sse
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service --app bidding-app-sse
- 
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/web -a ${{env.HEROKU_APP_NAME}}
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway -a ${{env.HEROKU_APP_NAME}}
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service -a ${{env.HEROKU_APP_NAME}}
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service -a ${{env.HEROKU_APP_NAME}}
+
  
       # - name: Set Heroku Environment Variables
       #   run: |
-      #     heroku config:set -a bidding-app-sse \
+      #     heroku config:set -a ${{env.HEROKU_APP_NAME}} \
       #                       SUPABASE_URL=${{secrets.SUPABASE_URL}} \
       #                       SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
       #                       JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
@@ -147,8 +141,8 @@ jobs:
  
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release web api-gateway user-service auction-service -a bidding-app-sse
+          heroku container:release web api-gateway user-service auction-service -a ${{env.HEROKU_APP_NAME}}
  
       - name: Scale dynos
         run: |
-          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse
+          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a ${{env.HEROKU_APP_NAME}}
