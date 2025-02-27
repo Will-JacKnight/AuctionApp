@@ -26,7 +26,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 app.register_blueprint(mainPage)
 app.register_blueprint(listingPage)
 app.register_blueprint(dashboard)
-# app.register_blueprint(productPage)
+app.register_blueprint(productPage)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=7070, debug=True, allow_unsafe_werkzeug=True)

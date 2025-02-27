@@ -1,26 +1,26 @@
-# from flask import Flask, request, jsonify, Blueprint
-# from supabase import create_client, Client
-# import os
-# import datetime
-# import uuid
-# from dotenv import load_dotenv
-# from flask_cors import CORS
-# import traceback
-# from collections import defaultdict
-# import threading
-# from flask_socketio import SocketIO, emit
-# import time
+from flask import Flask, request, jsonify, Blueprint
+from supabase import create_client, Client
+import os
+import datetime
+import uuid
+from dotenv import load_dotenv
+from flask_cors import CORS
+import traceback
+from collections import defaultdict
+import threading
+from flask_socketio import SocketIO, emit
+import time
 
 # # Load environment variables
-# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-# load_dotenv(dotenv_path)
+dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+load_dotenv(dotenv_path)
 
 productPage = Blueprint("productPage", __name__)
 
 # # Supabase Settings
-# SUPABASE_URL = os.getenv("SUPABASE_URL")
-# SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # app = Flask(__name__)

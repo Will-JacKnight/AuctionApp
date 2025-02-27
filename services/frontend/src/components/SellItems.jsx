@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
   
-const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
-  ? import.meta.env.VITE_API_DOCKER_API_URL
-  : import.meta.env.VITE_API_LOCAL_API_URL;
+const API_URL =
+  import.meta.env.VITE_RUN_MODE === "docker"
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+    : import.meta.env.VITE_RUN_MODE === "heroku"
+    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
 const getSalesData = () => [
     { id: 1, item: "Bike", price: 100, img: "/images/bike1.jpg", description: "ndustry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum" },

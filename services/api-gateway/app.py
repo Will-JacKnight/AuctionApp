@@ -90,8 +90,8 @@ def serach():
 @app.route('/product', methods=['GET'])
 def bidding():
 
-#     response = requests.get(f"{AUCTION_SERVICE_URL}/product")
-#     return jsonify(response.json()), response.status_code
+    response = requests.get(f"{AUCTION_SERVICE_URL}/product")
+    return jsonify(response.json()), response.status_code
 
 
 @app.route('/dashboard_sell', methods=['GET'])
