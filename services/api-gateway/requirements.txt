@@ -4,3 +4,4 @@ Flask-Cors==5.0.0
 pytest==8.3.4
 python-dotenv==1.0.1
 supabase==2.13.0
+Flask-SocketIO==5.5.1

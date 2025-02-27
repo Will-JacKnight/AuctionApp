@@ -15,7 +15,7 @@
 # dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 # load_dotenv(dotenv_path)
 
-# dashboard = Blueprint("dashboard", __name__)
+productPage = Blueprint("productPage", __name__)
 
 # # Supabase Settings
 # SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -26,10 +26,90 @@
 # app = Flask(__name__)
 # CORS(app)
 # socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSockets
+socketio = SocketIO() 
 
-# current_auction_id = None 
-# latest_max_bid = None  # Store last highest bid
-# polling_thread_started = False
+current_auction_id = None 
+latest_max_bid = None  # Store last highest bid
+polling_thread_started = False
+
+@productPage.route('/product', methods=['GET'])
+def product():
+    # data = request.json
+    # auction_id = data.get('auction_id')
+
+    global current_auction_id, latest_max_bid, polling_thread_started
+    auction_id = "b3dd3d7f-1f20-4f79-9651-b33b9f411600"
+    current_auction_id = auction_id
+
+    if not auction_id:
+        return jsonify({'error': 'auction_id is required'}), 400
+    try:
+        response = supabase.table('auctions').select('name', 'description', 'status', 'start_date', 'start_time', 'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url').eq('id', auction_id).execute()
+        item = response.data[0] if response.data else {} 
+
+        if not item:
+                return jsonify({'error': 'Auction not found'}), 404
+
+        bid_response = (
+                    supabase.table('bids')
+                    .select('bid_amount')
+                    .eq('auction_id', auction_id)
+                    .order('bid_amount', desc=True)
+                    .limit(1)
+                    .execute()
+        )
+        max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
+        item["max_bid"] = max_bid 
+        latest_max_bid = max_bid
+        if not polling_thread_started:
+            polling_thread_started = True
+            threading.Thread(target=poll_for_new_bids, daemon=True).start()
+
+        return jsonify(item), 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+def poll_for_new_bids():
+    global current_auction_id, latest_max_bid
+    print("Polling thread started!")
+    while True:
+        print("Polling loop running...")
+        if not current_auction_id:
+            print("No auction selected. Waiting...")
+            time.sleep(1)
+            continue  # Skip iteration if no auction is set
+
+        try:
+            print(f"Checking for new bids on auction: {current_auction_id}")
+            # Get the latest highest bid
+            bid_response = (
+                supabase.table('bids')
+                .select('bid_amount')
+                .eq('auction_id', current_auction_id)
+                .order('bid_amount', desc=True)
+                .limit(1)
+                .execute()
+            )
+            print(f"Bid response from DB: {bid_response.data}")
+            new_max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
+
+            # Only send update if bid amount has changed
+            if new_max_bid != latest_max_bid:
+                latest_max_bid = new_max_bid
+                socketio.emit('bid_update', {'auction_id': current_auction_id, 'max_bid': new_max_bid})
+                print(f"New bid detected for auction {current_auction_id}: {new_max_bid}")
+
+        except Exception as e:
+            print("Error polling bids:", e)
+
+        time.sleep(2)  # Wait 5 seconds before checking again
+
+
+
+
+# if __name__ == "__main__":
+#     socketio.run(app, debug=True, allow_unsafe_werkzeug=True) 
 
 # @app.route('/product', methods=['GET'])
 # def product():
