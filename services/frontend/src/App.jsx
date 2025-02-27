@@ -5,7 +5,8 @@ import LandingPage from './pages/LandingPage';
 import './styles/App.css';  // For styling
 import Listing from './pages/Listing';
 import Dashboard from './pages/Dashboard';
-
+import Product from './pages/Product';
+ 
 function App() {
   return (
     <Router>
@@ -15,9 +16,10 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/listing" element={<Listing />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/product" element={<Product />} />
       </Routes>
     </Router>
   );
 }
-
+ 
 export default App;

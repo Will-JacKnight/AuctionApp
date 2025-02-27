@@ -7,6 +7,7 @@ import uuid
 from dotenv import load_dotenv
 from supabase import create_client
 import logging
+from flask_socketio import SocketIO, emit
 
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
@@ -33,6 +34,9 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 print(SUPABASE_URL)
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 
 @app.route('/signup', methods=['POST'])
 def register():
@@ -81,24 +85,34 @@ def serach():
 
 
 @app.route('/product', methods=['GET'])
-def display():
+def bidding():
 
     response = requests.get(f"{AUCTION_SERVICE_URL}/product")
     return jsonify(response.json()), response.status_code
 
 
 @app.route('/dashboard_sell', methods=['GET'])
-def display():
+def sell():
 
     response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell")
     return jsonify(response.json()), response.status_code
 
 
 @app.route('/dashboard_bid', methods=['GET'])
-def display():
+def bid():
 
     response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid")
     return jsonify(response.json()), response.status_code
+
+@socketio.on("connect")
+def handle_connect():
+    print("Client connected to WebSocket")
+
+@socketio.on("bid_update")
+def handle_bid_update(data):
+    # Forward WebSocket messages to Auction Service
+    requests.post(f"{AUCTION_SERVICE_URL}/product", json=data)
+    emit("bid_update", data, broadcast=True)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=4000, debug=True)

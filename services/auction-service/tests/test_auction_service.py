@@ -128,5 +128,95 @@ class TestListingPageAPI(unittest.TestCase):
         self.assertEqual(data["item_id"], 456)
         self.assertIn("image_url", data) 
 
+class TestDashboardPageAPI(unittest.TestCase):
+
+    def setUp(self):
+        """Setup the test client."""
+        self.app = app
+        self.client = self.app.test_client()
+
+    @patch('dashboard.supabase')  # Patch Supabase in the listingPage module
+    def test_dashboard_sell(self, mock_supabase):
+        """Test the /dashboard_sell POST route."""
+        
+
+        mock_supabase.table.return_value.select.return_value.execute.return_value.data = [
+             {
+                "username": "test_user",
+                "items": [
+                    {
+                        "description": "This is a test item for debugging",
+                        "id": "abc-123",
+                        "image_url": "http://example.com",
+                        "max_bid": 10,
+                        "name": "test_item1"
+                    },
+                    {
+                        "description": "This is collegedropout bear",
+                        "id": "def-456",
+                        "image_url": "http://graduation.com",
+                        "max_bid": 100,
+                        "name": "collegedropout bear"
+                    }
+                ]
+            }
+        ]
+
+         # Simulate a GET request to the display API
+        response = self.client.get('/dashboard_sell')
+        
+        # Assert that the status code is 200
+        self.assertEqual(response.status_code, 200)
+        
+        # Assert that the response data is a list (shuffled items)
+        data = response.get_json()
+        self.assertIn("username", data)  # Ensure username key exists
+        self.assertIn("items", data)  # Ensure items key exists
+        self.assertIsInstance(data["items"], list)  # Ensure items is a list
+        self.assertTrue(len(data) > 0)  # Check if items are returned
+    
+
+
+
+    # @patch('dashboard.supabase')  # Patch Supabase in the listingPage module
+    # def test_dashboard_bid(self, mock_supabase):
+    #     """Test the /dashboard_bid POST route."""
+        
+
+    #     mock_supabase.table.return_value.select.return_value.execute.return_value.data = [
+    #          {
+    #             "username": "test_user",
+    #             "items": [
+    #                 {
+    #                     "description": "This is a test item for debugging",
+    #                     "id": "abc-123",
+    #                     "image_url": "http://example.com",
+    #                     "max_bid": 10,
+    #                     "name": "test_item1"
+    #                 },
+    #                 {
+    #                     "description": "This is collegedropout bear",
+    #                     "id": "def-456",
+    #                     "image_url": "http://graduation.com",
+    #                     "max_bid": 100,
+    #                     "name": "collegedropout bear"
+    #                 }
+    #             ]
+    #         }
+    #     ]
+
+    #      # Simulate a GET request to the display API
+    #     response = self.client.get('/dashboard_bid')
+        
+    #     # Assert that the status code is 200
+    #     self.assertEqual(response.status_code, 200)
+        
+    #     # Assert that the response data is a list (shuffled items)
+    #     data = response.get_json()
+    #     self.assertIn("username", data)  # Ensure username key exists
+    #     self.assertIn("items", data)  # Ensure items key exists
+    #     self.assertIsInstance(data["items"], list)  # Ensure items is a list
+    #     self.assertTrue(len(data) > 0)  # Check if items are returned
+
 if __name__ == '__main__':
     unittest.main()

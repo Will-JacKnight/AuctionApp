@@ -15,7 +15,7 @@ import time
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 load_dotenv(dotenv_path)
 
-dashboard = Blueprint("dashboard", __name__)
+productPage = Blueprint("productPage", __name__)
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -23,15 +23,16 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-app = Flask(__name__)
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSockets
+# app = Flask(__name__)
+# CORS(app)
+# socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSockets
+socketio = SocketIO() 
 
 current_auction_id = None 
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False
 
-@app.route('/product', methods=['GET'])
+@productPage.route('/product', methods=['GET'])
 def product():
     # data = request.json
     # auction_id = data.get('auction_id')
@@ -43,7 +44,7 @@ def product():
     if not auction_id:
         return jsonify({'error': 'auction_id is required'}), 400
     try:
-        response = supabase.table('auctions').select('name', 'description', 'status', 'end_date', 'end_time', 'auction_type', 'image_url').eq('id', auction_id).execute()
+        response = supabase.table('auctions').select('name', 'description', 'status', 'start_date', 'start_time', 'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url').eq('id', auction_id).execute()
         item = response.data[0] if response.data else {} 
 
         if not item:
@@ -64,7 +65,7 @@ def product():
             polling_thread_started = True
             threading.Thread(target=poll_for_new_bids, daemon=True).start()
 
-        return jsonify({'item': item}), 200
+        return jsonify(item), 200
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
@@ -107,8 +108,8 @@ def poll_for_new_bids():
 
 
 
-if __name__ == "__main__":
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True) 
+# if __name__ == "__main__":
+#     socketio.run(app, debug=True, allow_unsafe_werkzeug=True) 
 
 # @app.route('/product', methods=['GET'])
 # def product():
