@@ -4,12 +4,12 @@ import Card from "./../components/Card"
 
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
-    ? import.meta.env.VITE_API_GATEWAY_DOCKER_URL
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
     : import.meta.env.VITE_RUN_MODE === "heroku"
     ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
- 
 function LandingPage()  {
   const [searchQuery, setSearchQuery] = useState("")
   const [data, setData] = useState("")
