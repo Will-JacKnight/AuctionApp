@@ -16,6 +16,13 @@ load_dotenv(dotenv_path)
 app = Flask(__name__)
 CORS(app)
 
+<<<<<<< HEAD
+=======
+# Microservices URLs
+# USER_SERVICE_URL = "http://user-service:8080"
+# AUCTION_SERVICE_URL = "http://auction-service:7070"
+
+>>>>>>> 0ca238e (feat/merge version1)
 MODE = os.getenv("RUN_MODE")
 if MODE == "docker":
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_DOCKER_URL")
@@ -26,8 +33,12 @@ elif MODE == "heroku":
 else:
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_LOCAL_URL")
     USER_SERVICE_URL = os.getenv("USER_SERVICE_LOCAL_URL")
+<<<<<<< HEAD
 
 
+=======
+ 
+>>>>>>> 0ca238e (feat/merge version1)
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")

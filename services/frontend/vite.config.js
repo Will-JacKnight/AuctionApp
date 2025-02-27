@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
+ 
 // https://vite.dev/config/
 export default defineConfig({
   resolve: {
@@ -16,5 +16,9 @@ export default defineConfig({
       "bidding-app-sse-6fcb4edfed53.herokuapp.com" // Allow your Heroku domain
     ],
   },
+<<<<<<< HEAD
 });
  
+=======
+});
+>>>>>>> 0ca238e (feat/merge version1)

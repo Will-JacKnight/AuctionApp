@@ -1,18 +1,18 @@
 name: Build, Test and Deploy to Heroku
-
+ 
 on:
   push:
     branches:
 #      - deployment-test
   workflow_dispatch:  # Allows manual deployment
-
+ 
 env:
   CR_USERNAME: ${{ secrets.GHCR_USERNAME }}
   CR_TOKEN: ${{ secrets.GHCR_TOKEN }}
   #  IMPAAS_TOKEN: ${{secrets.IMPAAS_DEPLOY_TOKEN}}
   #  TSURU_TARGET: ${{ secrets.TSURU_TARGET }}
   #  TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
-
+ 
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
@@ -21,7 +21,11 @@ env:
   API_GATEWAY_HEROKU_URL: ${{secrets.API_GATEWAY_HEROKU_URL}}
   
   
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> 0ca238e (feat/merge version1)
 jobs:
   build-and-test:
     name: Build and Test Microservices
@@ -29,25 +33,29 @@ jobs:
     env:
       CR_PREFIX: ""
       RUN_MODE: docker
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> 0ca238e (feat/merge version1)
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
+ 
       - name: Build Microservices with Docker Compose
         run: |
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
-
+ 
       - name: Run Tests
         run: |
           echo "Running tests for each microservices..."
           docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit
-
+ 
       - name: Stop and Clean Up After Testing
         run: |
           docker compose -f docker-compose.yml down -v
-
+ 
   push-images:
     name: Push Docker Images to GHCR
     needs: build-and-test
@@ -57,16 +65,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
+ 
       - name: Log in to GitHub Container Registry (GHCR)
         run: echo ${{env.CR_TOKEN}} | docker login ghcr.io -u ${{env.CR_USERNAME}} --password-stdin
-
+ 
       - name: Build and Push Images to GHCR
         run: |
           export CR_PREFIX="ghcr.io/${{env.CR_USERNAME}}/"
           docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml push
-
+ 
   deploy-to-heroku:
     name: deploy Images to Heroku
     needs: build-and-test
@@ -77,15 +85,23 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
+ 
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
+<<<<<<< HEAD
 
       - name: Login to docker
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
 
+=======
+ 
+      - name: Login to docker
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username jw1524@ic.ac.uk --password-stdin registry.heroku.com
+ 
+>>>>>>> 0ca238e (feat/merge version1)
       - name: Authenticate with Heroku
         run: |
           echo "machine api.heroku.com login jw1524@ic.ac.uk password ${{ secrets.HEROKU_API_KEY }}" > ~/.netrc
@@ -93,19 +109,33 @@ jobs:
           chmod 600 ~/.netrc
           heroku auth:token
           heroku auth:whoami
+<<<<<<< HEAD
 
       # - name: Login to Heroku
       #   run: |
       #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
 
+=======
+ 
+      # - name: Login to Heroku
+      #   run: |
+      #     echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+ 
+>>>>>>> 0ca238e (feat/merge version1)
       # build frontend service as web
       - name: Build, Tag and push Microservices
         run: |
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
+<<<<<<< HEAD
 
           echo "Retag images..."
           docker tag frontend ${HEROKU_REGISTRY_PREFIX}/web 
+=======
+ 
+          echo "Retag images..."
+          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/web
+>>>>>>> 0ca238e (feat/merge version1)
           docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
           docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
           docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
@@ -115,7 +145,11 @@ jobs:
           docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
           docker push ${HEROKU_REGISTRY_PREFIX}/user-service
           docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> 0ca238e (feat/merge version1)
       # - name: Debug, List Files Before Heroku Push
       #   run: |
       #     echo "Checking files before Heroku push..."
@@ -123,7 +157,11 @@ jobs:
       #     ls -l ./services/api-gateway
       #     ls -l ./services/user-service
       #     ls -l ./services/auction-service
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> 0ca238e (feat/merge version1)
       # - name: Build, Tag and push Microservices using heroku
       #   run: |
       #     echo "Building microservices using heroku..."
@@ -133,8 +171,13 @@ jobs:
       #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway --app bidding-app-sse
       #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service --app bidding-app-sse
       #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service --app bidding-app-sse
+<<<<<<< HEAD
 
 
+=======
+ 
+ 
+>>>>>>> 0ca238e (feat/merge version1)
       # - name: Set Heroku Environment Variables
       #   run: |
       #     heroku config:set -a bidding-app-sse \
@@ -144,11 +187,19 @@ jobs:
       #                       API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
       #                       RUN_MODE=heroku \
                             
+<<<<<<< HEAD
 
       - name: Release pushed images to Heroku
         run: |
           heroku container:release web api-gateway user-service auction-service -a bidding-app-sse
 
+=======
+ 
+      - name: Release pushed images to Heroku
+        run: |
+          heroku container:release web api-gateway user-service auction-service -a bidding-app-sse
+ 
+>>>>>>> 0ca238e (feat/merge version1)
       - name: Scale dynos
         run: |
           heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse
