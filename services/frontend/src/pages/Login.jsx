@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import "./../styles/authentication.css"
  
 
 const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
@@ -34,7 +35,13 @@ function Login() {
           console.log(data.access_token)
           navigate("/"); // Redirect to login page
       } else {
-          setError(data.error || "Signup failed");
+          if(response.status == 401 || response.status == 404) {
+              setError("Bad credentials. Please try again")
+          }
+          else {
+            setError(data.error || "Login failed");
+          }
+          
       }
   } catch (err) {
       console.log(err)
@@ -45,8 +52,9 @@ function Login() {
   };
  
   return (
-    <div className="auth-form">
+    <div className="auth-form form">
       <h2>Login</h2>
+      {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleLogin}>
         <input
           type="email"

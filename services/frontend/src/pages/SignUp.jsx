@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/index.css"; // Import global styles
+// import "../styles/index.css"; // Import global styles
+import "./../styles/authentication.css"
 
 const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
   ? import.meta.env.VITE_API_DOCKER_API_URL
@@ -51,7 +52,7 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="auth-form">
+        <div className="auth-form form">
             <h2>Sign Up</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSignup}>
