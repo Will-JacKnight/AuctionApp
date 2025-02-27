@@ -47,8 +47,8 @@ services:
     build: ./services/frontend
     image: ${CR_PREFIX}frontend:latest
     environment:
-      - RUN_MODE=${RUN_MODE}
-      - API_GATEWAY_DOCKER_URL=${API_GATEWAY_DOCKER_URL}
+      - VITE_RUN_MODE=${RUN_MODE}
+      - VITE_API_GATEWAY_DOCKER_URL=${API_GATEWAY_DOCKER_URL}
     ports:
       - "80:5173"
     depends_on:
