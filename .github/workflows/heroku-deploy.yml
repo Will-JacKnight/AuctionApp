@@ -110,11 +110,11 @@ jobs:
           docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
           docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
           
-        # echo "Push images..."
-        # docker push ${HEROKU_REGISTRY_PREFIX}/web
-        # docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
-        # docker push ${HEROKU_REGISTRY_PREFIX}/user-service
-        # docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
+          echo "Push images..."
+          docker push ${HEROKU_REGISTRY_PREFIX}/web
+          docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
+          docker push ${HEROKU_REGISTRY_PREFIX}/user-service
+          docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
       # - name: Debug, List Files Before Heroku Push
       #   run: |
@@ -124,15 +124,15 @@ jobs:
       #     ls -l ./services/user-service
       #     ls -l ./services/auction-service
 
-      - name: Build, Tag and push Microservices using heroku 
-        run: |
-          echo "Building microservices using heroku..."
-          echo "Debug, List Files Before Heroku Push"
-          docker images
-          heroku container:push ${HEROKU_REGISTRY_PREFIX}/web --app bidding-app-sse
-          heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway --app bidding-app-sse
-          heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service --app bidding-app-sse
-          heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service --app bidding-app-sse
+      # - name: Build, Tag and push Microservices using heroku 
+      #   run: |
+      #     echo "Building microservices using heroku..."
+      #     echo "Debug, List Files Before Heroku Push"
+      #     docker images
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/web --app bidding-app-sse
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway --app bidding-app-sse
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service --app bidding-app-sse
+      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service --app bidding-app-sse
 
 
       # - name: Set Heroku Environment Variables
@@ -158,4 +158,4 @@ jobs:
 
       - name: Scale dynos
         run: |
-          heroku ps:scale frontend=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse
+          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a bidding-app-sse
