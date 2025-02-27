@@ -2,13 +2,16 @@ import { useState } from "react";
 import Biddings from "../components/BidItems";
 import Sales from "../components/SellItems";
 import "./../styles/dashboard.css"
+import NavBar from "../components/NavBar";
 
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("biddings");
 
   return (
-    <div className="p-4">
+    <>
+      <NavBar />
+      <div className="p-4">
       <h2 className="">Dashboard</h2>
 
       {/* Toggle Buttons */}
@@ -37,6 +40,8 @@ const Dashboard = () => {
       </div>
       
     </div>
+    </>
+    
   );
 };
 

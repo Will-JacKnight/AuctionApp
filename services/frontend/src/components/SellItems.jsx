@@ -13,10 +13,6 @@ const Sales = () => {
   const [sales, setSales] = useState([])
   const [error, setError] = useState()
 
-  // useEffect(() => {
-  //   setSales(getSalesData());
-  // }, []);
-
   useEffect(() => {
     async function getData() {
         try {

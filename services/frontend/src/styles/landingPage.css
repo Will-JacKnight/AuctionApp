@@ -5,30 +5,6 @@ body {
     padding: 0;
   }
   
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #333;
-    padding: 20px;
-    color: white;
-  }
-
-  #navbar-logo {
-    width: 120px;
-  }
-  
-  .navbar ul {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-  }
-  
-  .navbar ul li a {
-    color: white;
-    text-decoration: none;
-  }
-  
   .search-container {
     max-width: 1000px;
     margin: 50px auto;

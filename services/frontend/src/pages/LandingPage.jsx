@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import "./../styles/landingPage.css"
 import Card from "./../components/Card"
+import NavBar from "./../components/NavBar"
 
 const API_URL = import.meta.env.VITE_API_RUN_MODE === "docker"
   ? import.meta.env.VITE_API_DOCKER_API_URL
@@ -81,14 +82,7 @@ function LandingPage()  {
   return (
     <div>
       {/* Navbar */}
-      <nav className="navbar">
-        <h1>BiddingHub</h1>
-        {/* <img src="/images/navbar-logo.png" id='navbar-logo'/> */}
-        <ul>
-          <li><a href="#home">Sell</a></li>
-          <li><a href="#auctions">Dashboard</a></li>
-        </ul>
-      </nav>
+      <NavBar />
 
       {/* Search Bar */}
       <div className="search-container">
