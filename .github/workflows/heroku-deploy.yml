@@ -41,7 +41,7 @@ jobs:
           docker compose -f docker-compose.yml down -v
  
   push-images:
-    name: Push Docker Images to GHCR
+    name: Push Docker Images to GHCR as Backup
     needs: build-and-test
     runs-on: ubuntu-latest
     env:
@@ -109,26 +109,7 @@ jobs:
           docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
           docker push ${HEROKU_REGISTRY_PREFIX}/user-service
           docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
- 
-      # - name: Debug, List Files Before Heroku Push
-      #   run: |
-      #     echo "Checking files before Heroku push..."
-      #     ls -l ./services/frontend
-      #     ls -l ./services/api-gateway
-      #     ls -l ./services/user-service
-      #     ls -l ./services/auction-service
 
-      # - name: Build, Tag and push Microservices using heroku
-      #   run: |
-      #     echo "Building microservices using heroku..."
-      #     echo "Debug, List Files Before Heroku Push"
-      #     docker images
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/web -a ${{env.HEROKU_APP_NAME}}
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/api-gateway -a ${{env.HEROKU_APP_NAME}}
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/user-service -a ${{env.HEROKU_APP_NAME}}
-      #     heroku container:push ${HEROKU_REGISTRY_PREFIX}/auction-service -a ${{env.HEROKU_APP_NAME}}
-
- 
       # - name: Set Heroku Environment Variables
       #   run: |
       #     heroku config:set -a ${{env.HEROKU_APP_NAME}} \
