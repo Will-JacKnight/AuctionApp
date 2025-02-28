@@ -90,10 +90,12 @@ function Product() {
       const response = await fetch(`${API_URL}/place_bid`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ auctionId: finalAuctionId, bidPrice }),
+        body: JSON.stringify({ bidPrice: Number(bidPrice)}),
       });
       // Handle API response errors
       if (!response.ok) {
+        console.log(response)
+        console.log(bidPrice)
         throw new Error("Failed to place bid");
       }
      

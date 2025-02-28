@@ -70,6 +70,31 @@ def product():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
+@productPage.route('/place_bid', methods=['POST'])
+def place_bid():
+    print("Received bid request:", request.json)  # Debugging log
+    data = request.json
+    # The frontend sends auctionId and bidPrice
+    bid_price = data.get('bidPrice')
+
+    print("current_auction_id is:", current_auction_id) # debug
+
+    if bid_price is None:
+        return jsonify({'error': 'bidPrice are required'}), 400
+
+    try:
+        new_bid = {
+            'user_id': "b7f65d95-7589-4dca-a389-5e293bd648e4", # hard-code for now
+            'auction_id': current_auction_id,
+            'bid_amount': bid_price,
+            'created_at': datetime.datetime.utcnow().isoformat() 
+        }
+        response = supabase.table('bids').insert(new_bid).execute()
+        return jsonify({'message': 'Bid placed successfully', 'bid': response.data}), 201
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+    
 def poll_for_new_bids():
     global current_auction_id, latest_max_bid
     print("Polling thread started!")
