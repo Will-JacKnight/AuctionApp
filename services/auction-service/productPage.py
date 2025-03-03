@@ -42,43 +42,104 @@ current_auction_id = None
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False
 
-@productPage.route('/product', methods=['GET', 'POST'])
-def product():
-    data = request.get_json()
-    auction_id = data.get('auction_id')
-
-    global current_auction_id, latest_max_bid, polling_thread_started
-    # auction_id = "b3dd3d7f-1f20-4f79-9651-b33b9f411600"
-    current_auction_id = auction_id
+@productPage.route('/product/<auction_id>', methods=['GET'])
+def get_product_by_id(auction_id):
+    print(f"📩 Received request for auction_id: {auction_id}")
 
     if not auction_id:
         return jsonify({'error': 'auction_id is required'}), 400
-    try:
-        response = supabase.table('auctions').select('name', 'description', 'status', 'start_date', 'start_time', 'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url').eq('id', auction_id).execute()
-        item = response.data[0] if response.data else {} 
 
-        if not item:
-                return jsonify({'error': 'Auction not found'}), 404
+    try:
+        response = supabase.table('auctions').select(
+            'name', 'description', 'status', 'start_date', 'start_time', 
+            'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url'
+        ).eq('id', auction_id).execute()
+
+        if not response.data:
+            print("⚠️ Auction not found for ID:", auction_id)
+            return jsonify({"error": "Auction not found"}), 404
+
+        item = response.data[0]
 
         bid_response = (
-                    supabase.table('bids')
-                    .select('bid_amount')
-                    .eq('auction_id', auction_id)
-                    .order('bid_amount', desc=True)
-                    .limit(1)
-                    .execute()
+            supabase.table('bids')
+            .select('bid_amount')
+            .eq('auction_id', auction_id)
+            .order('bid_amount', desc=True)
+            .limit(1)
+            .execute()
         )
         max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
         item["max_bid"] = max_bid 
-        latest_max_bid = max_bid
-        if not polling_thread_started:
-            polling_thread_started = True
-            threading.Thread(target=poll_for_new_bids, daemon=True).start()
 
         return jsonify(item), 200
     except Exception as e:
-        traceback.print_exc()
+        print(f"🔥 Error retrieving auction: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+
+# @productPage.route('/product/<auction_id>', methods=['GET'])
+# def get_product_by_id(auction_id):
+#     print(f"Received request for auction_id: {auction_id}")
+
+#     if not auction_id:
+#         return jsonify({'error': 'auction_id is required'}), 400
+
+#     try:
+#         response = supabase.table('auctions').select(
+#             'name', 'description', 'status', 'start_date', 'start_time', 
+#             'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url'
+#         ).eq('id', auction_id).execute()
+
+#         if not response.data:
+#             print("⚠️ Auction not found for ID:", auction_id)
+#             return jsonify({"error": "Auction not found"}), 404
+
+#         item = response.data[0]
+#         return jsonify(item), 200
+#     except Exception as e:
+#         print(f"🔥 Error retrieving auction: {e}")
+#         return jsonify({'error': str(e)}), 500
+
+
+# @productPage.route('/product', methods=['GET', 'POST'])
+# def product():
+#     data = request.get_json()
+#     auction_id = data.get('auction_id')
+
+#     global current_auction_id, latest_max_bid, polling_thread_started
+#     # auction_id = "b3dd3d7f-1f20-4f79-9651-b33b9f411600"
+#     current_auction_id = auction_id
+
+#     if not auction_id:
+#         return jsonify({'error': 'auction_id is required'}), 400
+#     try:
+#         response = supabase.table('auctions').select('name', 'description', 'status', 'start_date', 'start_time', 'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url').eq('id', auction_id).execute()
+#         item = response.data[0] if response.data else {} 
+
+#         if not item:
+#                 return jsonify({'error': 'Auction not found'}), 404
+
+#         bid_response = (
+#                     supabase.table('bids')
+#                     .select('bid_amount')
+#                     .eq('auction_id', auction_id)
+#                     .order('bid_amount', desc=True)
+#                     .limit(1)
+#                     .execute()
+#         )
+#         max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
+#         item["max_bid"] = max_bid 
+#         latest_max_bid = max_bid
+#         if not polling_thread_started:
+#             polling_thread_started = True
+#             threading.Thread(target=poll_for_new_bids, daemon=True).start()
+
+#         return jsonify(item), 200
+#     except Exception as e:
+#         traceback.print_exc()
+#         return jsonify({'error': str(e)}), 500
 
 @productPage.route('/place_bid', methods=['POST'])
 def place_bid():

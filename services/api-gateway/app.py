@@ -89,9 +89,9 @@ def serach():
     return jsonify(response.json()), response.status_code
 
 
-@app.route('/product', methods=['GET'])
-def bidding():
-    response = requests.get(f"{AUCTION_SERVICE_URL}/product")
+@app.route('/product/<auction_id>', methods=['GET'])
+def bidding(auction_id):
+    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}")
     return jsonify(response.json()), response.status_code
 
 @app.route('/place_bid', methods=['POST'])
