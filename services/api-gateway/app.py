@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, request, jsonify
 import requests
 from flask_cors import CORS
@@ -38,7 +40,7 @@ print(SUPABASE_URL)
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet", logger=True, engineio_logger=True)
 
 
 @app.route('/signup', methods=['POST'])
@@ -110,15 +112,48 @@ def bid():
     response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid")
     return jsonify(response.json()), response.status_code
 
+# HTTP route to handle bid updates from the backend
+@app.route('/bid_update', methods=['POST'])
+def handle_bid_update_request():
+    try:
+        
+        print(f"Received bid update request:", request.headers)
+        print("Received request data:", request.data)
+
+        # Ensure the request contains JSON data
+        if not request.is_json:
+            print("Request is not JSON")
+            return jsonify({"error": "Request must be JSON"}), 400
+        
+        data = request.json
+        print(f"Received bid update request: {data}")
+         # Validate required fields
+        if not data or "auction_id" not in data or "max_bid" not in data:
+            print("Invalid data format")
+            return jsonify({"error": "Invalid data format"}), 400
+        
+
+        # Forward the bid update to WebSocket clients
+        socketio.emit('bid_update', data, to=None)
+        return jsonify({"message": "Bid update forwarded"}), 200
+    except Exception as e:
+        print(f"Error handling bid update request: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 @socketio.on("connect")
 def handle_connect():
     print("Client connected to WebSocket")
+    emit("connection_success", {"message": "WebSocket connected"})
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("Client disconnected from WebSocket")
 
 @socketio.on("bid_update")
 def handle_bid_update(data):
-    # Forward WebSocket messages to Auction Service
-    requests.post(f"{AUCTION_SERVICE_URL}/product", json=data)
+    print(f"Received bid update from Auction Service: {data}")
+    # Broadcast the bid update to all connected clients
     emit("bid_update", data, broadcast=True)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=4000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=4000, debug=True, allow_unsafe_werkzeug=True)

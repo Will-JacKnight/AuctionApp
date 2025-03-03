@@ -10,10 +10,20 @@ from collections import defaultdict
 import threading
 from flask_socketio import SocketIO, emit
 import time
+import requests
 
 # # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 load_dotenv(dotenv_path)
+
+RUN_MODE = os.getenv("RUN_MODE", "local")  # Default to local if not set
+
+if RUN_MODE == "docker":
+    API_GATEWAY_URL = os.getenv("API_GATEWAY_DOCKER_URL")
+elif RUN_MODE == "heroku":
+    API_GATEWAY_URL = os.getenv("API_GATEWAY_HEROKU_URL")
+else:  # Default to local
+    API_GATEWAY_URL = os.getenv("API_GATEWAY_LOCAL_URL")
 
 productPage = Blueprint("productPage", __name__)
 
@@ -90,6 +100,13 @@ def place_bid():
             'created_at': datetime.datetime.utcnow().isoformat() 
         }
         response = supabase.table('bids').insert(new_bid).execute()
+
+        # Emit WebSocket event when a new bid is placed
+        requests.post(f"{API_GATEWAY_URL}/bid_update", json={
+            "auction_id": current_auction_id,
+            "max_bid": bid_price
+        })
+
         return jsonify({'message': 'Bid placed successfully', 'bid': response.data}), 201
     except Exception as e:
         traceback.print_exc()
@@ -122,7 +139,14 @@ def poll_for_new_bids():
             # Only send update if bid amount has changed
             if new_max_bid != latest_max_bid:
                 latest_max_bid = new_max_bid
-                socketio.emit('bid_update', {'auction_id': current_auction_id, 'max_bid': new_max_bid})
+
+                # socketio.emit('bid_update', {'auction_id': current_auction_id, 'max_bid': new_max_bid})
+                # Emit the bid update to the API Gateway
+                requests.post(f"{API_GATEWAY_URL}/bid_update", json={
+                        "auction_id": current_auction_id,
+                        "max_bid": new_max_bid
+                })
+
                 print(f"New bid detected for auction {current_auction_id}: {new_max_bid}")
 
         except Exception as e:

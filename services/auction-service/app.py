@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask
 from mainPage import mainPage  # Import the Blueprint
 from listingPage import listingPage
@@ -5,8 +8,6 @@ from dashboard import dashboard
 from flask_cors import CORS
 from productPage import productPage, socketio
 from flask_socketio import SocketIO, emit
-import eventlet
-eventlet.monkey_patch()
 
 # from .app_create_project import create_bp
 # from .app_manage_project import manage_bp
@@ -18,7 +19,7 @@ eventlet.monkey_patch()
 app = Flask(__name__)
 CORS(app)
 
-socketio = SocketIO(app, cors_allowed_origins="*") 
+socketio.init_app(app, cors_allowed_origins="*")
 
 # Register blueprints to modularize the application
 # Each blueprint corresponds to a specific set of routes and functionality
@@ -29,4 +30,4 @@ app.register_blueprint(dashboard)
 app.register_blueprint(productPage)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=7070, debug=True, allow_unsafe_werkzeug=True)
+    app.run(host='0.0.0.0', port=7070, debug=True)
