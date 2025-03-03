@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
-import "./../styles/bidding.css"; 
+import "./../styles/bidding.css";
 import NavBar from "../components/NavBar";
 
-const API_URL = 
+const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
     ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
     : import.meta.env.VITE_RUN_MODE === "heroku"
