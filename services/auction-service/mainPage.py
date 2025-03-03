@@ -45,7 +45,10 @@ def display_item():
         # Combine end_date and end_time into a full timestamp
         end_datetime_str = f"{item['end_date']}T{item['end_time']}Z"
         end_datetime = datetime.fromisoformat(end_datetime_str.replace("Z", "+00:00"))  # Convert to datetime object
-        
+         # Calculate remaining days
+        remaining_time_delta = (end_datetime - current_time).total_seconds()
+        remaining_days = max(0, int(remaining_time_delta // 86400))
+
         # Check if auction is still active
         if end_datetime <= current_time and item.get("status") != "expired":
             update_response = (
@@ -71,7 +74,7 @@ def display_item():
 
             # Attach max_bid if available, otherwise keep it None
             item['max_bid'] = bid_response.data[0]['bid_amount'] if bid_response.data else None
-            
+            item['remaining_days'] = remaining_days
             # Add active item to the list
             active_items.append(item)
 

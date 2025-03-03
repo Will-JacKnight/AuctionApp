@@ -13,7 +13,7 @@ function Card({data}) {
                 {/* Flex container for name and time */}
                 <div className="item-card-title-container">
                     <p className="item-card-name">{data.name}</p>
-                    <p className="item-card-time">2 Days</p>
+                    <p className="item-card-time">{data.remaining_days <= 1 ? `Less than 24 hours` : `${data.remaining_days} Days`}</p>
                 </div>
 
                 {/* Display Current Bid if available, otherwise show Starting Price */}
