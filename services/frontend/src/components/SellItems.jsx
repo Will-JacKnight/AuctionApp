@@ -60,18 +60,26 @@ const Sales = () => {
       <ul>
         {sales.map((sale) => (
           <NavLink to={`/product/${sale.id}`} key={sale.id}>
-            <div className="listing" >
-                <img
-                  src={sale.image_url}
-                />
-                <div className="information">
-                  <h3 className="item-name">
-                    {sale.name}
-                  </h3>
-                  <h5 className="highest-bid">Highest Bid: £{sale.max_bid}</h5>
-                  <h6 className="time-left">Time Left: 12 hrs</h6>
-                  <p className="item-description">{sale.description.slice(0, 150)}</p>
-                </div>
+            <div className="listing">
+              <img src={sale.image_url} alt={sale.name} />
+
+              <div className="information">
+                <h3 className="item-name">{sale.name}</h3>
+
+                {/* If sold, show the sold out text*/}
+                {sale.status === "expired" ? (
+                  <h5 className="sold-text">Sold for: £{sale.max_bid}</h5>
+                ) : (
+                  <>
+                    <h5 className="highest-bid">Highest Bid: £{sale.max_bid}</h5>
+                    <p className="item-description">{sale.description.slice(0, 150)}</p>
+                  </>
+                )}
+
+                <h6 className="time-left">
+                  {sale.status === "expired" ? "Auction Ended" : "Time Left: 12 hrs"}
+                </h6>
+              </div>
             </div>
           </NavLink>
         ))}

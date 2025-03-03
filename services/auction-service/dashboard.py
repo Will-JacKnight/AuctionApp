@@ -41,7 +41,7 @@ def dashboard_sell():
             return jsonify({'error': 'Seller not found'}), 404
 
         # get the selling items
-        items_response = supabase.table('auctions').select('id', 'name', 'description', 'image_url').eq('seller_id', seller_id).execute()
+        items_response = supabase.table('auctions').select('id', 'name', 'description', 'image_url', 'status').eq('seller_id', seller_id).execute()
         items = items_response.data
 
         if not items:

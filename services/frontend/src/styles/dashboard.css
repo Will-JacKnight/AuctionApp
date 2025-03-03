@@ -93,9 +93,10 @@
   }
 
   .listing .item-description {
-    margin-top: 40px;
+    margin-top: 60px;
     width: 90%;
     overflow: hidden;
+    text-align: center;
   }
 
   .listing .highest-bid {
@@ -111,5 +112,11 @@
     font-family: "Kiwi Maru", serif;
   }
 
-
-
+  .sold-text {
+    font-size: 35px;
+    font-weight: bold;
+    color: #ff0800; 
+    position: absolute;
+    text-align: center;
+    margin-bottom: 10px; 
+  }
