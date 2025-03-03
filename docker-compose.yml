@@ -3,7 +3,7 @@
 services:
   api-gateway:
     build: ./services/api-gateway
-    image: api-gateway:latest
+    image: ${CR_PREFIX}api-gateway:latest
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
@@ -23,7 +23,7 @@ services:
 
   auction-service:
     build: ./services/auction-service
-    image: auction-service:latest
+    image: ${CR_PREFIX}auction-service:latest
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
@@ -36,7 +36,7 @@ services:
 
   user-service:
     build: ./services/user-service
-    image: user-service:latest
+    image: ${CR_PREFIX}user-service:latest
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
@@ -48,7 +48,7 @@ services:
 
   frontend:
     build: ./services/frontend
-    image: frontend:latest
+    image: ${CR_PREFIX}frontend:latest
     environment:
       - VITE_RUN_MODE=${RUN_MODE}
 #      - VITE_API_GATEWAY_DOCKER_URL=${API_GATEWAY_DOCKER_URL}
