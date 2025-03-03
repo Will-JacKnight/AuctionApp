@@ -30,21 +30,36 @@ def search_item():
 def display_item():
     
     # Fetch all matching products from Supabase
-    response = supabase.table('auctions').select('name', 'starting_price', 'image_url', 'id').execute()
-
-    items = response.data  # List of items
+    response = supabase.table('auctions').select('name', 'image_url', 'id').execute()
+    items = response.data
 
     if not items:
         return jsonify([])  # Return an empty list if no items
+    
+    for item in items:
+        auction_id = item['id']
+        bid_response = (
+            supabase.table('bids')
+            .select('bid_amount')
+            .eq('auction_id', auction_id)
+            .order('bid_amount', desc=True)  # Sort by bid_amount in descending order
+            .limit(1)  # Get the highest bid
+            .execute()
+        )
+        item['max_bid'] = bid_response.data[0]['bid_amount'] if bid_response.data else None
+        
+    return jsonify(items)  # Return only the modified items list
+    
 
-    # Duplicate items until we have at least 12
-    while len(items) < 12:
-        items += items[:12 - len(items)]  # Add copies of existing items
 
-    # Shuffle and pick exactly 12 random items
-    random_items = random.sample(items, 12)
+    # # Duplicate items until we have at least 12
+    # while len(items) < 12:
+    #     items += items[:12 - len(items)]  # Add copies of existing items
 
-    return jsonify(random_items)
+    # # Shuffle and pick exactly 12 random items
+    # random_items = random.sample(items, 12)
+
+    # return jsonify()
 
 
     
