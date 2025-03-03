@@ -41,7 +41,7 @@ def dashboard_sell():
             return jsonify({'error': 'Seller not found'}), 404
 
         # get the selling items
-        items_response = supabase.table('auctions').select('id', 'name', 'description', 'image_url').eq('seller_id', seller_id).execute()
+        items_response = supabase.table('auctions').select('id', 'name', 'description', 'image_url', 'status').eq('seller_id', seller_id).execute()
         items = items_response.data
 
         if not items:
@@ -93,7 +93,7 @@ def dashboard_bid():
         # get the bidding items
         bids_response = (
         supabase.table('bids')
-        .select('bid_amount, created_at, auctions(name, status)')  # Implicit join
+        .select('bid_amount, created_at, auction_id, auctions(name, status)')  # Implicit join
         .eq('user_id', seller_id)
         .execute()
         )
@@ -105,12 +105,27 @@ def dashboard_bid():
         auction_bids = defaultdict(list)
 
         for bid in bids:
+            auction_id = bid['auction_id']
+            # Fetch the max_bid for this auction
+            max_bid_response = (
+                supabase.table('bids')
+                .select('bid_amount')
+                .eq('auction_id', auction_id)
+                .order('bid_amount', desc=True)  # Sort in descending order
+                .limit(1)  # Get the highest bid
+                .execute()
+            )
+
+            # Get the highest bid amount (if exists)
+            max_bid = max_bid_response.data[0]['bid_amount'] if max_bid_response.data else None
+
             auction_name = bid['auctions']['name']
             auction_bids[auction_name].append({
                 "bid_amount": bid["bid_amount"],
                 "created_at": bid["created_at"],
                 "status": bid["auctions"]["status"],
-                "item_name": bid['auctions']['name']
+                "item_name": bid['auctions']['name'],
+                "max_bid": max_bid
             })
         bids_list = [{name: history} for name, history in auction_bids.items()]
         print(bids_list, flush=True)

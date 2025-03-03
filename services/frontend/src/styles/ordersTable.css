@@ -56,5 +56,13 @@
   background-color: #d0e2ff;
   cursor: pointer;
 }
-  
-  
+
+.highlight-row {
+  background-color: #ffeb99 !important;
+  font-weight: bold;
+}
+
+.bid-status-yellow {
+  color: red; 
+  font-weight: bold;
+}
