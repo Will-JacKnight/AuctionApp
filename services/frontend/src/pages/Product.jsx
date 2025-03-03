@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import "./../styles/bidding.css"; 
+import NavBar from "../components/NavBar";
 
 const API_URL = 
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -94,35 +95,38 @@ function Product() {
   if (!auctionData) return <p>No auction data found</p>;
 
   return (
-    <div className="bidding-container">
-      <div className="auction-info">
-        <img src={auctionData.image_url} alt={auctionData.name} className="auction-image" />
+    <>
+      <NavBar />
+      <div className="bidding-container">
+        <div className="auction-info">
+          <img src={auctionData.image_url} alt={auctionData.name} className="auction-image" />
+        </div>
+
+        <div className="bidding-section">
+          <div className="product-details">
+            <h2 className="product-name">{auctionData.name}</h2>
+            <p>{auctionData.description}</p>
+          </div>
+
+          <div className="price-date-container">
+            <h3>Starting Price: ${auctionData.starting_price.toLocaleString()}</h3>
+            <h3 className="bid-price">Current Price: ${auctionData.max_bid?.toLocaleString() || "N/A"}</h3>
+            <p>Bidding Start: {new Date(auctionData.start_date).toLocaleString()}</p>
+            <p>Bidding End: {new Date(auctionData.end_date).toLocaleString()}</p>
+          </div>
+
+          <div className="bid-input">
+            <input
+              type="number"
+              value={bidPrice}
+              onChange={(e) => setBidPrice(e.target.value)}
+              placeholder="Enter your bid..."
+            />
+            <button onClick={handleBidSubmit}>Place Bid</button>
+          </div>
+        </div>
       </div>
-
-      <div className="bidding-section">
-        <div className="product-details">
-          <h2 className="product-name">{auctionData.name}</h2>
-          <p>{auctionData.description}</p>
-        </div>
-
-        <div className="price-date-container">
-          <h3>Starting Price: ${auctionData.starting_price.toLocaleString()}</h3>
-          <h3 className="bid-price">Current Price: ${auctionData.max_bid?.toLocaleString() || "N/A"}</h3>
-          <p>Bidding Start: {new Date(auctionData.start_date).toLocaleString()}</p>
-          <p>Bidding End: {new Date(auctionData.end_date).toLocaleString()}</p>
-        </div>
-
-        <div className="bid-input">
-          <input
-            type="number"
-            value={bidPrice}
-            onChange={(e) => setBidPrice(e.target.value)}
-            placeholder="Enter your bid..."
-          />
-          <button onClick={handleBidSubmit}>Place Bid</button>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
   
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -58,7 +59,8 @@ const Sales = () => {
       <h3 className="text-lg font-semibold mb-2">Your Sales</h3>
       <ul>
         {sales.map((sale) => (
-            <div className="listing" key={sale.id}>
+          <NavLink to={`/product/${sale.id}`} key={sale.id}>
+            <div className="listing" >
                 <img
                   src={sale.image_url}
                 />
@@ -71,6 +73,7 @@ const Sales = () => {
                   <p className="item-description">{sale.description.slice(0, 150)}</p>
                 </div>
             </div>
+          </NavLink>
         ))}
       </ul>
     </div>
