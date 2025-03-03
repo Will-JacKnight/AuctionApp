@@ -2,7 +2,7 @@ import pandas as pd
 import random
 from flask import Flask, request, Blueprint, jsonify
 from supabase_client import supabase # need to modify
-
+from datetime import datetime, timezone
 # *************  DESCRIPTION: ********************************
 # This page handles requests from the user to search items
 # *************************************************************
@@ -30,21 +30,62 @@ def search_item():
 def display_item():
     
     # Fetch all matching products from Supabase
-    response = supabase.table('auctions').select('name', 'starting_price', 'image_url', 'id').execute()
-
-    items = response.data  # List of items
+    response = supabase.table('auctions').select('name', 'starting_price', 'image_url', 'id', 'end_date', 'end_time').execute()
+    items = response.data
 
     if not items:
         return jsonify([])  # Return an empty list if no items
+    
+    # Get the current UTC time
+    current_time = datetime.now(timezone.utc)
 
-    # Duplicate items until we have at least 12
-    while len(items) < 12:
-        items += items[:12 - len(items)]  # Add copies of existing items
+    active_items = []
 
-    # Shuffle and pick exactly 12 random items
-    random_items = random.sample(items, 12)
+    for item in items:
+        # Combine end_date and end_time into a full timestamp
+        end_datetime_str = f"{item['end_date']}T{item['end_time']}Z"
+        end_datetime = datetime.fromisoformat(end_datetime_str.replace("Z", "+00:00"))  # Convert to datetime object
+        
+        # Check if auction is still active
+        if end_datetime <= current_time and item.get("status") != "expired":
+            update_response = (
+                supabase.table('auctions')
+                .update({"status": 'expired'})  # Update status to "expired"
+                .eq('id', item['id'])  # Where id matches the item's id
+                .execute()
+            )
+            print(f"Auction {item['id']} marked as expired.")
 
-    return jsonify(random_items)
+        else:
+            auction_id = item['id']
+
+            # Get the highest bid for the current auction
+            bid_response = (
+                supabase.table('bids')
+                .select('bid_amount')
+                .eq('auction_id', auction_id)
+                .order('bid_amount', desc=True)  # Sort in descending order
+                .limit(1)  # Get only the highest bid
+                .execute()
+            )
+
+            # Attach max_bid if available, otherwise keep it None
+            item['max_bid'] = bid_response.data[0]['bid_amount'] if bid_response.data else None
+            
+            # Add active item to the list
+            active_items.append(item)
+
+    return jsonify(active_items)  # Return only active items
+
+
+    # # Duplicate items until we have at least 12
+    # while len(items) < 12:
+    #     items += items[:12 - len(items)]  # Add copies of existing items
+
+    # # Shuffle and pick exactly 12 random items
+    # random_items = random.sample(items, 12)
+
+    # return jsonify()
 
 
     

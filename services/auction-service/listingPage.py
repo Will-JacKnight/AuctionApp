@@ -92,6 +92,7 @@ def create_item():
             "end_date": data["end_date"],
             "end_time": end_dt.strftime('%H:%M'),
             "auction_type": "English",
+            "status": 'active',
             "image_url": image_url,  # Store the image URL
             "created_at": datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         }).execute()
