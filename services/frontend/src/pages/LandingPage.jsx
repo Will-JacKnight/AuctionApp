@@ -2,7 +2,18 @@ import { useEffect, useState } from 'react'
 import "./../styles/landingPage.css"
 import Card from "./../components/Card"
 import NavBar from "./../components/NavBar"
-import { getApiUrl } from '../config'
+// import { getApiUrl } from '../config'
+
+const API_URL =
+  import.meta.env.VITE_RUN_MODE === "docker"
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+    : import.meta.env.VITE_RUN_MODE === "heroku"
+    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
+
+// Debugging output
+console.log("API_URL:", API_URL);
 
 function LandingPage()  {
   const [searchQuery, setSearchQuery] = useState("")
