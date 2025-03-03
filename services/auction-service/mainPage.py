@@ -30,7 +30,7 @@ def search_item():
 def display_item():
     
     # Fetch all matching products from Supabase
-    response = supabase.table('auctions').select('name', 'image_url', 'id').execute()
+    response = supabase.table('auctions').select('name', 'starting_price', 'image_url', 'id').execute()
     items = response.data
 
     if not items:
