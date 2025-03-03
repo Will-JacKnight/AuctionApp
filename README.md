@@ -44,33 +44,49 @@ auction-app/
 ### Local Docker-compose Build (test only)
 
 #### builds with .env in root by default
+```
+docker compose -f docker-compose-local.yml up -d --build
+```
 
-`docker compose -f docker-compose-local.yml up -d --build`
-
-### Local Docker-compose Unit Tests
-
-`docker compose -f docker-compose-local.yml -f docker-compose-test.yml up --abort-on-container-exit`
+### Local Unit Tests
+```
+docker compose -f docker-compose-local.yml -f docker-compose-test.yml up --abort-on-container-exit
+```
 
 ### Local - Shut down all services
-
-`docker compose -f docker-compose-local.yml down -v`
+```
+docker compose -f docker-compose-local.yml down -v
+```
 
 ## Heroku Deployment Commands
 
 ### Run shell in Heroku
-
-`heroku run sh -a bidding-app-sse`
+```
+heroku run sh -a <HEROKU_APP_NAME>
+```
 
 ### Heroku app release
-
-`heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse`
+```
+heroku container:release web -a <HEROKU_APP_NAME>
+```
 
 ### set app stack as container
-`heroku stack:set container -a ${{env.HEROKU_FRONTEND_APP_NAME}}`
+```
+heroku stack:set container -a <HEROKU_APP_NAME>
+```
 
 ## Project .env management
 
 To keep updated with the latest .env, you should ask for permission to the private .env-repo and have it savely cloned
 in the project root as `./.env-repo`. This step is only needed for the first time.
 
-To get the latest .env, just run the script `sync-env.sh` in the project root. Voilà! All .env files are synced.
+To get the latest .env, just run the script:
+```
+sync-env.sh
+```
+in the project root. Voilà! All .env files are synced.
+
+Similarly, to update the env-repo with the latest local .env, run the following:
+```
+upload-env.sh
+```
