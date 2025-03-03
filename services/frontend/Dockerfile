@@ -12,7 +12,7 @@ RUN npm install
 COPY . .
 
 # Create env.js at build time
-RUN echo "window.API_URL = '${API_URL}';" > /app/public/env.js
+RUN echo "window.API_URL = '${API_GATEWAY_HEROKU_URL}';" > /app/public/env.js
 
 # Expose the Vite development server port
 EXPOSE 5173
