@@ -71,7 +71,7 @@ jobs:
       HEROKU_USERNAME: ${{secrets.HEROKU_USERNAME}}
       HEROKU_REGISTRY_PREFIX: registry.heroku.com/${{secrets.HEROKU_APP_NAME}}
 
-      RUN_MODE: docker
+      RUN_MODE: heroku
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
