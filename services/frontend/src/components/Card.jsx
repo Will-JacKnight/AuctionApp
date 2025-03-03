@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import "../styles/card.css"
+import { NavLink } from "react-router-dom";
 
 function Card({data}) {
     return (
+      <NavLink to={`/product/${data.id}`}>
         <div className="popular-items">
           <div className="item-card">
             <img src={data.image_url} className="item-card-img"/>
@@ -15,7 +17,9 @@ function Card({data}) {
                 
             </div>
           </div>
-      </div>
+        </div>
+      </NavLink>
+        
         
     )
 }

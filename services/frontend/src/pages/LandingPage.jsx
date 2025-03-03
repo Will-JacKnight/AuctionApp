@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import "./../styles/landingPage.css"
 import Card from "./../components/Card"
 import NavBar from "./../components/NavBar"
+import { NavLink } from 'react-router-dom'
 
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -106,6 +107,7 @@ function LandingPage()  {
     }
   }
 
+  console.log(data)
   return (
     <div>
       {/* Navbar */}

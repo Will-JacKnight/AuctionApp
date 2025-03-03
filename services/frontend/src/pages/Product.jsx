@@ -28,6 +28,9 @@ function Product() {
   const [bidPrice, setBidPrice] = useState(""); // Store user's bid price
   const [error, setError] = useState(null); // Store any errors during API calls
  
+  const { id } = useParams();
+  console.log(id)
+
    // Fetch auction details when the component mounts or when auctionId changes
   useEffect(() => {
     async function fetchAuctionDetails() {
@@ -44,13 +47,19 @@ function Product() {
         //   });
         //   return;
         // }
+        
        
         // Fetch auction details from the API
-        const response = await fetch(`${API_URL}/product`);
+        const response = await fetch(`${API_URL}/search`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({"auction_id": id})
+          })
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json(); // Parse response data as JSON
+        console.log(data)
         setAuctionData(data); // Update state with fetched auction details
       } catch (err) {
         console.error("Error fetching auction details:", err);

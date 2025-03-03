@@ -32,13 +32,13 @@ current_auction_id = None
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False
 
-@productPage.route('/product', methods=['GET'])
+@productPage.route('/product', methods=['GET', 'POST'])
 def product():
-    # data = request.json
-    # auction_id = data.get('auction_id')
+    data = request.get_json()
+    auction_id = data.get('auction_id')
 
     global current_auction_id, latest_max_bid, polling_thread_started
-    auction_id = "b3dd3d7f-1f20-4f79-9651-b33b9f411600"
+    # auction_id = "b3dd3d7f-1f20-4f79-9651-b33b9f411600"
     current_auction_id = auction_id
 
     if not auction_id:
