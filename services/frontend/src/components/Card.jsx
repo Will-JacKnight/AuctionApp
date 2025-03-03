@@ -9,9 +9,9 @@ function Card({data}) {
           <div className="item-card">
             <img src={data.image_url} className="item-card-img"/>
             <div className="item-card-description">
-                <p>{data.item_name}</p>
+                <p className="item-name">{data.name}</p>
                 <div className="item-card-price-time">
-                    <p className="smaller-font">Current Bid: £{data.starting_price}</p>
+                    <p className="smaller-font">Current Bid: £{data.max_bid}</p>
                     <p className="grey-text">2 Days</p>
                 </div>
                 
