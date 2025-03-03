@@ -1,5 +1,5 @@
 // Runtime configuration
-let API_URL = window.API_URL || import.meta.env.VITE_API_GATEWAY_DOCKER_URL;
+let API_URL = window.API_URL || import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
 export const setApiUrl = (url) => {
   API_URL = url;
