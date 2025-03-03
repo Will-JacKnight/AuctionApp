@@ -3,14 +3,16 @@
 services:
   api-gateway:
     build: ./services/api-gateway
-    image: ${CR_PREFIX}api-gateway:latest
+#    image: ${CR_PREFIX}api-gateway:latest
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - RUN_MODE=${RUN_MODE}
-      - USER_SERVICE_DOCKER_URL=${USER_SERVICE_DOCKER_URL}
-      - AUCTION_SERVICE_DOCKER_URL=${AUCTION_SERVICE_DOCKER_URL}
+      - AUCTION_SERVICE_HEROKU_URL=${AUCTION_SERVICE_HEROKU_URL}
+      - USER_SERVICE_HEROKU_URL=${USER_SERVICE_HEROKU_URL}
+#      - USER_SERVICE_DOCKER_URL=${USER_SERVICE_DOCKER_URL}
+#      - AUCTION_SERVICE_DOCKER_URL=${AUCTION_SERVICE_DOCKER_URL}
     ports:
       - "4000:4000"
     depends_on:
@@ -21,20 +23,20 @@ services:
 
   auction-service:
     build: ./services/auction-service
-    image: ${CR_PREFIX}auction-service:latest
+#    image: ${CR_PREFIX}auction-service:latest
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - PORT = ${PORT}
-    # ports:
-    #   - "7070:7070"
+#      - PORT = ${PORT}
+    ports:
+       - "7070:7070"
     networks:
       - auction-network
 
   user-service:
     build: ./services/user-service
-    image: ${CR_PREFIX}user-service:latest
+#    image: ${CR_PREFIX}user-service:latest
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
@@ -46,10 +48,10 @@ services:
 
   frontend:
     build: ./services/frontend
-    image: ${CR_PREFIX}frontend:latest
+#    image: ${CR_PREFIX}frontend:latest
     environment:
       - VITE_RUN_MODE=${RUN_MODE}
-      - VITE_API_GATEWAY_DOCKER_URL=${API_GATEWAY_DOCKER_URL}
+#      - VITE_API_GATEWAY_DOCKER_URL=${API_GATEWAY_DOCKER_URL}
       - VITE_API_GATEWAY_HEROKU_URL=${API_GATEWAY_HEROKU_URL}
     ports:
       - "80:5173"

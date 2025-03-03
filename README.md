@@ -63,6 +63,9 @@
 
 `heroku container:release frontend api-gateway user-service auction-service -a bidding-app-sse`
 
+### set app stack as container
+`heroku stack:set container -a ${{env.HEROKU_FRONTEND_APP_NAME}}`
+
 ## Project .env management
 
 To keep updated with the latest .env, you should ask for permission to the private .env-repo and have it savely cloned

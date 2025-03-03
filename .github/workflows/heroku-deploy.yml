@@ -19,7 +19,7 @@ jobs:
     name: Build and Test Microservices
     runs-on: ubuntu-latest
     env:
-      CR_PREFIX: ""
+#      CR_PREFIX: ""
       RUN_MODE: docker
  
     steps:
@@ -66,10 +66,14 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     env:
+      HEROKU_REGISTRY_PREFIX: registry.heroku.com
       HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
-      HEROKU_APP_NAME: ${{secrets.HEROKU_APP_NAME}}
       HEROKU_USERNAME: ${{secrets.HEROKU_USERNAME}}
-      HEROKU_REGISTRY_PREFIX: registry.heroku.com/${{secrets.HEROKU_APP_NAME}}
+
+      HEROKU_FRONTEND_APP_NAME: ${{secrets.HEROKU_FRONTEND_APP_NAME}}
+      HEROKU_API_GATEWAY_APP_NAME: ${{secrets.HEROKU_API_GATEWAY_APP_NAME}}
+      HEROKU_AUCTION_SERVICE_APP_NAME: ${{secrets.HEROKU_AUCTION_SERVICE_APP_NAME}}
+      HEROKU_USER_SERVICE_APP_NAME: ${{secrets.HEROKU_USER_SERVICE_APP_NAME}}
 
       RUN_MODE: heroku
     steps:
@@ -93,37 +97,62 @@ jobs:
           heroku auth:whoami
  
       # build frontend service as web
-      - name: Build, Tag and push Microservices
+      - name: Build Services
         run: |
           echo "Building microservices..."
           docker compose -f docker-compose.yml build
- 
-          echo "Retag images..."
-          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/web
-          docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/api-gateway
-          docker tag user-service ${HEROKU_REGISTRY_PREFIX}/user-service
-          docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/auction-service
-          
-          echo "Push images..."
-          docker push ${HEROKU_REGISTRY_PREFIX}/web
-          docker push ${HEROKU_REGISTRY_PREFIX}/api-gateway
-          docker push ${HEROKU_REGISTRY_PREFIX}/user-service
-          docker push ${HEROKU_REGISTRY_PREFIX}/auction-service
 
-      # - name: Set Heroku Environment Variables
-      #   run: |
-      #     heroku config:set -a ${{env.HEROKU_APP_NAME}} \
-      #                       SUPABASE_URL=${{secrets.SUPABASE_URL}} \
-      #                       SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
-      #                       JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
-      #                       API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
-      #                       RUN_MODE=heroku \
-                            
+      - name: Tag Images
+        run: |
+          echo "Retag images..."
+          docker tag frontend ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+          docker tag api-gateway ${HEROKU_REGISTRY_PREFIX}/${HEROKU_API_GATEWAY_APP_NAME}/web
+          docker tag auction-service ${HEROKU_REGISTRY_PREFIX}/${HEROKU_AUCTION_SERVICE_APP_NAME}/web
+          docker tag user-service ${HEROKU_REGISTRY_PREFIX}/${HEROKU_USER_SERVICE_APP_NAME}/web
+
+      - name: Push Images
+        run: |
+          echo "Push images..."
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_API_GATEWAY_APP_NAME}/web
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_AUCTION_SERVICE_APP_NAME}/web
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_USER_SERVICE_APP_NAME}/web
+
+      - name: Update Environment Variables for each Heroku app
+        run: |
+          heroku config:set -a ${{env.HEROKU_FRONTEND_APP_NAME}} \
+                               API_GATEWAY_HEROKU_URL=${{secrets.API_GATEWAY_HEROKU_URL}} \
+          
+          heroku config:set -a ${{env.HEROKU_API_GATEWAY_APP_NAME}} \
+                               SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+                               SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+                               JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+                               AUCTION_SERVICE_HEROKU_URL=${{secrets.AUCTION_SERVICE_HEROKU_URL}} \
+                               USER_SERVICE_HEROKU_URL=${{secrets.USER_SERVICE_HEROKU_URL}} \
+
+          
+          heroku config:set -a ${{env.HEROKU_AUCTION_SERVICE_APP_NAME}} \
+                               SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+                               SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+                               JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+
+          
+          heroku config:set -a ${{env.HEROKU_USER_SERVICE_APP_NAME}} \
+                               SUPABASE_URL=${{secrets.SUPABASE_URL}} \
+                               SUPABASE_KEY=${{secrets.SUPABASE_KEY}} \
+                               JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}} \
+                          
  
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release web api-gateway user-service auction-service -a ${{env.HEROKU_APP_NAME}}
- 
+          heroku container:release web -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+          heroku container:release web -a ${{env.HEROKU_API_GATEWAY_APP_NAME}}
+          heroku container:release web -a ${{env.HEROKU_AUCTION_SERVICE_APP_NAME}}
+          heroku container:release web -a ${{env.HEROKU_USER_SERVICE_APP_NAME}}
+
       - name: Scale dynos
         run: |
-          heroku ps:scale web=1 api-gateway=1 auction-service=1 user-service=1 -a ${{env.HEROKU_APP_NAME}}
+          heroku ps:scale web=1 -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+          heroku ps:scale web=1 -a ${{env.HEROKU_API_GATEWAY_APP_NAME}}
+          heroku ps:scale web=1 -a ${{env.HEROKU_AUCTION_SERVICE_APP_NAME}}
+          heroku ps:scale web=1 -a ${{env.HEROKU_USER_SERVICE_APP_NAME}}
