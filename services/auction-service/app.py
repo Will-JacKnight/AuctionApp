@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from mainPage import mainPage  # Import the Blueprint
 from listingPage import listingPage
@@ -30,4 +32,4 @@ app.register_blueprint(productPage)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 7070)) 
-    socketio.run(app, host='0.0.0.0', port=7070, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=port, debug=True, allow_unsafe_werkzeug=True)
