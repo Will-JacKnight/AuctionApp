@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./../styles/listing.css";
 import NavBar from "../components/NavBar";
-import { getApiUrl } from '../config';
+// import { getApiUrl } from '../config';
 
 function AuctionUpload() {
   const [formData, setFormData] = useState({
@@ -20,6 +20,14 @@ function AuctionUpload() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const API_URL =
+  import.meta.env.VITE_RUN_MODE === "docker"
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+    : import.meta.env.VITE_RUN_MODE === "heroku"
+    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
   const tags = [
     "electronics", "furniture", "stationery", "clothing", "jewelry", "art", "books", "toys", "vehicles",
@@ -50,7 +58,7 @@ function AuctionUpload() {
           formDataToSend.append("productImage", image); 
         }
 
-        const response = await fetch(`${getApiUrl()}/listing`, {
+        const response = await fetch(`${API_URL}/listing`, {
             method: "POST",
             body: formDataToSend
         });
