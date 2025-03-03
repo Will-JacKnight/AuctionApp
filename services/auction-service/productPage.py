@@ -38,7 +38,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSockets
 socketio = SocketIO() 
 
-current_auction_id = None 
+
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False
 
@@ -147,8 +147,9 @@ def place_bid():
     data = request.json
     # The frontend sends auctionId and bidPrice
     bid_price = data.get('bidPrice')
+    auction_id = data.get('auctionId')
 
-    print("current_auction_id is:", current_auction_id) # debug
+    print("current_auction_id is:", auction_id) # debug
 
     if bid_price is None:
         return jsonify({'error': 'bidPrice are required'}), 400
@@ -156,7 +157,7 @@ def place_bid():
     try:
         new_bid = {
             'user_id': "b7f65d95-7589-4dca-a389-5e293bd648e4", # hard-code for now
-            'auction_id': current_auction_id,
+            'auction_id': auction_id,
             'bid_amount': bid_price,
             'created_at': datetime.datetime.utcnow().isoformat() 
         }
@@ -164,7 +165,7 @@ def place_bid():
 
         # Emit WebSocket event when a new bid is placed
         requests.post(f"{API_GATEWAY_URL}/bid_update", json={
-            "auction_id": current_auction_id,
+            "auction_id": auction_id,
             "max_bid": bid_price
         })
 

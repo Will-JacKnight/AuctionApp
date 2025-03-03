@@ -74,7 +74,7 @@ function Product() {
       const response = await fetch(`${API_URL}/place_bid`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bidPrice: Number(bidPrice) }),
+        body: JSON.stringify({ bidPrice: Number(bidPrice), auctionId: id}),
       });
 
       if (!response.ok) {
