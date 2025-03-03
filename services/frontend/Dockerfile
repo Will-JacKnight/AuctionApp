@@ -11,6 +11,9 @@ RUN npm install
 # Copy the rest of the app's source code
 COPY . .
 
+# Create env.js at build time
+RUN echo "window.API_URL = '${API_URL}';" > /app/public/env.js
+
 # Expose the Vite development server port
 EXPOSE 5173
 

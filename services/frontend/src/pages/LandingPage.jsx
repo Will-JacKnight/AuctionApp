@@ -2,14 +2,7 @@ import { useEffect, useState } from 'react'
 import "./../styles/landingPage.css"
 import Card from "./../components/Card"
 import NavBar from "./../components/NavBar"
-
-const API_URL =
-  import.meta.env.VITE_RUN_MODE === "docker"
-    // When running in Docker, we access the frontend via localhost from the browser (external access)
-    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
-    : import.meta.env.VITE_RUN_MODE === "heroku"
-    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
-    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
+import { getApiUrl } from '../config'
 
 function LandingPage()  {
   const [searchQuery, setSearchQuery] = useState("")
@@ -20,8 +13,7 @@ function LandingPage()  {
   useEffect(() => {
     async function getData() {
         try {
-          // const response = await fetch(("/api-gateway/display_mainPage", {
-          const response = await fetch(`${API_URL}/display_mainPage`, {
+          const response = await fetch(`${getApiUrl()}/display_mainPage`, {
             method: "GET",
             // headers: { "Content-Type": "application/json" },
             })
@@ -29,7 +21,6 @@ function LandingPage()  {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
 
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
@@ -55,7 +46,7 @@ function LandingPage()  {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevents form submission reloading the page
       try {
-        const response = await fetch(`${API_URL}/search`, {
+        const response = await fetch(`${getApiUrl()}/search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({"query": searchQuery})
@@ -82,7 +73,7 @@ function LandingPage()  {
 
   const handleSearchClick =  async (e) => {
     try {
-      const response = await fetch(`${API_URL}/search`, {
+      const response = await fetch(`${getApiUrl()}/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({"query": searchQuery})

@@ -2,18 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./../styles/bidding.css";
 import { io } from "socket.io-client"; 
-
-// Define API URL based on environment variables
-const API_URL =
-  import.meta.env.VITE_RUN_MODE === "docker"
-    // When running in Docker, we access the frontend via localhost from the browser (external access)
-    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
-    : import.meta.env.VITE_RUN_MODE === "heroku"
-    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
-    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
-    
-// const SOCKET_URL = "http://127.0.0.1:7070";
-const SOCKET_URL = API_URL; 
+import { getApiUrl } from '../config';
 
 function Product() {
 //   // Extract auctionId from URL parameters
@@ -46,7 +35,7 @@ function Product() {
         // }
        
         // Fetch auction details from the API
-        const response = await fetch(`${API_URL}/product`);
+        const response = await fetch(`${getApiUrl()}/product`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -61,7 +50,7 @@ function Product() {
   }, []); // Re-run effect when auctionId changes
  
   useEffect(() => {
-    const socket = io(SOCKET_URL); // Initialize WebSocket connection
+    const socket = io(getApiUrl()); // Initialize WebSocket connection
   
     // Listen for bid updates
     const handleBidUpdate = (updatedBid) => {
@@ -87,7 +76,7 @@ function Product() {
     }
     try {
       // Send bid request to API
-      const response = await fetch(`${API_URL}/place_bid`, {
+      const response = await fetch(`${getApiUrl()}/place_bid`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bidPrice: Number(bidPrice)}),

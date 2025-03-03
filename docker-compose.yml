@@ -49,6 +49,7 @@ services:
     environment:
       - VITE_RUN_MODE=${RUN_MODE}
       - VITE_API_GATEWAY_DOCKER_URL=${API_GATEWAY_DOCKER_URL}
+      - API_URL=${API_GATEWAY_HEROKU_URL}
     ports:
       - "80:5173"
     depends_on:
