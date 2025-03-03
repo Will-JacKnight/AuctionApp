@@ -8,6 +8,7 @@ services:
       - ./services/api-gateway/.env
     ports:
       - "4000:4000"
+    restart: always
     networks:
       - auction-network
 
@@ -18,6 +19,7 @@ services:
       - ./services/auction-service/.env
     ports:
       - "7070:7070"
+    restart: always
     depends_on:
       - api-gateway
     networks:
@@ -32,6 +34,7 @@ services:
       - "8080:8080"
     depends_on:
       - api-gateway
+    restart: always
     networks:
       - auction-network
 
@@ -44,6 +47,7 @@ services:
       - "80:5173"
     depends_on:
       - api-gateway
+    restart: always
     networks:
       - auction-network
 

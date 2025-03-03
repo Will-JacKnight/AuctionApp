@@ -6,3 +6,4 @@ Flask-Cors==5.0.0
 pytest==8.3.4
 Flask-SocketIO==5.5.1
 eventlet==0.39.0
+requests==2.32.3

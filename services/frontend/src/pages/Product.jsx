@@ -12,8 +12,8 @@ const API_URL =
     ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
     
-// const SOCKET_URL = "http://127.0.0.1:7070";
-const SOCKET_URL = API_URL; 
+// const SOCKET_URL = "http://127.0.0.1:4000";
+// const SOCKET_URL = API_URL; 
 
 function Product() {
 //   // Extract auctionId from URL parameters
@@ -61,20 +61,39 @@ function Product() {
   }, []); // Re-run effect when auctionId changes
  
   useEffect(() => {
-    const socket = io(SOCKET_URL); // Initialize WebSocket connection
-  
+    const socket = io(API_URL, {
+      transports: ["websocket"], // Ensure WebSocket is used
+      reconnection: true, 
+      reconnectionAttempts: 5,   // Retry before giving up
+      timeout: 20000,            // Allow more time before failing
+    });
+
+    socket.on("connect", () => {
+      console.log("✅ Connected to WebSocket server");
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn(" WebSocket disconnected. Reason:", reason);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("❌ WebSocket connection error:", error);
+    });
+
     // Listen for bid updates
-    const handleBidUpdate = (updatedBid) => {
-        console.log("Received bid update:", updatedBid);
-      };
-    
-      socket.on("bid_update", handleBidUpdate);  // Set up event listener
-    
-      return () => {
-        socket.off("bid_update", handleBidUpdate);  // Remove event listener
-        socket.disconnect();  // Close WebSocket connection
-      };
-    }, [auctionData]);
+    socket.on("bid_update", (updatedBid) => {
+      console.log("🔔 Received bid update:", updatedBid);
+      setAuctionData((prevData) => ({
+        ...prevData,
+        max_bid: updatedBid.max_bid,
+      }));
+    });
+
+    return () => {
+      socket.off("bid_update");
+      socket.disconnect();
+    };
+  }, []);
 
 
   
