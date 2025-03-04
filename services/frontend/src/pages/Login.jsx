@@ -35,6 +35,7 @@ function Login() {
       const data = await response.json();
       if (response.ok) {
           console.log(data.access_token)
+          sessionStorage.setItem("token", data.access_token)
           alert("Login Successfull!");
           console.log(data.access_token)
           navigate("/"); // Redirect to login page

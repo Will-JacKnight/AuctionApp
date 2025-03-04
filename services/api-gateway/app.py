@@ -10,13 +10,14 @@ from dotenv import load_dotenv
 from supabase import create_client
 import logging
 from flask_socketio import SocketIO, emit
+import sys
 
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Microservices URLs
 # USER_SERVICE_URL = "http://user-service:8080"
@@ -101,8 +102,15 @@ def place_bid():
 
 @app.route('/dashboard_sell', methods=['GET'])
 def sell():
+    print("Received request at API Gateway")
+    print("Gateway Headers:", dict(request.headers))  # Debugging
+    sys.stdout.flush()
 
-    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell")
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
+    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell", headers=headers)
     return jsonify(response.json()), response.status_code
 
 

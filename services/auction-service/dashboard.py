@@ -7,6 +7,11 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import traceback
 from collections import defaultdict
+import logging
+import sys
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+
 
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
@@ -24,10 +29,28 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # CORS(app)
 
 @dashboard.route('/dashboard_sell', methods=['GET'])
+@jwt_required()
 def dashboard_sell():
+    print("Request received at /dashboard_sell")
+    sys.stdout.flush()  # Ensures logs are immediately written
+
+    # Print all request headers
+    print("Request Headers:", dict(request.headers))
+    sys.stdout.flush()
+
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    print("Received JWT:", f"'{token}'")  # Add quotes to detect if it's an empty string
+
+    seller_id = get_jwt_identity()  # Extract user data from JWT
+    # print("printing the user ", user)
+    # sys.stdout.flush()
+    # # user_id = user.get("id")  # Get the user ID from the token
+    # print("User ID from JWT:", user_id)
+    # sys.stdout.flush()
+
     # data = request.json
     # seller_id = data.get('seller_id')
-    seller_id = "b7f65d95-7589-4dca-a389-5e293bd648e4"
+    # seller_id = "b7f65d95-7589-4dca-a389-5e293bd648e4"
     if not seller_id:
         return jsonify({'error': 'seller_id is required'}), 400
 
@@ -128,7 +151,7 @@ def dashboard_bid():
                 "max_bid": max_bid
             })
         bids_list = [{name: history} for name, history in auction_bids.items()]
-        print(bids_list, flush=True)
+        # print(bids_list, flush=True)
 
         return jsonify(bids_list), 200
 

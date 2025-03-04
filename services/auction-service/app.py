@@ -8,6 +8,9 @@ from dashboard import dashboard
 from flask_cors import CORS
 from productPage import productPage, socketio
 from flask_socketio import SocketIO, emit
+import os
+from flask_jwt_extended import JWTManager
+
 
 # from .app_create_project import create_bp
 # from .app_manage_project import manage_bp
@@ -17,7 +20,10 @@ from flask_socketio import SocketIO, emit
 
 # Create an instance of the Flask class for the web application
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")
+jwt = JWTManager(app)
 
 socketio.init_app(app, cors_allowed_origins="*")
 
