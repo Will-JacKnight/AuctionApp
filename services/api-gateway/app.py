@@ -13,8 +13,8 @@ from flask_socketio import SocketIO, emit
 import sys
 
 # Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-load_dotenv(dotenv_path)
+# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+# load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -37,7 +37,6 @@ else:
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-print(SUPABASE_URL)
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
