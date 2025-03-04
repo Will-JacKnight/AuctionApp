@@ -91,6 +91,29 @@ def search_item():
     return jsonify(active_items), 200
 
 
+# Define a route for searching items with keyword
+@mainPage.route('/search_byTag', methods=['GET', 'POST'])
+def search_item_byTag():
+    # Get keyword from query parameter
+    data = request.get_json()
+    keyword = data.get("query_tag", "")
+    print(keyword)
+
+    # Fetch items matching the search query
+    response = (
+        supabase.table('auctions')
+        .select('name', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
+        .ilike('category', f"%{keyword}%")
+        .execute()
+    )
+    
+    items = response.data
+    # Fetch highest bids in one query (avoiding per-item queries)
+    active_items = return_items_with_max_bid(items, update_expire = False) 
+    
+    return jsonify(active_items), 200
+
+
 # Define a route for displaying default items on the mainpage
 @mainPage.route('/display_mainPage', methods=['GET'])
 def display_item():
