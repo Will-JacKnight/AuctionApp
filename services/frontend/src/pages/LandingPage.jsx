@@ -11,28 +11,28 @@ const API_URL =
     ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
-  const tagIcons = {
-    Electronics: "🔌",
-    Books: "📚",
-    Clothing: "👗",
-    HomeDecor: "🏠",
-    Toys: "🧸",
-    Furniture: "🛋️",
-    Stationery: "📝",
-    Jewelry: "💍",
-    Art: "🎨",
-    Vehicles: "🚗",
-    Sports: "⚽",
-    MusicalInstruments: "🎸",
-    Antiques: "🏺",
-    Collectibles: "🃏",
-    Kitchenware: "🍽️",
-    Tools: "🔧",
-    Outdoors: "🏕️",
-    PetSupplies: "🐾",
-    Gaming: "🎮",
-    OfficeSupplies: "📎"
-  };
+const tagIcons = {
+  electronics: "🔌",
+  books: "📚",
+  clothing: "👗",
+  homeDecor: "🏠",
+  toys: "🧸",
+  furniture: "🛋️",
+  stationery: "📝",
+  jewelry: "💍",
+  art: "🎨",
+  vehicles: "🚗",
+  sports: "⚽",
+  musicalInstruments: "🎸",
+  antiques: "🏺",
+  collectibles: "🃏",
+  kitchenware: "🍽️",
+  tools: "🔧",
+  outdoors: "🏕️",
+  petSupplies: "🐾",
+  gaming: "🎮",
+  officeSupplies: "📎"
+};
 
 function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -95,6 +95,31 @@ function LandingPage() {
     }
   };
 
+  const handleTagSearch = async (tag) => {
+    try {
+      console.log(tag);
+      setLoading(true);
+      const response = await fetch(`${API_URL}/search_byTag`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query_tag: tag })
+      });
+      console.log(response);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setData(data);
+    } catch (err) {
+      console.error("Error searching by tag:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="landing-page">
       <NavBar />
@@ -120,7 +145,11 @@ function LandingPage() {
       <div className="tag-search-container">
         <div className="tag-search">
           {Object.keys(tagIcons).map((tag, index) => (
-            <div className="tag-item" key={index}>
+            <div
+              className="tag-item"
+              key={index}
+              onClick={() => handleTagSearch(tag)}
+            >
               <span className="tag-icon">{tagIcons[tag]}</span>
               <span className="tag-name">{tag}</span>
             </div>
