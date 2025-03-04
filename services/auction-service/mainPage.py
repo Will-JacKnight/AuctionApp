@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import sys
 from flask import Flask, request, Blueprint, jsonify
 from supabase_client import supabase # need to modify
 from datetime import datetime, timezone
@@ -98,6 +99,7 @@ def search_item_byTag():
     data = request.get_json()
     keyword = data.get("query_tag", "")
     print(keyword)
+    sys.stdout.flush()
 
     # Fetch items matching the search query
     response = (
