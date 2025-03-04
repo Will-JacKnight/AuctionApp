@@ -18,12 +18,12 @@ function NavBar() {
 
     return (
         <nav className="navbar">
-        <h1>BiddingHub</h1>
+        <NavLink to="/" className="navbar-brand">BiddingHub</NavLink>
         <ul>
           <li><NavLink to="/" className={({ isActive }) => (isActive ? "active-link" : "")}>Home</NavLink></li>
           <li><NavLink to="/listing" className={({ isActive }) => (isActive ? "active-link" : "")}>Sell</NavLink></li>
           <li><NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active-link" : "")}>Dashboard</NavLink></li>
-          {sessionStorage.getItem("token") && <img src="/images/logout.png" className='logout-icon' onClick={handleLogout}/>}
+          {sessionStorage.getItem("token") && <img src="/images/logout.svg" className='logout-icon' onClick={handleLogout}/>}
           
         </ul>
       </nav>

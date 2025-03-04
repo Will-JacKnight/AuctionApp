@@ -58,7 +58,7 @@ body {
   .search-button {
     width: 100px;
     height: 38px;
-    background: #1a237e;
+    background: linear-gradient(135deg, #1a237e, #0d47a1); /* Themed blue */
     border: none;
     color: white;
     cursor: pointer;
@@ -79,8 +79,11 @@ body {
   }
   
   .search-icon {
-    font-size: 1.2rem;
-    pointer-events: none;
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin: 0 auto;
+    filter: invert(1);
   }
   
   .popular-items {
@@ -120,8 +123,11 @@ body {
   
   .tag-item {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    padding: 5px 10px;
+    justify-content: center;
+    width: 80px;
+    padding: 10px;
     background-color: #e0e0e0;
     border-radius: 20px;
     cursor: pointer;
@@ -133,5 +139,19 @@ body {
   }
   
   .tag-icon {
-    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease;
+    object-fit: cover;
+  }
+  
+  .tag-item:hover .tag-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(2px 4px 6px rgb(219, 219, 219));
+  }
+
+  .tag-name {
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #333;
   }

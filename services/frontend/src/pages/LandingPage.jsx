@@ -12,27 +12,29 @@ const API_URL =
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
 const tagIcons = {
-  electronics: "🔌",
-  books: "📚",
-  clothing: "👗",
-  homeDecor: "🏠",
-  toys: "🧸",
-  furniture: "🛋️",
-  stationery: "📝",
-  jewelry: "💍",
-  art: "🎨",
-  vehicles: "🚗",
-  sports: "⚽",
-  musicalInstruments: "🎸",
-  antiques: "🏺",
-  collectibles: "🃏",
-  kitchenware: "🍽️",
-  tools: "🔧",
-  outdoors: "🏕️",
-  petSupplies: "🐾",
-  gaming: "🎮",
-  officeSupplies: "📎"
+  electronics: "/images/tag_icons/electronics.svg",
+  books: "/images/tag_icons/books.svg",
+  clothing: "/images/tag_icons/clothing.svg",
+  homeDecor: "/images/tag_icons/homeDecor.svg",
+  toys: "/images/tag_icons/toys.svg",
+  furniture: "/images/tag_icons/furniture.svg",
+  jewelry: "/images/tag_icons/jewelry.svg",
+  art: "/images/tag_icons/art.svg",
+  vehicles: "/images/tag_icons/vehicles.svg",
+  sports: "/images/tag_icons/sports.svg",
+  musical: "/images/tag_icons/musical.svg",
+  antiques: "/images/tag_icons/antiques.svg",
+  kitchenware: "/images/tag_icons/kitchenware.svg",
+  tools: "/images/tag_icons/tools.svg",
+  outdoors: "/images/tag_icons/outdoors.svg",
+  pets: "/images/tag_icons/pets.svg",
+  gaming: "/images/tag_icons/gaming.svg",
+  office: "/images/tag_icons/office.svg"
 };
+
+function formatTagName(tag) {
+  return tag.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^\w/, c => c.toUpperCase());
+}
 
 function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -140,7 +142,7 @@ function LandingPage() {
                 className="search-input"
               />
               <button type="submit" className="search-button">
-                <span className="search-icon">🔍</span>
+                <img src="/images/Search Icon.svg" alt="Search Icon" className="search-icon" />
               </button>
         </form>
       </div>
@@ -153,8 +155,8 @@ function LandingPage() {
               key={index}
               onClick={() => handleTagSearch(tag)}
             >
-              <span className="tag-icon">{tagIcons[tag]}</span>
-              <span className="tag-name">{tag}</span>
+              <img src={tagIcons[tag]} alt={`${tag} icon`} className="tag-icon" />
+              <span className="tag-name">{formatTagName(tag)}</span>
             </div>
           ))}
         </div>

@@ -29,9 +29,9 @@ function AuctionUpload() {
       : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
   const tags = [
-    "electronics", "furniture", "stationery", "clothing", "jewelry", "art", "books", "toys", "vehicles",
-    "sports", "musical instruments", "antiques", "collectibles", "home decor", "kitchenware", "tools",
-    "outdoor", "pet supplies", "gaming", "office supplies"
+    "electronics", "furniture", "clothing", "jewelry", "art", "books", "toys", "vehicles",
+    "sports", "musical", "antiques", "homeDecor", "kitchenware", "tools",
+    "outdoors", "pets", "gaming", "office"
   ];
 
   const handleChange = (e) => {
