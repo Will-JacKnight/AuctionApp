@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import "./../styles/landingPage.css"
 import Card from "./../components/Card"
 import NavBar from "./../components/NavBar"
-import { NavLink } from 'react-router-dom'
 
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -12,128 +11,114 @@ const API_URL =
     ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
-function LandingPage()  {
+function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [data, setData] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     async function getData() {
-        try {
-          const response = await fetch(`${API_URL}/display_mainPage`, {
-            method: "GET",
-            // headers: { "Content-Type": "application/json" },
-            })
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-              throw new Error("Received non-JSON response. Check API response.");
-            }
-            console.log(response)
-            const data = await response.json()
-            setData(data)
-            console.log(data)
-
-        }
-        catch (err) {
-            console.log(`Following error occured when fetching data: ${err}`)
-            setError(err)
-        }
-    }
-    getData()
-
-  }, [])
-
-  const  handleKeyDown = async (event) => {
-    console.log(searchQuery)
-    if (event.key === "Enter") {
-      event.preventDefault(); // Prevents form submission reloading the page
       try {
-        const response = await fetch(`${API_URL}/search`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({"query": searchQuery})
-          })
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Received non-JSON response. Check API response.");
-          }
-          const data = await response.json()
-          setData(data)
-
-      }
-      catch (err) {
-          console.log(`Following error occured when fetching data: ${err}`)
-          setError(err)
-      }
-    }
-  };
-
-  const handleSearchClick =  async (e) => {
-    try {
-      const response = await fetch(`${API_URL}/search`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({"query": searchQuery})
-        })
+        setLoading(true);
+        const response = await fetch(`${API_URL}/display_mainPage`, {
+          method: "GET",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        
+
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           throw new Error("Received non-JSON response. Check API response.");
         }
-        const data = await response.json()
-        setData(data)
 
+        const data = await response.json();
+        setData(data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }
-    catch (err) {
-        console.log(`Following error occured when fetching data: ${err}`)
-        setError(err)
-    }
-  }
+    getData();
+  }, []);
 
-  console.log(data)
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/search`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchQuery })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setData(data);
+    } catch (err) {
+      console.error("Error searching:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div>
-      {/* Navbar */}
+    <div className="landing-page">
       <NavBar />
-
-      {/* Search Bar */}
-      <div className="search-container">
-        <div className='relative'>
-          <img src="/images/search2.png" className='search-icon' onClick={handleSearchClick}></img>
-          <input
-          type="text"
-          placeholder="Search for an item..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}>
-          </input>
-        </div>
+      
+      <div className="search-section">
+        <h1 className="search-title">Find Your Next Great Deal</h1>
+        <p className="search-subtitle">Discover unique items at amazing prices</p>
+        
+        <form onSubmit={handleSearch} className="search-form">
+          <div className="search-input-container">
+            <input
+              type="text"
+              placeholder="Search for items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+            <button type="submit" className="search-button">
+              <span className="search-icon">🔍</span>
+            </button>
+          </div>
+        </form>
       </div>
 
-      {/* Popular Items Grid */}
-      <div className="popular-items">
-        {data && data.map((item, i) => (
-          <Card data={item} key={i}/>
-        ))}
-
+      <div className="content-section">
+        {loading ? (
+          <div className="loading-state">
+            <p>Loading items...</p>
+          </div>
+        ) : error ? (
+          <div className="error-state">
+            <p>Error: {error}</p>
+          </div>
+        ) : data.length === 0 ? (
+          <div className="empty-state">
+            <p>No items found. Try a different search term.</p>
+          </div>
+        ) : (
+          <div className="popular-items">
+            {data.map((item, i) => (
+              <Card data={item} key={i} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
-};
+}
 
 export default LandingPage;

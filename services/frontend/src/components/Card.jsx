@@ -1,31 +1,38 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react";
 import "../styles/card.css"
 import { NavLink } from "react-router-dom";
 
 function Card({data}) {
-    return (
-      <NavLink to={`/product/${data.id}`}>
-        <div className="popular-items">
-          <div className="item-card">
-            <img src={data.image_url} className="item-card-img"/>
-            <div className="item-card-description">
-                
-                {/* Flex container for name and time */}
-                <div className="item-card-title-container">
-                    <p className="item-card-name">{data.name}</p>
-                    <p className="item-card-time">{data.remaining_days <= 1 ? `Less than 24 hours` : `${data.remaining_days} Days`}</p>
-                </div>
+    const [imageLoaded, setImageLoaded] = useState(false);
 
-                {/* Display Current Bid if available, otherwise show Starting Price */}
-                <p className="item-card-price">
-                    {data.max_bid !== null ? `Current Bid: £${data.max_bid}` : `Current Bid: £${data.starting_price}`}
-                </p>
-                
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+    };
+
+    return (
+      <NavLink to={`/product/${data.id}`} className="card-link">
+        <div className="item-card">
+          <img 
+            src={data.image_url} 
+            className={`item-card-img ${!imageLoaded ? 'loading' : ''}`}
+            alt={data.name}
+            onLoad={handleImageLoad}
+          />
+          <div className="item-card-description">
+            <div className="item-card-title-container">
+              <p className="item-card-name">{data.name}</p>
+              <p className="item-card-time">
+                {data.remaining_days <= 1 ? 'Less than 24 hours' : `${data.remaining_days} Days`}
+              </p>
             </div>
+            <p className="item-card-price">
+              {data.max_bid !== null ? `Current Bid: £${data.max_bid.toLocaleString()}` : `Starting Price: £${data.starting_price.toLocaleString()}`}
+            </p>
           </div>
         </div>
       </NavLink>
-    )
+    );
 }
 
 export default Card;

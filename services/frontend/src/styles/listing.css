@@ -1,75 +1,158 @@
 .auction-form-container {
-  max-width: 500px;
-  margin: auto;
-  padding: 25px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: #f9f9f9;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background-color: #ffffff;
   text-align: left;
 }
 
 .auction-form-container h2 {
   text-align: center;
-  color: #003366;
-  font-size: 28px;
-  margin-bottom: 15px;
+  color: #1a237e;
+  font-size: 32px;
+  margin-bottom: 30px;
+  font-weight: 600;
 }
 
 .error-message {
-  color: red;
+  color: #d32f2f;
   text-align: center;
-  font-weight: bold;
+  font-weight: 500;
+  padding: 12px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: 20px;
 }
 
 label {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 500;
+  margin-bottom: 8px;
   display: block;
-  color: #333;
+  color: #424242;
+  font-size: 14px;
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  margin-bottom: 20px;
-  padding: 12px;
-  border: 1px solid #bbb;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: #ffffff;
   font-size: 16px;
+  transition: all 0.3s ease;
+  color: #212121;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #1a237e;
+  box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
 }
 
 textarea {
   resize: vertical;
-  height: 100px;
+  min-height: 120px;
+  line-height: 1.5;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  background-color: #0056b3;
+  padding: 14px;
+  background-color: #1a237e;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
+  margin-top: 10px;
 }
 
 button:disabled {
-  background-color: #ccc;
+  background-color: #bdbdbd;
+  cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
-  background-color: #003366;
+  background-color: #0d47a1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
+}
+
+/* File input styling */
+input[type="file"] {
+  padding: 8px;
+  border: 2px dashed #e0e0e0;
+  background-color: #fafafa;
+  cursor: pointer;
+}
+
+input[type="file"]:hover {
+  border-color: #1a237e;
+  background-color: #f5f5f5;
+}
+
+/* Date and time inputs */
+input[type="date"],
+input[type="time"] {
+  color: #424242;
+}
+
+/* Select styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.help-text {
+  display: block;
+  margin-top: 4px;
+  color: #757575;
+  font-size: 12px;
+}
+
+.date-time-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .auction-form-container {
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  .auction-form-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .date-time-inputs {
+    grid-template-columns: 1fr;
+  }
 }

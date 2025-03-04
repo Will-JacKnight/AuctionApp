@@ -1,22 +1,110 @@
+.popular-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 .item-card {
-    padding: 5px;
-    text-align: center;
-    max-width: 330px;
-    max-height: 400px;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #e0e0e0;
+}
+
+.item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .item-card-img {
-    width: 330px;
-    height: 330px;
+    width: 100%;
+    height: 300px;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.item-card:hover .item-card-img {
+    transform: scale(1.05);
 }
 
 .item-card-description {
-    font-family: "Inter", "safari";
+    padding: 16px;
     display: flex;
-    flex-direction: column; /* Ensure elements stack vertically */
-    align-items: flex-start; /* Align text to the left */
-    margin-top: 7px;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item-card-title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.item-card-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a237e;
+    margin: 0;
+}
+
+.item-card-time {
+    font-size: 0.9rem;
+    color: #666;
+    background-color: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.item-card-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2e7d32;
+    margin: 0;
+}
+
+/* Loading state for images */
+.item-card-img.loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .popular-items {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .item-card-img {
+        height: 250px;
+    }
+
+    .item-card-name {
+        font-size: 1rem;
+    }
+
+    .item-card-price {
+        font-size: 1.1rem;
+    }
 }
 
 .item-card-description p {
@@ -24,30 +112,6 @@
     padding: 2px 0;
 }
 
-/* Flex container for name and time */
-.item-card-title-container {
-    display: flex;
-    justify-content: space-between; /* Push name left and time right */
-    width: 100%;
-}
-
-/* Style for product name */
-.item-card-name {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-/* Style for time ("2 Days") */
-.item-card-time {
-    font-size: 14px;
-    color: #B4BABC; /* Grey color */
-}
-
-/* Ensure Current Bid appears on the next line */
-.item-card-price {
-    font-size: 14px;
-    color: #333;
-}
 .grey-text {
     color: #B4BABC;
 }
