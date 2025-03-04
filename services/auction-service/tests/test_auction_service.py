@@ -20,8 +20,8 @@ class TestMainPageAPI(unittest.TestCase):
         """Test the /search route."""
         
         mock_supabase.table.return_value.select.return_value.ilike.return_value.execute.return_value.data = [
-            {"id": 1, "name": "Test Item 1", "price": 100},
-            {"id": 2, "name": "Test Item 2", "price": 200},
+            {"id": 1, "item_name": "Item 1", "price": 100, "end_date": "2025-03-10", "end_time": "12:00:00"},
+            {"id": 2, "item_name": "Item 2", "price": 200, "end_date": "2025-03-11", "end_time": "15:30:00"},
         ]
 
         # Simulate a POST request
