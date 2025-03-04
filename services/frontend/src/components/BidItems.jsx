@@ -34,8 +34,11 @@ const Biddings = () => {
         }
 
         const data = await response.json();
-        const extracted_data = data.flatMap(obj => Object.values(obj).flat());
-        setBiddings(extracted_data);
+        if(data.message  != "No bids found for this user") {
+          const extracted_data = data.flatMap(obj => Object.values(obj).flat());
+          setBiddings(extracted_data);
+        }
+        
       } catch (err) {
         console.log(`Following error occurred when fetching data: ${err}`)
         setError(err.message);
@@ -64,7 +67,7 @@ const Biddings = () => {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2">Your Biddings</h3>
+      
       {biddings && <OrderTable data={biddings}/>}
 
     </div>

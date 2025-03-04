@@ -36,10 +36,12 @@ const Sales = () => {
               throw new Error("Received non-JSON response. Check API response.");
             }
             const data = await response.json()
-            const extracted_data = data["items"];
+            if(data != "No items found for this seller") {
+              const extracted_data = data["items"];
+              setSales(extracted_data)
 
-            setSales(extracted_data)
-
+            }
+            
         }
         catch (err) {
             console.log(`Following error occured when fetching data: ${err}`)
@@ -49,6 +51,14 @@ const Sales = () => {
     getData()
 
   }, [])
+
+  if (!sales || !Array.isArray(sales) || sales.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>No items have been added for sale.</p>
+      </div>
+    );
+  }
 
 
   return (

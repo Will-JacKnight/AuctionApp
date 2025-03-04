@@ -13,7 +13,6 @@ const OrderTable = ({ data }) => {
     minute: "2-digit"
   });
 
-  // Early return if data is null, undefined, or empty
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <div className="empty-state">
@@ -36,7 +35,9 @@ const OrderTable = ({ data }) => {
   });
 
   return (
-    <div className="table-container">
+    <>
+      <h3 className="text-lg font-semibold mb-2">Your Bids</h3>
+      <div className="table-container">
       <table className="order-table">
         <thead>
           <tr>
@@ -79,6 +80,8 @@ const OrderTable = ({ data }) => {
         </tbody>
       </table>
     </div>
+    </>
+    
   );
 };
 
