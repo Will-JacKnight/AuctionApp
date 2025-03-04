@@ -11,6 +11,29 @@ const API_URL =
     ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
+  const tagIcons = {
+    Electronics: "🔌",
+    Books: "📚",
+    Clothing: "👗",
+    HomeDecor: "🏠",
+    Toys: "🧸",
+    Furniture: "🛋️",
+    Stationery: "📝",
+    Jewelry: "💍",
+    Art: "🎨",
+    Vehicles: "🚗",
+    Sports: "⚽",
+    MusicalInstruments: "🎸",
+    Antiques: "🏺",
+    Collectibles: "🃏",
+    Kitchenware: "🍽️",
+    Tools: "🔧",
+    Outdoors: "🏕️",
+    PetSupplies: "🐾",
+    Gaming: "🎮",
+    OfficeSupplies: "📎"
+  };
+
 function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [data, setData] = useState([])
@@ -92,6 +115,17 @@ function LandingPage() {
                 <span className="search-icon">🔍</span>
               </button>
         </form>
+      </div>
+
+      <div className="tag-search-container">
+        <div className="tag-search">
+          {Object.keys(tagIcons).map((tag, index) => (
+            <div className="tag-item" key={index}>
+              <span className="tag-icon">{tagIcons[tag]}</span>
+              <span className="tag-name">{tag}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="content-section">
