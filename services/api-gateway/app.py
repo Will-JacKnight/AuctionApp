@@ -116,8 +116,12 @@ def sell():
 
 @app.route('/dashboard_bid', methods=['GET'])
 def bid():
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
 
-    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid")
+    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid", headers=headers)
     return jsonify(response.json()), response.status_code
 
 # HTTP route to handle bid updates from the backend

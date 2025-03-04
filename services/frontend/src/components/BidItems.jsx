@@ -17,10 +17,9 @@ const Biddings = () => {
   useEffect(() => {
     async function getData() {
         try {
-          // const response = await fetch(("/api-gateway/display_mainPage", {
           const response = await fetch(`${API_URL}/dashboard_bid`, {
             method: "GET",
-            // headers: { "Content-Type": "application/json" },
+            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}`, },
             })
 
             if (!response.ok) {

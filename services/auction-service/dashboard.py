@@ -31,15 +31,15 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 @dashboard.route('/dashboard_sell', methods=['GET'])
 @jwt_required()
 def dashboard_sell():
-    print("Request received at /dashboard_sell")
-    sys.stdout.flush()  # Ensures logs are immediately written
+    # print("Request received at /dashboard_sell")
+    # sys.stdout.flush()  # Ensures logs are immediately written
 
-    # Print all request headers
-    print("Request Headers:", dict(request.headers))
-    sys.stdout.flush()
+    # # Print all request headers
+    # print("Request Headers:", dict(request.headers))
+    # sys.stdout.flush()
 
-    token = request.headers.get("Authorization", "").replace("Bearer ", "")
-    print("Received JWT:", f"'{token}'")  # Add quotes to detect if it's an empty string
+    # token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    # print("Received JWT:", f"'{token}'")  # Add quotes to detect if it's an empty string
 
     seller_id = get_jwt_identity()  # Extract user data from JWT
     # print("printing the user ", user)
@@ -97,10 +97,13 @@ def dashboard_sell():
 
 
 @dashboard.route('/dashboard_bid', methods=['GET'])
+@jwt_required()
 def dashboard_bid():
     # data = request.json
     # seller_id = data.get('seller_id')
+    
     seller_id = "b7f65d95-7589-4dca-a389-5e293bd648e4"
+    seller_id = get_jwt_identity()  # Extract user data from JWT
 
     # if not seller_id:
     #     return jsonify({'error': 'seller_id is required'}), 400
