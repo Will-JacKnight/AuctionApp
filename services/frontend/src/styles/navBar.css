@@ -21,6 +21,8 @@
     list-style: none;
     display: flex;
     gap: 15px;
+    padding-right: 75px;
+
 }
   
 .navbar li {
@@ -56,4 +58,12 @@
 
 .navbar a:hover {
     color: #f8d210;
+}
+
+.logout-icon {
+    position: absolute;
+    width: 50px;
+    cursor: pointer;
+    /* border-radius: 100%; */
+    right: 50px;
 }
