@@ -24,7 +24,7 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 jwt = JWTManager(app)
 
 socketio.init_app(app, cors_allowed_origins="*")
