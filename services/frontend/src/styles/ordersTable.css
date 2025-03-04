@@ -1,68 +1,176 @@
 /* Container Styling */
 .table-container {
-    width: 100%;
-    margin: 40px auto;
-    overflow-x: auto;
-  }
-  
-  /* Table Styling */
-  .order-table {
-    border-collapse: collapse;
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
-  /* Table Headers */
-  .order-table thead {
-    background-color: #333;
-    color: white;
-  }
-  
-  .order-table th {
-    padding: 12px;
-    text-align: left;
-  }
-  
-  /* Table Rows */
-  .order-table tr {
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s ease-in-out;
-  }
+  width: 100%;
+  margin: 20px auto;
+  overflow-x: auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
-  .group-even {
-    background-color: whitesmoke;
-  }
-  .group-odd {
-    background-color: #DEDEDE;
-  }
-  
-  .order-table td {
-    padding: 12px;
-    color: #333;
-  }
+/* Table Styling */
+.order-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
 
+/* Table Headers */
+.order-table thead {
+  background-color: #1a237e;
+  color: white;
+}
 
+.order-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
+/* Table Rows */
+.order-table tr {
+  transition: all 0.3s ease;
+}
+
+.order-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.order-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.group-even {
+  background-color: #f8f9fa;
+}
+
+.group-odd {
+  background-color: white;
+}
+
+.order-table td {
+  padding: 16px;
+  color: #424242;
+  font-size: 0.95rem;
+}
+
+/* Status Styling */
 .bid-status-green {
-    color: green;
+  color: #2e7d32;
+  font-weight: 600;
+  padding: 4px 12px;
+  background-color: #e8f5e9;
+  border-radius: 16px;
+  font-size: 0.9rem;
 }
 
 .bid-status-red {
-  color: red;
+  color: #d32f2f;
+  font-weight: 600;
+  padding: 4px 12px;
+  background-color: #ffebee;
+  border-radius: 16px;
+  font-size: 0.9rem;
 }
 
+.bid-status-yellow {
+  color: #f57c00;
+  font-weight: 600;
+  padding: 4px 12px;
+  background-color: #fff3e0;
+  border-radius: 16px;
+  font-size: 0.9rem;
+}
+
+/* Hover and Highlight Effects */
 .order-table tbody tr:hover {
-  background-color: #d0e2ff;
+  background-color: #f5f5f5;
   cursor: pointer;
 }
 
 .highlight-row {
-  background-color: #ffeb99 !important;
-  font-weight: bold;
+  background-color: #fff3e0 !important;
 }
 
-.bid-status-yellow {
-  color: red; 
-  font-weight: bold;
+/* Empty State */
+.order-table tbody tr:empty {
+  display: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .table-container {
+    margin: 10px 0;
+  }
+
+  .order-table th,
+  .order-table td {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .bid-status-green,
+  .bid-status-red,
+  .bid-status-yellow {
+    padding: 3px 8px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Item Cell Styling */
+.item-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-name {
+  font-weight: 500;
+  color: #1a237e;
+}
+
+.winning-badge {
+  background-color: #fff3e0;
+  color: #f57c00;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Error State */
+.error-state {
+  text-align: center;
+  padding: 40px;
+  background-color: #ffebee;
+  border-radius: 12px;
+  color: #d32f2f;
+  font-size: 1.1rem;
+  font-weight: 500;
 }

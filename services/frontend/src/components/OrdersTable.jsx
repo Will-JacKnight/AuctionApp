@@ -13,12 +13,20 @@ const OrderTable = ({ data }) => {
     minute: "2-digit"
   });
 
-  if (!data || data.length === 0) {
-    return <p>No items have been bid.</p>;
+  // Early return if data is null, undefined, or empty
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>No items have been bid.</p>
+      </div>
+    );
   }
 
+  // Filter out any null or invalid items
+  const validData = data.filter(item => item && typeof item === 'object');
+
   // Sort items: first by name (A-Z), then by created_at (latest first)
-  const sortedData = [...data].sort((a, b) => {
+  const sortedData = [...validData].sort((a, b) => {
     // First, sort alphabetically by item_name
     if (a.item_name < b.item_name) return -1;
     if (a.item_name > b.item_name) return 1;
@@ -32,7 +40,7 @@ const OrderTable = ({ data }) => {
       <table className="order-table">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Item Name</th>
             <th>Bid Amount</th>
             <th>Time</th>
             <th>Status</th>
@@ -40,22 +48,29 @@ const OrderTable = ({ data }) => {
         </thead>
         <tbody>
           {sortedData.map((order, index) => {
-            if (order?.item_name !== lastName) {
+            if (!order?.item_name) return null;
+            
+            if (order.item_name !== lastName) {
               groupNum++;
-              lastName = order?.item_name;
+              lastName = order.item_name;
             }
 
             // Determine row highlight condition: If expired and the bid is the highest
-            const isWinningExpiredBid = order?.status === "expired" && order?.bid_amount === order?.max_bid;
+            const isWinningExpiredBid = order.status === "expired" && order.bid_amount === order.max_bid;
 
             return (
               <tr key={index} className={`${groupNum % 2 === 0 ? "group-even" : "group-odd"} ${isWinningExpiredBid ? "highlight-row" : ""}`}>
-                <td>{order?.item_name}</td>
-                <td>£{order?.bid_amount}</td>
-                <td>{order?.created_at && formatter.format(new Date(order.created_at))}</td>
                 <td>
-                  <span className={`${order?.status === "active" ? "bid-status-green" : isWinningExpiredBid ? "bid-status-yellow" : "bid-status-red"}`}>
-                    {order?.status === "active" ? "Active" : isWinningExpiredBid ? "Win" : "Sold"}
+                  <div className="item-cell">
+                    <span className="item-name">{order.item_name}</span>
+                    {isWinningExpiredBid && <span className="winning-badge">Winning Bid</span>}
+                  </div>
+                </td>
+                <td>£{order.bid_amount?.toLocaleString() || '0'}</td>
+                <td>{order.created_at ? formatter.format(new Date(order.created_at)) : 'N/A'}</td>
+                <td>
+                  <span className={`${order.status === "active" ? "bid-status-green" : isWinningExpiredBid ? "bid-status-yellow" : "bid-status-red"}`}>
+                    {order.status === "active" ? "Active" : isWinningExpiredBid ? "Won" : "Sold"}
                   </span>
                 </td>
               </tr>
