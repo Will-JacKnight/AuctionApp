@@ -96,7 +96,7 @@ def serach():
 @app.route('/search_byTag', methods=['POST'])
 def serach_byTag():
     """ Forward login request to User Service """
-    response = requests.post(f"{AUCTION_SERVICE_URL}/search", json=request.json)
+    response = requests.post(f"{AUCTION_SERVICE_URL}/search_byTag", json=request.json)
     return jsonify(response.json()), response.status_code
 
 
