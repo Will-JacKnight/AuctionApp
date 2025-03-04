@@ -81,7 +81,6 @@ function LandingPage() {
         <p className="search-subtitle">Discover unique items at amazing prices</p>
         
         <form onSubmit={handleSearch} className="search-form">
-          <div className="search-input-container">
             <input
               type="text"
               placeholder="Search for items..."
@@ -92,7 +91,6 @@ function LandingPage() {
             <button type="submit" className="search-button">
               <span className="search-icon">🔍</span>
             </button>
-          </div>
         </form>
       </div>
 
