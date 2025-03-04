@@ -25,23 +25,24 @@ class TestMainPageAPI(unittest.TestCase):
         ]
 
         # Simulate a POST request
-        payload = {"keyword": "Test"}
+        payload = {"keyword": "bear"}
         response = self.client.post('/search', json=payload)
 
         # Assert response
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
         print("Mocked data:", data)
-        self.assertEqual(len(data), 2)  # Should return only mocked data
+        self.assertEqual(len(data), 1)  # Should return only mocked data
+        self.assertEqual(data[0]["name"], "Collegedropout bear")  # Check if the name matches the mocked data
 
     @patch('mainPage.supabase')  # Patch where Flask is actually using supabase
     def test_display_item(self, mock_supabase):  # Pass the mock as an argument
         """Test the /display_mainPage route."""
         # Set up the mock data for Supabase
         mock_supabase.table.return_value.select.return_value.execute.return_value.data = [
-            {"id": 1, "item_name": "Item 1", "price": 100, "end_date": "2025-03-10", "end_time": "12:00:00"},
-            {"id": 2, "item_name": "Item 2", "price": 200, "end_date": "2025-03-11", "end_time": "15:30:00"},
-            {"id": 3, "item_name": "Item 3", "price": 300, "end_date": "2025-03-12", "end_time": "18:45:00"},
+            {"id": 1, "name": "Item 1", "starting_price": 100, "end_date": "2025-03-10", "end_time": "12:00", "max_bid": 150, "remaining_days": 1, "image_url": "http://someexample1.com"},
+            {"id": 2, "name": "Item 2", "starting_price": 200, "end_date": "2025-03-11", "end_time": "15:30", "max_bid": 250, "remaining_days": 2, "image_url": "http://someexample2.com"},
+            {"id": 3, "name": "Item 3", "starting_price": 300, "end_date": "2025-03-12", "end_time": "18:45", "max_bid": 350, "remaining_days": 0, "image_url": "http://someexample3.com"}
         ]
 
         # Simulate a GET request to the display API
