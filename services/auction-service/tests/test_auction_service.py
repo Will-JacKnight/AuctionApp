@@ -39,9 +39,9 @@ class TestMainPageAPI(unittest.TestCase):
         """Test the /display_mainPage route."""
         # Set up the mock data for Supabase
         mock_supabase.table.return_value.select.return_value.execute.return_value.data = [
-            {"id": 1, "item_name": "Item 1", "price": 100},
-            {"id": 2, "item_name": "Item 2", "price": 200},
-            {"id": 3, "item_name": "Item 3", "price": 300},
+            {"id": 1, "item_name": "Item 1", "price": 100, "end_date": "2025-03-10", "end_time": "12:00:00"},
+            {"id": 2, "item_name": "Item 2", "price": 200, "end_date": "2025-03-11", "end_time": "15:30:00"},
+            {"id": 3, "item_name": "Item 3", "price": 300, "end_date": "2025-03-12", "end_time": "18:45:00"},
         ]
 
         # Simulate a GET request to the display API

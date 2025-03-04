@@ -21,7 +21,6 @@ function LandingPage()  {
   useEffect(() => {
     async function getData() {
         try {
-          // const response = await fetch(("/api-gateway/display_mainPage", {
           const response = await fetch(`${API_URL}/display_mainPage`, {
             method: "GET",
             // headers: { "Content-Type": "application/json" },
@@ -30,7 +29,6 @@ function LandingPage()  {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
 
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {

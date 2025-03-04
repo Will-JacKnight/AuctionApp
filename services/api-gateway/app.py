@@ -124,7 +124,7 @@ def bid():
 @app.route('/bid_update', methods=['POST'])
 def handle_bid_update_request():
     try:
-        
+
         print(f"Received bid update request:", request.headers)
         print("Received request data:", request.data)
 
@@ -132,14 +132,14 @@ def handle_bid_update_request():
         if not request.is_json:
             print("Request is not JSON")
             return jsonify({"error": "Request must be JSON"}), 400
-        
+
         data = request.json
         print(f"Received bid update request: {data}")
          # Validate required fields
         if not data or "auction_id" not in data or "max_bid" not in data:
             print("Invalid data format")
             return jsonify({"error": "Invalid data format"}), 400
-        
+
 
         # Forward the bid update to WebSocket clients
         socketio.emit('bid_update', data, to=None)
@@ -147,7 +147,7 @@ def handle_bid_update_request():
     except Exception as e:
         print(f"Error handling bid update request: {e}")
         return jsonify({"error": str(e)}), 500
-    
+
 @socketio.on("connect")
 def handle_connect():
     print("Client connected to WebSocket")
@@ -164,4 +164,5 @@ def handle_bid_update(data):
     emit("bid_update", data, broadcast=True)
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=4000, debug=True, allow_unsafe_werkzeug=True)
+    port = int(os.environ.get("PORT", 4000))
+    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
