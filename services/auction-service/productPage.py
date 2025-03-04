@@ -32,7 +32,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-current_auction_id = None # Track the auction ID being monitored
+current_auction_id = None # Track the auction ID being monitoreda
 socketio = SocketIO() # Initialize the Websocket server
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False # Ensure to fetch data first before pulling bids
@@ -40,6 +40,8 @@ polling_thread_started = False # Ensure to fetch data first before pulling bids
 # Get the proudction information
 @productPage.route('/product/<auction_id>', methods=['GET'])
 def get_product_by_id(auction_id):
+    global current_auction_id, polling_thread_started, latest_max_bid
+    current_auction_id = auction_id # Assign the current auction id
     print(f"📩 Received request for auction_id: {auction_id}")
 
     if not auction_id:
@@ -68,6 +70,10 @@ def get_product_by_id(auction_id):
         max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
         item["max_bid"] = max_bid # Add the max bidding price to the item
 
+        if not polling_thread_started:
+            polling_thread_started = True
+            threading.Thread(target=poll_for_new_bids, daemon=True).start()
+
         return jsonify(item), 200
     except Exception as e:
         print(f"🔥 Error retrieving auction: {e}")
@@ -76,7 +82,6 @@ def get_product_by_id(auction_id):
 # Place the bid
 @productPage.route('/place_bid', methods=['POST'])
 def place_bid():
-    global current_auction_id
     # Get the auctionId and bidPrice from frontend
     data = request.json
     print("Received bid request:", data)
@@ -99,9 +104,6 @@ def place_bid():
 
         # Insert the new bid into supabase
         response = supabase.table('bids').insert(new_bid).execute()
-
-        if current_auction_id is None:
-            current_auction_id = auction_id # Assign the current auction id
 
         # Emit WebSocket (in API gateway) event when a new bid is placed
         requests.post(f"{API_GATEWAY_URL}/bid_update", json={
