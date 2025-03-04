@@ -67,9 +67,7 @@ const Biddings = () => {
 
   return (
     <div>
-      
       {biddings && <OrderTable data={biddings}/>}
-
     </div>
   );
 };

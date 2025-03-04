@@ -32,20 +32,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 24px;
+  padding: 16px 32px;
   border: none;
-  border-radius: 8px;
-  background-color: #f5f5f5;
-  color: #666;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 12px;
+  background-color: #1a237e;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .tab-button:hover {
-  background-color: #e0e0e0;
-  transform: translateY(-1px);
+  background-color: #0d47a1;
+  transform: translateY(-2px);
 }
 
 .tab-button.active {
@@ -67,26 +67,31 @@
 /* Listing styles */
 .listing {
   display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   width: 100%;
-  margin: 20px 0;
+  max-width: 600px;
+  margin: 20px auto;
   padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  background-color: #f4f7fc;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid #e0e0e0;
 }
 
 .listing:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  background-color: white;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border: none;
 }
 
 .listing img {
-  width: 200px;
-  height: 200px;
+  width: 40%;
+  height: auto;
+  max-height: 250px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-right: 20px;
 }
 
@@ -94,14 +99,16 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  position: relative;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  height: 100%;
 }
 
 .item-name {
+  margin-bottom: auto;
   font-size: 1.5rem;
   color: #1a237e;
-  margin-bottom: 10px;
   font-weight: 600;
 }
 
@@ -109,6 +116,10 @@
   color: #666;
   margin: 10px 0;
   line-height: 1.5;
+}
+
+.highest-bid, .time-left {
+  margin-top: 10px;
 }
 
 .highest-bid {
@@ -119,7 +130,9 @@
 
 .time-left {
   color: #f57c00;
-  font-weight: 500;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 10px;
 }
 
 .sold-text {
@@ -249,13 +262,12 @@
     font-family: "Inter", sans-serif;
     background-color: #DEDEDE;
     border-radius: 25px;
-    transition: transform 1s, background-color 1s;
     height: 250px;
   }
   
 .listing:hover {
-    transform: translate(50px);
-    background-color: rgb(195, 192, 192);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    background-color: white;
 }
   
   .information {
