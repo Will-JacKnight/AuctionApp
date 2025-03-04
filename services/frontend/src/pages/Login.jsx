@@ -35,11 +35,10 @@ function Login() {
 
       const data = await response.json();
       if (response.ok) {
-          console.log(data.access_token)
           sessionStorage.setItem("token", data.access_token)
-          alert("Login Successfull!");
-          console.log(data.access_token)
-          navigate("/dashboard"); // Redirect to login page
+          const lastVisited = sessionStorage.getItem("lastVisited") || "/dashboard"
+          sessionStorage.removeItem("lastVisited")
+          navigate(lastVisited)
       } else {
           if(response.status == 401 || response.status == 404) {
               setError("Bad credentials. Please try again")

@@ -23,7 +23,7 @@ function NavBar() {
           <li><NavLink to="/" className={({ isActive }) => (isActive ? "active-link" : "")}>Home</NavLink></li>
           <li><NavLink to="/listing" className={({ isActive }) => (isActive ? "active-link" : "")}>Sell</NavLink></li>
           <li><NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active-link" : "")}>Dashboard</NavLink></li>
-          {!logoutOff && <img src="/images/logout.png" className='logout-icon' onClick={handleLogout}/>}
+          {sessionStorage.getItem("token") && <img src="/images/logout.png" className='logout-icon' onClick={handleLogout}/>}
           
         </ul>
       </nav>

@@ -71,6 +71,7 @@ function AuctionUpload() {
 
       const response = await fetch(`${API_URL}/listing`, {
         method: "POST",
+        headers: {Authorization: `Bearer ${sessionStorage.getItem("token")}`, },
         body: formDataToSend
       });
 

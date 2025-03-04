@@ -69,8 +69,12 @@ def listing():
         form_data = {key: request.form[key] for key in request.form}
  
         files = {"productImage": (file.filename, file.stream, file.content_type)}
- 
-        response = requests.post(f"{AUCTION_SERVICE_URL}/listing", files=files, data=form_data)
+        
+        headers = {
+        "Authorization": request.headers.get("Authorization")  
+        }
+
+        response = requests.post(f"{AUCTION_SERVICE_URL}/listing", files=files, data=form_data, headers=headers)
         return jsonify(response.json()), response.status_code
  
     except Exception as e:
