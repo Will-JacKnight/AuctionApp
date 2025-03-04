@@ -81,16 +81,16 @@ function LandingPage() {
         <p className="search-subtitle">Discover unique items at amazing prices</p>
         
         <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              placeholder="Search for items..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            <button type="submit" className="search-button">
-              <span className="search-icon">🔍</span>
-            </button>
+              <input
+                type="text"
+                placeholder="Search for items..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              <button type="submit" className="search-button">
+                <span className="search-icon">🔍</span>
+              </button>
         </form>
       </div>
 

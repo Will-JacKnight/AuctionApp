@@ -6,7 +6,7 @@ body {
     background-color: #f4f4f9;
   }
   
-  .search-container {
+  /* .search-container {
     max-width: 1000px;
     margin: 50px auto;
     text-align: center;
@@ -14,17 +14,18 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-  }
+  } */
   
   .search-form {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
+    justify-content: space-around;
     gap: 8px;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    
   }
   
   .search-input {
@@ -56,7 +57,7 @@ body {
   
   .search-button {
     width: 100px;
-    height: 40px;
+    height: 38px;
     background: #1a237e;
     border: none;
     color: white;
@@ -64,6 +65,12 @@ body {
     transition: background-color 0.3s ease, transform 0.2s ease;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    bottom: 3.5px;
+    margin-left: -15px;
   }
   
   .search-button:hover {
