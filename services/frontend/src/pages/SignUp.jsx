@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import "../styles/index.css"; // Import global styles
 import "./../styles/authentication.css"
+import NavBar from "../components/NavBar";
 // import { getApiUrl } from '../config';
 
   const API_URL =
@@ -57,7 +58,9 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="auth-form form">
+        <>
+            <NavBar />
+            <div className="auth-form form">
             <h2>Sign Up</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSignup}>
@@ -73,6 +76,8 @@ const SignupPage = () => {
             </form>
             <p>Already have an account? <a href="/login">Log in</a></p>
         </div>
+        </>
+       
     );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./../styles/authentication.css"
+import NavBar from '../components/NavBar';
 // import { getApiUrl } from '../config';
 
   const API_URL =
@@ -38,7 +39,7 @@ function Login() {
           sessionStorage.setItem("token", data.access_token)
           alert("Login Successfull!");
           console.log(data.access_token)
-          navigate("/"); // Redirect to login page
+          navigate("/dashboard"); // Redirect to login page
       } else {
           if(response.status == 401 || response.status == 404) {
               setError("Bad credentials. Please try again")
@@ -57,7 +58,9 @@ function Login() {
   };
  
   return (
-    <div className="auth-form form">
+    <>
+      <NavBar />
+      <div className="auth-form form">
       <h2>Login</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleLogin}>
@@ -81,6 +84,8 @@ function Login() {
       </form>
       <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     </div>
+    </>
+    
   );
 }
  
