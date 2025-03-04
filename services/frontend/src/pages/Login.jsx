@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./../styles/authentication.css"
-import { getApiUrl } from '../config';
+// import { getApiUrl } from '../config';
+
+  const API_URL =
+  import.meta.env.VITE_RUN_MODE === "docker"
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+    : import.meta.env.VITE_RUN_MODE === "heroku"
+    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,7 +26,7 @@ function Login() {
     setLoading(true);
  
     try {
-      const response = await fetch(`${getApiUrl()}/login`, {
+      const response = await fetch(`${API_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
