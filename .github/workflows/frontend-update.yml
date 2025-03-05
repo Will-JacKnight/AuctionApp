@@ -1,4 +1,4 @@
-name: Frontend Service Sole Deployment
+name: Only Build Frontend When Updated
 
 on:
   push:
@@ -19,7 +19,7 @@ env:
 
 jobs:
   build-and-test-image:
-    name: Build and Test Image
+    name: Run Frontend Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

@@ -19,7 +19,7 @@ env:
 
 jobs:
   build-and-test-image:
-    name: Run Test
+    name: Run User Service Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
