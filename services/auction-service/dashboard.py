@@ -33,23 +33,25 @@ def dashboard_sell():
     try:
         # Raw SQL function definition in Supabase SQL Function Editor
         """
-        CREATE OR REPLACE FUNCTION getting_seller_auctions(seller_id_param UUID)
+        CREATE OR REPLACE FUNCTION getting_seller_auction(seller_id_param UUID)
         RETURNS TABLE (
-            id UUID,
+            id UUID,  -- Changed from auction_id to id
             name TEXT,
             description TEXT,
             image_url TEXT,
             status TEXT,
+            starting_price NUMERIC,
             max_bid NUMERIC
         ) AS $$
         BEGIN
             RETURN QUERY
             SELECT 
-                a.id,
+                a.id,  -- Ensure this matches the expected "id"
                 a.name,
                 a.description,
                 a.image_url,
                 a.status,
+                a.starting_price,
                 (SELECT MAX(b.bid_amount) FROM bids b WHERE b.auction_id = a.id) AS max_bid
             FROM auctions a
             WHERE a.seller_id = seller_id_param;
@@ -65,7 +67,7 @@ def dashboard_sell():
             return jsonify({'error': 'Seller not found'}), 404
 
         # Use `rpc()` to call the SQL function stored in Supabase
-        items_response = supabase.rpc("getting_seller_auctions", {"seller_id_param": seller_id}).execute()
+        items_response = supabase.rpc("getting_seller_auction", {"seller_id_param": seller_id}).execute()
         items = items_response.data if items_response.data else []
         print(items)
 
