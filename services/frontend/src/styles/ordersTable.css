@@ -103,7 +103,7 @@
 /* Hover and Highlight Effects */
 .order-table tbody tr:hover {
   background-color: #e3f2fd;
-  cursor: pointer;
+  
 }
 
 .highlight-row {

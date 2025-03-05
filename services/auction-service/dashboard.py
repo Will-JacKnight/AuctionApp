@@ -121,7 +121,8 @@ def dashboard_bid():
                 "created_at": bid["created_at"],
                 "status": bid["status"],
                 "item_name": auction_name,
-                "max_bid": bid["max_bid"]
+                "max_bid": bid["max_bid"],
+                "product_id": bid["product_id"]
             })
 
         return jsonify([{name: history} for name, history in auction_bids.items()]), 200
