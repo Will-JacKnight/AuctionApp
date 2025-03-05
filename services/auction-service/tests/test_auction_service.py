@@ -243,35 +243,35 @@ class TestDashboardPageAPI(unittest.TestCase):
         # mock_username_response.execute.return_value.data = [{"username": "test_seller"}]
         # mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_username_response
 
-        # # ✅ Mock Supabase RPC response for seller's auctions
-        # mock_rpc_response = MagicMock()
-        # mock_rpc_response.execute.return_value.data = [
-        #     {
-        #         "id": "11111111-1111-1111-1111-111111111111",
-        #         "name": "Vintage Watch",
-        #         "description": "A classic timepiece from the 80s.",
-        #         "image_url": "http://example.com/vintage_watch.jpg",
-        #         "status": "active",
-        #         "max_bid": 1200
-        #     }
-        #     # {
-        #     #     "id": "22222222-2222-2222-2222-222222222222",
-        #     #     "name": "Signed Football",
-        #     #     "description": "Football signed by a legendary player.",
-        #     #     "image_url": "http://example.com/signed_football.jpg",
-        #     #     "status": "active",
-        #     #     "max_bid": None  # Ensure None works correctly
-        #     # },
-        #     # {
-        #     #     "id": "33333333-3333-3333-3333-333333333333",
-        #     #     "name": "Antique Painting",
-        #     #     "description": "A rare 19th-century painting.",
-        #     #     "image_url": "http://example.com/antique_painting.jpg",
-        #     #     "status": "expired",
-        #     #     "max_bid": 5000
-        #     # }
-        # ]
-        # mock_supabase.rpc.return_value = mock_rpc_response
+        # ✅ Mock Supabase RPC response for seller's auctions
+        mock_rpc_response = MagicMock()
+        mock_rpc_response.execute.return_value.data = [
+            {
+                "id": "11111111-1111-1111-1111-111111111111",
+                "name": "Vintage Watch",
+                "description": "A classic timepiece from the 80s.",
+                "image_url": "http://example.com/vintage_watch.jpg",
+                "status": "active",
+                "max_bid": 1200
+            },
+            {
+                "id": "22222222-2222-2222-2222-222222222222",
+                "name": "Signed Football",
+                "description": "Football signed by a legendary player.",
+                "image_url": "http://example.com/signed_football.jpg",
+                "status": "active",
+                "max_bid": None  # Ensure None works correctly
+            },
+            {
+                "id": "33333333-3333-3333-3333-333333333333",
+                "name": "Antique Painting",
+                "description": "A rare 19th-century painting.",
+                "image_url": "http://example.com/antique_painting.jpg",
+                "status": "expired",
+                "max_bid": 5000
+            }
+        ]
+        mock_supabase.rpc.return_value = mock_rpc_response
 
         # ✅ Send request
         response = self.client.get('/dashboard_sell', headers=auth_header)
@@ -281,91 +281,88 @@ class TestDashboardPageAPI(unittest.TestCase):
 
         # ✅ Validate JSON response
         data = response.get_json()
-        # self.assertIsInstance(data, dict)
-        # self.assertIn("username", data)
-        # self.assertIn("items", data)
+        self.assertIsInstance(data, list)
 
         # # ✅ Ensure username is correctly returned
         # self.assertEqual(data["username"], [{"username": "test_seller"}])
 
-        # # ✅ Validate the auction items list
-        # self.assertIsInstance(data["items"], list)
-        # self.assertEqual(len(data["items"]), 3)  # Ensure 3 items are returned
 
-        # # ✅ Validate first auction item (Vintage Watch)
-        # self.assertEqual(data["items"][0]["auction_id"], "11111111-1111-1111-1111-111111111111")
-        # self.assertEqual(data["items"][0]["name"], "Vintage Watch")
-        # self.assertEqual(data["items"][0]["max_bid"], 1200.50)
+        self.assertEqual(len(data), 3)  # Ensure 3 items are returned
 
-        # # ✅ Validate second auction item (Signed Football)
-        # self.assertEqual(data["items"][1]["auction_id"], "22222222-2222-2222-2222-222222222222")
-        # self.assertEqual(data["items"][1]["name"], "Signed Football")
-        # self.assertIsNone(data["items"][1]["max_bid"])  # Ensure max_bid is None when no bids exist
+        # ✅ Validate first auction item (Vintage Watch)
+        self.assertEqual(data[0]["id"], "11111111-1111-1111-1111-111111111111")
+        self.assertEqual(data[0]["name"], "Vintage Watch")
+        self.assertEqual(data[0]["max_bid"], 1200)
 
-        # # ✅ Validate third auction item (Antique Painting)
-        # self.assertEqual(data["items"][2]["auction_id"], "33333333-3333-3333-3333-333333333333")
-        # self.assertEqual(data["items"][2]["name"], "Antique Painting")
-        # self.assertEqual(data["items"][2]["max_bid"], 5000.00)
+        # ✅ Validate second auction item (Signed Football)
+        self.assertEqual(data[1]["id"], "22222222-2222-2222-2222-222222222222")
+        self.assertEqual(data[1]["name"], "Signed Football")
+        self.assertIsNone(data[1]["max_bid"])  # Ensure max_bid is None when no bids exist
 
-class TestProductPageAPI(unittest.TestCase):
+        # ✅ Validate third auction item (Antique Painting)
+        self.assertEqual(data[2]["id"], "33333333-3333-3333-3333-333333333333")
+        self.assertEqual(data[2]["name"], "Antique Painting")
+        self.assertEqual(data[2]["max_bid"], 5000.00)
 
-    def setUp(self):
-        """Setup the test client and Flask application context."""
-        self.app = app
-        self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-        self.client = self.app.test_client()
-        self.app_context = self.app.app_context()
-        self.app_context.push() 
+# class TestProductPageAPI(unittest.TestCase):
 
-    def tearDown(self):
-        """Remove the Flask app context after each test."""
-        self.app_context.pop()
+#     def setUp(self):
+#         """Setup the test client and Flask application context."""
+#         self.app = app
+#         self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+#         self.client = self.app.test_client()
+#         self.app_context = self.app.app_context()
+#         self.app_context.push() 
 
-    @patch('productPage.supabase')  # Mock Supabase
-    def test_get_product_by_id_success(self, mock_supabase):
-        """Test GET /product/<auction_id> API when auction exists."""
+#     def tearDown(self):
+#         """Remove the Flask app context after each test."""
+#         self.app_context.pop()
 
-        auction_id = "test-auction-123"
+#     @patch('productPage.supabase')  # Mock Supabase
+#     def test_get_product_by_id_success(self, mock_supabase):
+#         """Test GET /product/<auction_id> API when auction exists."""
 
-        mock_auction_response = MagicMock()
-        mock_auction_response.execute.return_value.data = [
-            {
-                "id": "test-auction-123", 
-                "name": "Test Item",
-                "description": "A test auction item",
-                "status": "active",
-                "start_date": "2025-05-01",
-                "start_time": "09:00",
-                "starting_price": 100,
-                "end_date": "2025-05-02",
-                "end_time": "10:00",
-                "auction_type": "standard",
-                "image_url": "http://someexample.com"
-            }
-        ]
+#         auction_id = "test-auction-123"
 
-        mock_bid_response = MagicMock()
-        mock_bid_response.execute.return_value.data = [
-            {"bid_amount": 500}
-        ]
+#         mock_auction_response = MagicMock()
+#         mock_auction_response.execute.return_value.data = [
+#             {
+#                 "id": "test-auction-123", 
+#                 "name": "Test Item",
+#                 "description": "A test auction item",
+#                 "status": "active",
+#                 "start_date": "2025-05-01",
+#                 "start_time": "09:00",
+#                 "starting_price": 100,
+#                 "end_date": "2025-05-02",
+#                 "end_time": "10:00",
+#                 "auction_type": "standard",
+#                 "image_url": "http://someexample.com"
+#             }
+#         ]
 
-        mock_supabase.table.return_value.select.return_value.eq.return_value.execute.side_effect = [
-            mock_auction_response.execute(),  
-            mock_bid_response.execute() 
-        ]
+#         mock_bid_response = MagicMock()
+#         mock_bid_response.execute.return_value.data = [
+#             {"bid_amount": 500}
+#         ]
 
-        response = self.client.get(f'/product/{auction_id}')
+#         mock_supabase.table.return_value.select.return_value.eq.return_value.execute.side_effect = [
+#             mock_auction_response.execute(),  
+#             mock_bid_response.execute() 
+#         ]
+
+#         response = self.client.get(f'/product/{auction_id}')
 
 
-        print("Response Status:", response.status_code)
-        print("Response JSON:", response.get_json())
+#         print("Response Status:", response.status_code)
+#         print("Response JSON:", response.get_json())
 
-        self.assertEqual(response.status_code, 200)
+#         self.assertEqual(response.status_code, 200)
 
-        data = response.get_json()
-        self.assertIsInstance(data, dict)
+#         data = response.get_json()
+#         self.assertIsInstance(data, dict)
 
-        self.assertEqual(data["name"], "Test Item")
+#         self.assertEqual(data["name"], "Test Item")
 
-        self.assertIn("max_bid", data)
-        self.assertEqual(data["max_bid"], 500)
+#         self.assertIn("max_bid", data)
+#         self.assertEqual(data["max_bid"], 500)

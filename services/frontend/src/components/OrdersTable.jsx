@@ -20,7 +20,6 @@ const OrderTable = ({ data }) => {
       </div>
     );
   }
-  console.log(data)
   // Filter out any null or invalid items
   const validData = data.filter(item => item && typeof item === 'object');
 

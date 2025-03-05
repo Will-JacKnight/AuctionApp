@@ -36,14 +36,11 @@ const Sales = () => {
               throw new Error("Received non-JSON response. Check API response.");
             }
             const data = await response.json()
-            console.log(data)
             if(data != "No items found for this seller") {
               const extracted_data = data;
-              console.log(extracted_data);
               setSales(extracted_data)
 
             }
-            console.log(data)
         }
         catch (err) {
             console.log(`Following error occured when fetching data: ${err}`)
