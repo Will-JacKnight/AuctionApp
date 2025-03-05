@@ -75,8 +75,7 @@ const Sales = () => {
                     {sale.name}
                   </h3>
                   <h5 className="highest-bid">Highest Bid: £
-                    {/* {sale.max_bid} */}
-                    500
+                    {sale.max_bid}
                     </h5>
                   <h6 className="time-left">Time Left: 12 hrs</h6>
                   <p className="item-description">{sale.description.slice(0, 150)}</p>
