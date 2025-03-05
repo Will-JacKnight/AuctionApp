@@ -138,9 +138,9 @@ function Product() {
             <span className="price-date-info-text">Current Price (£)</span>
             <span className="current-price-placeholder">{auctionData.max_bid?.toLocaleString() || auctionData.starting_price.toLocaleString()}</span>
             <span className="price-date-info-text">Bidding Start</span>
-            <span className="bidding-date-placeholder">{new Date(auctionData.start_date).toLocaleString()}</span>
+            <span className="bidding-date-placeholder">{`${new Date(`${auctionData.start_date}T${auctionData.start_time}`).toLocaleDateString()} ${new Date(`${auctionData.start_date}T${auctionData.start_time}`).toLocaleTimeString()}`}</span>
             <span className="price-date-info-text">Bidding End</span>
-            <span className="bidding-date-placeholder">{new Date(auctionData.end_date).toLocaleString()}</span>
+            <span className="bidding-date-placeholder">{`${new Date(`${auctionData.end_date}T${auctionData.end_time}`).toLocaleDateString()} ${new Date(`${auctionData.end_date}T${auctionData.end_time}`).toLocaleTimeString()}`}</span>
           </div>
 
           <div className="bid-input">
