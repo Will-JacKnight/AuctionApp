@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
-from supabase import create_client, Client
+from supabaseClient import supabase
 import os
 import datetime
 import uuid
@@ -27,11 +27,6 @@ else:  # Default to local
     API_GATEWAY_URL = os.getenv("API_GATEWAY_LOCAL_URL")
 
 productPage = Blueprint("productPage", __name__)
-
-# Supabase Settings
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 current_auction_id = None # Track the auction ID being monitoreda
 socketio = SocketIO() # Initialize the Websocket server
