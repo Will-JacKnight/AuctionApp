@@ -81,7 +81,6 @@ function Product() {
 
     const now = new Date();
     const startTime = new Date(`${auctionData.start_date}T${auctionData.start_time}`);
-    
     if (now < startTime) {
         alert("Bidding has not started yet. Please wait until the auction starts.");
         return;
