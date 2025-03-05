@@ -104,54 +104,57 @@ body {
   .content-section {
     padding: 20px;
   }
-  
-  .tag-search-container {
-    overflow-x: auto;
-    white-space: nowrap;
-    padding: 10px 0;
-    margin: 20px 0;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .tag-search {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .tag-item {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    padding: 10px;
-    background-color: #e0e0e0;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .tag-item:hover {
-    background-color: #d0d0d0;
-  }
-  
-  .tag-icon {
-    width: 40px;
-    height: 40px;
-    transition: transform 0.3s ease;
-    object-fit: cover;
-  }
-  
-  .tag-item:hover .tag-icon {
-    transform: scale(1.1);
-    filter: drop-shadow(2px 4px 6px rgb(219, 219, 219));
-  }
 
-  .tag-name {
-    margin-top: 5px;
-    font-size: 0.9rem;
-    color: #333;
-  }
+  .tag-search-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 10px 0;
+  margin: 10px 0;
+  background-color: transparent;
+  border-radius: 12px;
+}
+
+.tag-search {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Adjust column size and allow wrapping */
+  gap: 10px; /* Increased gap for better spacing */
+  padding: 10px;
+  justify-items: center; /* Center-align items within the grid */
+}
+
+.tag-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px; /* Fixed width for each tag */
+  padding: 10px;
+  background-color: #f9f9f9; /* Softer background color */
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-align: center; /* Centering text and icon */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow to each box */
+}
+.tag-item:hover {
+  background-color: #d0d0d0;
+}
+
+.tag-icon {
+  width: 26px; /* Smaller icon size */
+  height: 26px;
+  margin-bottom: 8px; /* Space between icon and text */
+  transition: transform 0.3s ease;
+  object-fit: contain; /* Ensure the icon stays proportional */
+}
+
+.tag-item:hover .tag-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(2px 4px 6px rgb(219, 219, 219)); /* Slight shadow effect */
+}
+
+.tag-name {
+  font-size: 0.85rem; /* Adjusted font size for better readability */
+  color: #333;
+  text-transform: capitalize; /* Capitalize the first letter of each tag */
+}
