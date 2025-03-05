@@ -1,15 +1,15 @@
-name: Only Build Frontend When Updated
+name: Only Build user-service When Updated
 
 on:
   push:
     branches:
       - deployment-test
     paths:
-      - 'services/frontend/**'
-      - '.github/workflows/frontend-update.yml'
+      - 'services/user-service/**'
+      - '.github/workflows/user-service-update.yml'
 
 env:
-  SERVICE_NAME: frontend
+  SERVICE_NAME: user-service
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run frontend tests
+      - name: Run user-service tests
         run: |
           echo "Running tests for $SERVICE_NAME"
           docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit $SERVICE_NAME
@@ -77,17 +77,17 @@ jobs:
       - name: Tag Image
         run: |
           echo "Tag the image..."
-          docker tag ${SERVICE_NAME} ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+          docker tag ${SERVICE_NAME} ${HEROKU_REGISTRY_PREFIX}/${HEROKU_USER_SERVICE_APP_NAME}/web
 
       - name: Push Image
         run: |
           echo "Push the image..."
-          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_USER_SERVICE_APP_NAME}/web
 
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release web -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+          heroku container:release web -a ${{env.HEROKU_USER_SERVICE_APP_NAME}}
 
       - name: Scale dynos
         run: |
-          heroku ps:scale web=1 -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+          heroku ps:scale web=1 -a ${{env.HEROKU_USER_SERVICE_APP_NAME}}

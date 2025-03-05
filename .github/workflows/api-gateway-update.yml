@@ -1,15 +1,15 @@
-name: Only Build Frontend When Updated
+name: Only Build api-gateway When Updated
 
 on:
   push:
     branches:
       - deployment-test
     paths:
-      - 'services/frontend/**'
-      - '.github/workflows/frontend-update.yml'
+      - 'services/api-gateway/**'
+      - '.github/workflows/api-gateway-update.yml'
 
 env:
-  SERVICE_NAME: frontend
+  SERVICE_NAME: api-gateway
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
   JWT_KEY: ${{secrets.JWT_KEY}}
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run frontend tests
+      - name: Run api-gateway tests
         run: |
           echo "Running tests for $SERVICE_NAME"
           docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit $SERVICE_NAME
@@ -77,17 +77,17 @@ jobs:
       - name: Tag Image
         run: |
           echo "Tag the image..."
-          docker tag ${SERVICE_NAME} ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+          docker tag ${SERVICE_NAME} ${HEROKU_REGISTRY_PREFIX}/${HEROKU_API_GATEWAY_APP_NAME}/web
 
       - name: Push Image
         run: |
           echo "Push the image..."
-          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_API_GATEWAY_APP_NAME}/web
 
       - name: Release pushed images to Heroku
         run: |
-          heroku container:release web -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+          heroku container:release web -a ${{env.HEROKU_API_GATEWAY_APP_NAME}}
 
       - name: Scale dynos
         run: |
-          heroku ps:scale web=1 -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+          heroku ps:scale web=1 -a ${{env.HEROKU_API_GATEWAY_APP_NAME}}
