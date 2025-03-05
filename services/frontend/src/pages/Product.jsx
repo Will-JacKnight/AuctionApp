@@ -30,6 +30,7 @@ function Product() {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log(data)
         setAuctionData(data);
       } catch (err) {
         console.error("Error fetching auction details:", err);
@@ -120,14 +121,18 @@ function Product() {
         <div className="bidding-section">
           <div className="product-details">
             <h2 className="product-name">{auctionData.name}</h2>
-            <p>{auctionData.description}</p>
+            <p className="product-description">{auctionData.description}</p>
           </div>
 
           <div className="price-date-container">
-            <h3>Starting Price: ${Math.round(auctionData.starting_price).toLocaleString()}</h3>
-            <h3 className="bid-price">Current Price: ${auctionData.max_bid?.toLocaleString() || "N/A"}</h3>
-            <p>Bidding Start: {new Date(auctionData.start_date).toLocaleString()}</p>
-            <p>Bidding End: {new Date(auctionData.end_date).toLocaleString()}</p>
+            <span className="price-date-info-text">Starting Price (£)</span>
+            <span className="starting-price-placeholder">{auctionData.starting_price.toLocaleString()}</span>
+            <span className="price-date-info-text">Current Price (£)</span>
+            <span className="current-price-placeholder">{auctionData.max_bid?.toLocaleString() || "N/A"}</span>
+            <span className="price-date-info-text">Bidding Start</span>
+            <span className="bidding-date-placeholder">{new Date(auctionData.start_date).toLocaleString()}</span>
+            <span className="price-date-info-text">Bidding End</span>
+            <span className="bidding-date-placeholder">{new Date(auctionData.end_date).toLocaleString()}</span>
           </div>
 
           <div className="bid-input">
