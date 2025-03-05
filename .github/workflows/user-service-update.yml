@@ -3,7 +3,7 @@ name: User Service Sole Deployment
 on:
   push:
     branches:
-      - deployment-test
+      - main
     paths:
       - 'services/user-service/**'
       - '.github/workflows/user-service-update.yml'

@@ -3,7 +3,7 @@ name: Auction Service Sole Deployment
 on:
   push:
     branches:
-      - deployment-test
+      - main
     paths:
       - 'services/auction-service/**'
       - '.github/workflows/auction-service-update.yml'

@@ -3,7 +3,7 @@ name: Only Build Frontend When Updated
 on:
   push:
     branches:
-      - deployment-test
+      - main
     paths:
       - 'services/frontend/**'
       - '.github/workflows/frontend-update.yml'

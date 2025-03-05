@@ -3,7 +3,7 @@ name: Api Gateway Sole Deployment
 on:
   push:
     branches:
-      - deployment-test
+      - main
     paths:
       - 'services/api-gateway/**'
       - '.github/workflows/api-gateway-update.yml'
