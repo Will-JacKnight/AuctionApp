@@ -8,14 +8,14 @@ from functools import wraps
 from dotenv import load_dotenv
 from flask_cors import CORS
 # Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-load_dotenv(dotenv_path)
+# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+# load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 CORS(app) # Allow cross-origin request between frontend and backend
 
 # Configure JWT settings
-app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")  # Retrieve the secret key from environment variables
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Retrieve the secret key from environment variables
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(hours=24)  # Set token expiration time to 24 hours
 jwt = JWTManager(app)
 

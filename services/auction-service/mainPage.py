@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import sys
 from flask import Flask, request, Blueprint, jsonify
 from supabase_client import supabase # need to modify
 from datetime import datetime, timezone
@@ -10,15 +11,71 @@ from datetime import datetime, timezone
 # Create a Flask Blueprint named "mainPage" for the items displayed on the main page
 mainPage = Blueprint("mainPage", __name__)
 
+# Fetch highest bids in one query (avoiding per-item queries) and update expired items
+def return_items_with_max_bid(items, update_expire = True):
+
+    auction_ids = [item['id'] for item in items]
+    
+    # Raw SQL in Supabase SQL Function Editor
+    """
+        CREATE OR REPLACE FUNCTION get_max_bids(auction_ids UUID[]) 
+        RETURNS TABLE(auction_id UUID, max_bid DECIMAL) AS $$
+        BEGIN
+            RETURN QUERY 
+            SELECT b.auction_id, MAX(b.bid_amount) AS max_bid
+            FROM bids b
+            WHERE b.auction_id = ANY(auction_ids)
+            GROUP BY b.auction_id;
+        END;
+        $$ LANGUAGE plpgsql;
+    """
+
+    # Execute the raw SQL query using Supabase's `rpc` method
+    bid_response = supabase.rpc('get_max_bids', {
+        "auction_ids": auction_ids
+    }).execute()
+
+    # Create a dictionary of auction_id -> max_bid for fast lookup
+    bid_data = {bid['auction_id']: bid['max_bid'] for bid in bid_response.data}
+
+    # Create a list of auction ids to mark as expired
+    current_time = datetime.now(timezone.utc)
+
+    expired_auction_ids = [
+        item['id'] for item in items
+        if datetime.fromisoformat(f"{item['end_date']}T{item['end_time']}Z".replace("Z", "+00:00")) <= current_time
+    ]
+
+    if update_expire and expired_auction_ids:
+        update_expired_response = (
+            supabase.table('auctions')
+            .update({"status": "expired"})
+            .in_('id', expired_auction_ids)
+            .execute()
+        )
+        print(f"Updated {update_expired_response.count} auctions as expired.")
+
+    # Process active auctions
+    active_items = [
+        {
+            **item,
+            "max_bid": bid_data.get(item["id"]),
+            "remaining_days": max(0, int(
+                (datetime.fromisoformat(f"{item['end_date']}T{item['end_time']}Z".replace("Z", "+00:00")) - current_time
+            ).total_seconds() // 86400))
+        }
+        for item in items if item['id'] not in expired_auction_ids
+    ]
+
+    return active_items
+
 # Define a route for searching items with keyword
 @mainPage.route('/search', methods=['GET', 'POST'])
 def search_item():
-    """Search for items by keyword, check expiration status, and fetch similar active items if needed."""
-    
-    # Get search keyword
+    # Get keyword from query parameter
     data = request.get_json()
-    keyword = data.get("query", "").strip()
-    print(f"Search Query: {keyword}")
+    keyword = data.get("query", "")
+    print(keyword)
 
     # Fetch items matching the search query
     response = (
@@ -28,85 +85,36 @@ def search_item():
         .execute()
     )
     
-    search_results = response.data
-    active_items = []
-
-    # Get the current UTC time
-    current_time = datetime.now(timezone.utc)
-
-    for item in search_results:
-        # Combine end_date and end_time into a full timestamp
-        end_datetime_str = f"{item['end_date']}T{item['end_time']}Z"
-        end_datetime = datetime.fromisoformat(end_datetime_str.replace("Z", "+00:00"))
-
-        # Calculate remaining days
-        remaining_time_delta = (end_datetime - current_time).total_seconds()
-        item['remaining_days'] = max(0, int(remaining_time_delta // 86400))
-
-        # Check if auction is expired
-        if end_datetime <= current_time:
-            # Mark as expired in the database
-            supabase.table('auctions').update({"status": 'expired'}).eq('id', item['id']).execute()
-            print(f"Auction {item['id']} marked as expired.")
-        else:
-            # Fetch max bid for active items
-            bid_response = (
-                supabase.table('bids')
-                .select('bid_amount')
-                .eq('auction_id', item['id'])
-                .order('bid_amount', desc=True)
-                .limit(1)
-                .execute()
-            )
-            item['max_bid'] = bid_response.data[0]['bid_amount'] if bid_response.data else None
-
-            active_items.append(item)
-
-    # # Fetch similar items if there are fewer than 12 active results
-    # if len(active_items) < 12:
-    #     # Extract categories from active search results
-    #     categories = set(item["category"] for item in active_items if "category" in item)
-
-    #     # Query similar items based on category
-    #     similar_response = (
-    #         supabase.table('auctions')
-    #         .select('name', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
-    #         .or_(
-    #             " or ".join([f"category.ilike.%{cat}%" for cat in categories])
-    #         )
-    #         .execute()
-    #     )
-
-    #     similar_items = similar_response.data
-
-    #     # Process similar items and exclude expired ones
-    #     for item in similar_items:
-    #         end_datetime_str = f"{item['end_date']}T{item['end_time']}Z"
-    #         end_datetime = datetime.fromisoformat(end_datetime_str.replace("Z", "+00:00"))
-
-    #         # Calculate remaining days
-    #         remaining_time_delta = (end_datetime - current_time).total_seconds()
-    #         item['remaining_days'] = max(0, int(remaining_time_delta // 86400))
-
-    #         if end_datetime > current_time and item.get("status") != "expired":
-    #             # Fetch max bid for similar items
-    #             bid_response = (
-    #                 supabase.table('bids')
-    #                 .select('bid_amount')
-    #                 .eq('auction_id', item['id'])
-    #                 .order('bid_amount', desc=True)
-    #                 .limit(1)
-    #                 .execute()
-    #             )
-    #             item['max_bid'] = bid_response.data[0]['bid_amount'] if bid_response.data else None
-
-    #             active_items.append(item)
-
-    #         # Ensure max 12 active items in the final response
-    #         if len(active_items) >= 12:
-    #             break
-
+    items = response.data
+    # Fetch highest bids in one query (avoiding per-item queries)
+    active_items = return_items_with_max_bid(items, update_expire = False) 
+    
     return jsonify(active_items), 200
+
+
+# Define a route for searching items with keyword
+@mainPage.route('/search_byTag', methods=['GET', 'POST'])
+def search_item_byTag():
+    # Get keyword from query parameter
+    data = request.get_json()
+    keyword = data.get("query_tag", "")
+    print(keyword)
+    sys.stdout.flush()
+
+    # Fetch items matching the search query
+    response = (
+        supabase.table('auctions')
+        .select('name', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
+        .ilike('category', f"%{keyword}%")
+        .execute()
+    )
+    
+    items = response.data
+    # Fetch highest bids in one query (avoiding per-item queries)
+    active_items = return_items_with_max_bid(items, update_expire = False) 
+    
+    return jsonify(active_items), 200
+
 
 # Define a route for displaying default items on the mainpage
 @mainPage.route('/display_mainPage', methods=['GET'])
@@ -119,59 +127,10 @@ def display_item():
     if not items:
         return jsonify([])  # Return an empty list if no items
     
-    # Get the current UTC time
-    current_time = datetime.now(timezone.utc)
-
-    active_items = []
-
-    for item in items:
-        # Combine end_date and end_time into a full timestamp
-        end_datetime_str = f"{item['end_date']}T{item['end_time']}Z"
-        end_datetime = datetime.fromisoformat(end_datetime_str.replace("Z", "+00:00"))  # Convert to datetime object
-         # Calculate remaining days
-        remaining_time_delta = (end_datetime - current_time).total_seconds()
-        remaining_days = max(0, int(remaining_time_delta // 86400))
-
-        # Check if auction is still active
-        if end_datetime <= current_time and item.get("status") != "expired":
-            update_response = (
-                supabase.table('auctions')
-                .update({"status": 'expired'})  # Update status to "expired"
-                .eq('id', item['id'])  # Where id matches the item's id
-                .execute()
-            )
-            print(f"Auction {item['id']} marked as expired.")
-
-        else:
-            auction_id = item['id']
-
-            # Get the highest bid for the current auction
-            bid_response = (
-                supabase.table('bids')
-                .select('bid_amount')
-                .eq('auction_id', auction_id)
-                .order('bid_amount', desc=True)  # Sort in descending order
-                .limit(1)  # Get only the highest bid
-                .execute()
-            )
-
-            # Attach max_bid if available, otherwise keep it None
-            item['max_bid'] = bid_response.data[0]['bid_amount'] if bid_response.data else None
-            item['remaining_days'] = remaining_days
-            # Add active item to the list
-            active_items.append(item)
+    # Fetch highest bids in one query (avoiding per-item queries)
+    active_items = return_items_with_max_bid(items, update_expire = True) 
 
     return jsonify(active_items)  # Return only active items
-
-
-    # # Duplicate items until we have at least 12
-    # while len(items) < 12:
-    #     items += items[:12 - len(items)]  # Add copies of existing items
-
-    # # Shuffle and pick exactly 12 random items
-    # random_items = random.sample(items, 12)
-
-    # return jsonify()
 
 
     

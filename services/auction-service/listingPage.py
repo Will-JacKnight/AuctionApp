@@ -6,6 +6,8 @@ import uuid
 from dotenv import load_dotenv
 from flask_cors import CORS
 import traceback
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
@@ -29,7 +31,9 @@ def allowed_file(filename):
 
 
 @listingPage.route('/listing', methods=['POST'])
+@jwt_required()
 def create_item():
+    seller_id = get_jwt_identity()
     try:
         # Extract form-data fields
         data = {key: request.form[key] for key in request.form}
@@ -84,6 +88,7 @@ def create_item():
         # Insert into `auctions` table
         new_item = supabase.table("auctions").insert({
             "name": data["name"],
+            "seller_id": seller_id,
             "category": data["category"],
             "description": data["description"],
             "starting_price": data["starting_price"],

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-  
+
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
     // When running in Docker, we access the frontend via localhost from the browser (external access)
@@ -9,23 +9,22 @@ const API_URL =
     ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
     : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
-const getSalesData = () => [
-    { id: 1, item: "Bike", price: 100, img: "/images/bike1.jpg", description: "ndustry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum" },
-    { id: 2, item: "Headphones", price: 50, img: "/images/shoe1.jpg", description: "ndustry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum" },
-  ];
 
 const Sales = () => {
   const [sales, setSales] = useState([])
   const [error, setError] = useState()
 
+
   useEffect(() => {
     async function getData() {
         try {
-          // const response = await fetch(("/api-gateway/display_mainPage", {
+          console.log(sessionStorage.getItem("token"))
           const response = await fetch(`${API_URL}/dashboard_sell`, {
             method: "GET",
-            // headers: { "Content-Type": "application/json" },
-            })
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+          });
 
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
@@ -37,12 +36,12 @@ const Sales = () => {
               throw new Error("Received non-JSON response. Check API response.");
             }
             const data = await response.json()
-            console.log(data)
-            const extracted_data = data["items"];
-            console.log(extracted_data)
+            if(data != "No items found for this seller") {
+              const extracted_data = data["items"];
+              setSales(extracted_data)
 
-            setSales(extracted_data)
-
+            }
+            
         }
         catch (err) {
             console.log(`Following error occured when fetching data: ${err}`)
@@ -53,6 +52,14 @@ const Sales = () => {
 
   }, [])
 
+  if (!sales || !Array.isArray(sales) || sales.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>No items have been added for sale.</p>
+      </div>
+    );
+  }
+
 
   return (
     <div>
@@ -60,26 +67,18 @@ const Sales = () => {
       <ul>
         {sales.map((sale) => (
           <NavLink to={`/product/${sale.id}`} key={sale.id}>
-            <div className="listing">
-              <img src={sale.image_url} alt={sale.name} />
-
-              <div className="information">
-                <h3 className="item-name">{sale.name}</h3>
-
-                {/* If sold, show the sold out text*/}
-                {sale.status === "expired" ? (
-                  <h5 className="sold-text">Sold for: £{sale.max_bid}</h5>
-                ) : (
-                  <>
-                    <h5 className="highest-bid">Highest Bid: £{sale.max_bid}</h5>
-                    <p className="item-description">{sale.description.slice(0, 150)}</p>
-                  </>
-                )}
-
-                <h6 className="time-left">
-                  {sale.status === "expired" ? "Auction Ended" : "Time Left: 12 hrs"}
-                </h6>
-              </div>
+            <div className="listing" >
+                <img
+                  src={sale.image_url}
+                />
+                <div className="information">
+                  <h3 className="item-name">
+                    {sale.name}
+                  </h3>
+                  <h5 className="highest-bid">Highest Bid: £{sale.max_bid}</h5>
+                  <h6 className="time-left">Time Left: 12 hrs</h6>
+                  <p className="item-description">{sale.description.slice(0, 150)}</p>
+                </div>
             </div>
           </NavLink>
         ))}

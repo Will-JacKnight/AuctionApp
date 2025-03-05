@@ -22,17 +22,16 @@ function AuctionUpload() {
   const [error, setError] = useState("");
 
   const API_URL =
-  import.meta.env.VITE_RUN_MODE === "docker"
-    // When running in Docker, we access the frontend via localhost from the browser (external access)
-    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
-    : import.meta.env.VITE_RUN_MODE === "heroku"
-    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
-    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
+    import.meta.env.VITE_RUN_MODE === "docker"
+      ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+      : import.meta.env.VITE_RUN_MODE === "heroku"
+      ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+      : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
   const tags = [
-    "electronics", "furniture", "stationery", "clothing", "jewelry", "art", "books", "toys", "vehicles",
-    "sports", "musical instruments", "antiques", "collectibles", "home decor", "kitchenware", "tools",
-    "outdoor", "pet supplies", "gaming", "office supplies"
+    "electronics", "furniture", "clothing", "jewelry", "art", "books", "toys", "vehicles",
+    "sports", "musical", "antiques", "homeDecor", "kitchenware", "tools",
+    "outdoors", "pets", "gaming", "office"
   ];
 
   const handleChange = (e) => {
@@ -41,7 +40,19 @@ function AuctionUpload() {
   };
 
   const handleFileChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setError("Image size should be less than 5MB");
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setError("Please upload an image file");
+        return;
+      }
+      setImage(file);
+      setError("");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -50,135 +61,145 @@ function AuctionUpload() {
     setError("");
 
     try {
-        const formDataToSend = new FormData();
-        Object.keys(formData).forEach((key) => {  
-          formDataToSend.append(key, formData[key]);       
-        });
-        if (image) {
-          formDataToSend.append("productImage", image); 
-        }
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+      });
+      if (image) {
+        formDataToSend.append("productImage", image);
+      }
 
-        const response = await fetch(`${API_URL}/listing`, {
-            method: "POST",
-            body: formDataToSend
-        });
+      const response = await fetch(`${API_URL}/listing`, {
+        method: "POST",
+        headers: {Authorization: `Bearer ${sessionStorage.getItem("token")}`, },
+        body: formDataToSend
+      });
 
-        const data = await response.json();
-        if (response.ok) {
-            alert("Auction created successfully!");
-            navigate("/");
-        } else {
-            setError(data.error || "Upload failed");
-        }
+      const data = await response.json();
+      if (response.ok) {
+        alert("Auction created successfully!");
+        navigate("/");
+      } else {
+        setError(data.error || "Upload failed");
+      }
     } catch (err) {
-        setError("Network error. Please try again.");
+      setError("Network error. Please try again.");
     }
     setLoading(false);
-};
+  };
 
   return (
     <>
       <NavBar />
       <div className="auction-form-container">
-        <h2>Create Auction</h2>
+        <h2>Create New Auction</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
-          {/* Product Name */}
-          <label>Product Name</label>
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-section">
+            <label>Product Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter product name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label>Product Image</label>
-          <input
-            type="file"
-            name="productImage"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-          />
+          <div className="form-section">
+            <label>Product Image</label>
+            <input
+              type="file"
+              name="productImage"
+              accept="image/*"
+              onChange={handleFileChange}
+              required
+            />
+            <small className="help-text">Upload a clear image of your product (max 5MB)</small>
+          </div>
 
-          {/* Tag (category) */}
-          <label>Tag</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-          >
-            {tags.map((tag) => (
-              <option key={tag} value={tag}>{tag}</option>
-            ))}
-          </select>
+          <div className="form-section">
+            <label>Category</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            >
+              {tags.map((tag) => (
+                <option key={tag} value={tag}>{tag.charAt(0).toUpperCase() + tag.slice(1)}</option>
+              ))}
+            </select>
+          </div>
 
-          {/* Product Description */}
-          <label>Product Description</label>
-          <textarea
-            name="description"
-            placeholder="Product Description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-section">
+            <label>Product Description</label>
+            <textarea
+              name="description"
+              placeholder="Describe your product in detail..."
+              value={formData.description}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          {/* Starting Price */}
-          <label>Starting Price (￡)</label>
-          <input
-            type="number"
-            name="starting_price"
-            placeholder="Starting Price (￡)"
-            value={formData.starting_price}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-section">
+            <label>Starting Price (£)</label>
+            <input
+              type="number"
+              name="starting_price"
+              placeholder="Enter starting price"
+              value={formData.starting_price}
+              onChange={handleChange}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
 
-          {/* Auction Start Date */}
-          <label>Auction Start Date</label>
-          <input
-            type="date"
-            name="start_date"
-            value={formData.start_date}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-section">
+            <label>Auction Start</label>
+            <div className="date-time-inputs">
+              <input
+                type="date"
+                name="start_date"
+                value={formData.start_date}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="time"
+                name="start_time"
+                value={formData.start_time}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
-          {/* Auction Start Time */}
-          <label>Auction Start Time</label>
-          <input
-            type="time"
-            name="start_time"
-            value={formData.start_time}
-            onChange={handleChange}
-            required
-          />
-
-          {/* Auction End Date */}
-          <label>Auction End Date</label>
-          <input
-            type="date"
-            name="end_date"
-            value={formData.end_date}
-            onChange={handleChange}
-            required
-          />
-
-          {/* Auction End Time */}
-          <label>Auction End Time</label>
-          <input
-            type="time"
-            name="end_time"
-            value={formData.end_time}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-section">
+            <label>Auction End</label>
+            <div className="date-time-inputs">
+              <input
+                type="date"
+                name="end_date"
+                value={formData.end_date}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="time"
+                name="end_time"
+                value={formData.end_time}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Uploading..." : "Create Auction"}
+            {loading ? "Creating Auction..." : "Create Auction"}
           </button>
         </form>
       </div>

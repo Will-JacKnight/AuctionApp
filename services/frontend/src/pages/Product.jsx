@@ -23,10 +23,17 @@ function Product() {
 
     async function fetchAuctionDetails() {
       try {
-        const response = await fetch(`${API_URL}/product/${id}`, { method: "GET" });
+        const response = await fetch(`${API_URL}/product/${id}`, { method: "GET", headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+              throw new Error("Received non-JSON response. Check API response.");
+            }
         const data = await response.json();
         setAuctionData(data);
       } catch (err) {

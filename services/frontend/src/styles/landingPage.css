@@ -1,11 +1,12 @@
 /* MainPage.css */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f9;
   }
   
-  .search-container {
+  /* .search-container {
     max-width: 1000px;
     margin: 50px auto;
     text-align: center;
@@ -13,36 +14,76 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-
+  } */
+  
+  .search-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 8px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    
   }
   
-  .search-container input {
-    padding: 8px;
-    width: 400px;
+  .search-input {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px;
     height: 40px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-family: "Inter", serif;
-    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    color: #333;
     outline: none;
-    text-indent: 35px;
-    border: 2px solid black;
-  }
-
-  .relative {
-    position: relative;
-    width: 400px;
-  }
-  .search-icon {
-    width: 55px;
-    position: absolute;
-    transform: translateY(15%);
-    left: -3px;
-    top: -3px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
   }
   
-  .search-container button {
-    padding: 8px 15px;
+  .search-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .search-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .search-button {
+    width: 100px;
+    height: 38px;
+    background: linear-gradient(135deg, #1a237e, #0d47a1); /* Themed blue */
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    bottom: 3.5px;
+    margin-left: -15px;
+  }
+  
+  .search-button:hover {
+    background: #0d47a1;
+    transform: scale(1.05);
+  }
+  
+  .search-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin: 0 auto;
+    filter: invert(1);
   }
   
   .popular-items {
@@ -60,5 +101,60 @@ body {
     text-decoration: none;
   }
   
+  .content-section {
+    padding: 20px;
+  }
 
-  
+  .tag-search-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 10px 0;
+  margin: 10px 0;
+  background-color: transparent;
+  border-radius: 12px;
+}
+
+.tag-search {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Adjust column size and allow wrapping */
+  gap: 10px; /* Increased gap for better spacing */
+  padding: 10px;
+  justify-items: center; /* Center-align items within the grid */
+}
+
+.tag-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px; /* Fixed width for each tag */
+  padding: 10px;
+  background-color: #f9f9f9; /* Softer background color */
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-align: center; /* Centering text and icon */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow to each box */
+}
+.tag-item:hover {
+  background-color: #d0d0d0;
+}
+
+.tag-icon {
+  width: 26px; /* Smaller icon size */
+  height: 26px;
+  margin-bottom: 8px; /* Space between icon and text */
+  transition: transform 0.3s ease;
+  object-fit: contain; /* Ensure the icon stays proportional */
+}
+
+.tag-item:hover .tag-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(2px 4px 6px rgb(219, 219, 219)); /* Slight shadow effect */
+}
+
+.tag-name {
+  font-size: 0.85rem; /* Adjusted font size for better readability */
+  color: #333;
+  text-transform: capitalize; /* Capitalize the first letter of each tag */
+}

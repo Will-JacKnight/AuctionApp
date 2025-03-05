@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./../styles/authentication.css"
-import { getApiUrl } from '../config';
+import NavBar from '../components/NavBar';
+// import { getApiUrl } from '../config';
+
+  const API_URL =
+  import.meta.env.VITE_RUN_MODE === "docker"
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+    : import.meta.env.VITE_RUN_MODE === "heroku"
+    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,7 +27,7 @@ function Login() {
     setLoading(true);
  
     try {
-      const response = await fetch(`${getApiUrl()}/login`, {
+      const response = await fetch(`${API_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
@@ -26,10 +35,10 @@ function Login() {
 
       const data = await response.json();
       if (response.ok) {
-          console.log(data.access_token)
-          alert("Login Successfull!");
-          console.log(data.access_token)
-          navigate("/"); // Redirect to login page
+          sessionStorage.setItem("token", data.access_token)
+          const lastVisited = sessionStorage.getItem("lastVisited") || "/dashboard"
+          sessionStorage.removeItem("lastVisited")
+          navigate(lastVisited)
       } else {
           if(response.status == 401 || response.status == 404) {
               setError("Bad credentials. Please try again")
@@ -48,7 +57,9 @@ function Login() {
   };
  
   return (
-    <div className="auth-form form">
+    <>
+      <NavBar />
+      <div className="auth-form form">
       <h2>Login</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleLogin}>
@@ -72,6 +83,8 @@ function Login() {
       </form>
       <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     </div>
+    </>
+    
   );
 }
  

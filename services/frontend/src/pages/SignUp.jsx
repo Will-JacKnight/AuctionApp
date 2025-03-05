@@ -2,7 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import "../styles/index.css"; // Import global styles
 import "./../styles/authentication.css"
-import { getApiUrl } from '../config';
+import NavBar from "../components/NavBar";
+// import { getApiUrl } from '../config';
+
+  const API_URL =
+  import.meta.env.VITE_RUN_MODE === "docker"
+    // When running in Docker, we access the frontend via localhost from the browser (external access)
+    ? import.meta.env.VITE_API_GATEWAY_LOCAL_URL
+    : import.meta.env.VITE_RUN_MODE === "heroku"
+    ? import.meta.env.VITE_API_GATEWAY_HEROKU_URL
+    : import.meta.env.VITE_API_GATEWAY_LOCAL_URL;
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({
@@ -23,7 +32,7 @@ const SignupPage = () => {
         setError(null); // Clear previous errors
 
         try {
-            const response = await fetch(`${getApiUrl()}/signup`, {
+            const response = await fetch(`${API_URL}/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -49,7 +58,9 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="auth-form form">
+        <>
+            <NavBar />
+            <div className="auth-form form">
             <h2>Sign Up</h2>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSignup}>
@@ -65,6 +76,8 @@ const SignupPage = () => {
             </form>
             <p>Already have an account? <a href="/login">Log in</a></p>
         </div>
+        </>
+       
     );
 };
 

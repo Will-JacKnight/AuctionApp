@@ -10,13 +10,14 @@ from dotenv import load_dotenv
 from supabase import create_client
 import logging
 from flask_socketio import SocketIO, emit
+import sys
 
 # Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-load_dotenv(dotenv_path)
+# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+# load_dotenv(dotenv_path)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Microservices URLs
 # USER_SERVICE_URL = "http://user-service:8080"
@@ -36,7 +37,6 @@ else:
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-print(SUPABASE_URL)
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -68,8 +68,12 @@ def listing():
         form_data = {key: request.form[key] for key in request.form}
  
         files = {"productImage": (file.filename, file.stream, file.content_type)}
- 
-        response = requests.post(f"{AUCTION_SERVICE_URL}/listing", files=files, data=form_data)
+        
+        headers = {
+        "Authorization": request.headers.get("Authorization")  
+        }
+
+        response = requests.post(f"{AUCTION_SERVICE_URL}/listing", files=files, data=form_data, headers=headers)
         return jsonify(response.json()), response.status_code
  
     except Exception as e:
@@ -88,10 +92,20 @@ def serach():
     response = requests.post(f"{AUCTION_SERVICE_URL}/search", json=request.json)
     return jsonify(response.json()), response.status_code
 
+@app.route('/search_byTag', methods=['POST'])
+def serach_byTag():
+    """ Forward login request to User Service """
+    response = requests.post(f"{AUCTION_SERVICE_URL}/search_byTag", json=request.json)
+    return jsonify(response.json()), response.status_code
+
 
 @app.route('/product/<auction_id>', methods=['GET'])
 def bidding(auction_id):
-    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}")
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
+    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}", headers=headers)
     return jsonify(response.json()), response.status_code
 
 @app.route('/place_bid', methods=['POST'])
@@ -101,15 +115,26 @@ def place_bid():
 
 @app.route('/dashboard_sell', methods=['GET'])
 def sell():
+    print("Received request at API Gateway")
+    print("Gateway Headers:", dict(request.headers))  # Debugging
+    sys.stdout.flush()
 
-    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell")
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
+    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_sell", headers=headers)
     return jsonify(response.json()), response.status_code
 
 
 @app.route('/dashboard_bid', methods=['GET'])
 def bid():
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
 
-    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid")
+    response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid", headers=headers)
     return jsonify(response.json()), response.status_code
 
 # HTTP route to handle bid updates from the backend
