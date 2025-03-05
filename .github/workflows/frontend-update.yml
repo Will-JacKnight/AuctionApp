@@ -1,4 +1,4 @@
-name: Only Build Frontend When Updated
+name: Frontend Service Sole Deployment
 
 on:
   push:
