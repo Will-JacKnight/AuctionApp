@@ -3,7 +3,7 @@ name: All Services Deployment
 on:
   push:
     branches:
-      - main
+      - production
   workflow_dispatch:  # Allows manual deployment
  
 env:
