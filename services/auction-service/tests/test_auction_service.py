@@ -167,79 +167,57 @@ class TestDashboardPageAPI(unittest.TestCase):
         self.app_context.pop()  # ✅ Pop the context to clean up
 
     @patch('dashboard.supabase')  # ✅ Patch where supabase is actually imported
-    def test_dashboard_sell(self, mock_supabase):
-        """Test the /dashboard_sell GET route with JWT authentication."""
+    def test_dashboard_bid(self, mock_supabase):
+        """Test the /dashboard_bid GET API with mock Supabase RPC."""
 
-        # ✅ Generate a real JWT test token
         with self.app.app_context():
-            test_token = create_access_token(identity="test_seller_id")  # Mock a seller ID
+            test_token = create_access_token(identity="test_user_id")  # Mock user ID
+
         auth_header = {
-        "Authorization": f"Bearer {test_token}",
-        "Content-Type": "application/json",  # ✅ Explicitly set Content-Type
+            "Authorization": f"Bearer {test_token}",
+            "Content-Type": "application/json", 
         }
 
-        # ✅ Mock Supabase authentication response
-        # mock_execute = MagicMock()
-        # mock_execute.data = [{"username": {"username": "test_user"}}]  # ✅ JSON-safe dictionary
-
-        # mock_supabase.auth.get_user.return_value.execute.return_value = mock_execute  # ✅ Corrected
-        # ✅ Mock Supabase response for items
-        mock_supabase.table.return_value.select.return_value.execute.return_value.data = [
-            {"username": "abc"}
+        mock_rpc_response = MagicMock()
+        mock_rpc_response.execute.return_value.data = [
+            {
+                "auction_name": "Test Item",
+                "bid_amount": 5000,
+                "created_at": "2025-03-04T10:30:00Z",
+                "status": "active",
+                "max_bid": 7000
+            },
+            {
+                "auction_name": "Test Item",
+                "bid_amount": 6000,
+                "created_at": "2025-03-04T11:00:00Z",
+                "status": "active",
+                "max_bid": 7000
+            },
+            {
+                "auction_name": "Danny",
+                "bid_amount": 15000,
+                "created_at": "2025-03-04T13:40:00Z",
+                "status": "active",
+                "max_bid": 16700
+            },
+            {
+                "auction_name": "Danny",
+                "bid_amount": 16000,
+                "created_at": "2025-03-04T13:50:00Z",
+                "status": "active",
+                "max_bid": 16700
+            }
         ]
 
-        
-        response = self.client.get('/dashboard_sell', headers=auth_header)
+        mock_supabase.rpc.return_value = mock_rpc_response
 
-        # ✅ Assert the response status code
+        response = self.client.get('/dashboard_bid', headers=auth_header)
+
         self.assertEqual(response.status_code, 200)
 
-        # ✅ Validate JSON response
         data = response.get_json()
-        self.assertIsInstance(data, list)  # Ensure it's a list of items
-        self.assertGreater(len(data), 0)  # Ensure items are returned
+        self.assertIsInstance(data, list)
 
-
-
-    # @patch('dashboard.supabase')  # Patch Supabase in the listingPage module
-    # def test_dashboard_bid(self, mock_supabase):
-    #     """Test the /dashboard_bid POST route."""
-        
-
-    #     mock_supabase.table.return_value.select.return_value.execute.return_value.data = [
-    #          {
-    #             "username": "test_user",
-    #             "items": [
-    #                 {
-    #                     "description": "This is a test item for debugging",
-    #                     "id": "abc-123",
-    #                     "image_url": "http://example.com",
-    #                     "max_bid": 10,
-    #                     "name": "test_item1"
-    #                 },
-    #                 {
-    #                     "description": "This is collegedropout bear",
-    #                     "id": "def-456",
-    #                     "image_url": "http://graduation.com",
-    #                     "max_bid": 100,
-    #                     "name": "collegedropout bear"
-    #                 }
-    #             ]
-    #         }
-    #     ]
-
-    #      # Simulate a GET request to the display API
-    #     response = self.client.get('/dashboard_bid')
-        
-    #     # Assert that the status code is 200
-    #     self.assertEqual(response.status_code, 200)
-        
-    #     # Assert that the response data is a list (shuffled items)
-    #     data = response.get_json()
-    #     self.assertIn("username", data)  # Ensure username key exists
-    #     self.assertIn("items", data)  # Ensure items key exists
-    #     self.assertIsInstance(data["items"], list)  # Ensure items is a list
-    #     self.assertTrue(len(data) > 0)  # Check if items are returned
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertIn("Test Item", data[0])
+        self.assertIn("Danny", data[1])
