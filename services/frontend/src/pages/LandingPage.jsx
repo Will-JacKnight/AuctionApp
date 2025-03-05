@@ -71,6 +71,13 @@ function LandingPage() {
     getData();
   }, []);
 
+  // Function to reset search query and navigate to homepage
+  const resetHomepage = () => {
+    setSearchQuery("");  // Reset search query
+    navigate("/");  // Navigate to homepage
+  };
+  
+
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -127,7 +134,7 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
-      <NavBar />
+      <NavBar resetHomepage={resetHomepage} />
       
       <div className="search-section">
         <h1 className="search-title">Find Your Next Great Deal</h1>
