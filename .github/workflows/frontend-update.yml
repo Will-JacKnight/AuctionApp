@@ -1,11 +1,11 @@
-name: Build Frontend Docker Image Only When Updated
+name: Only Build Frontend When Updated
 
 on:
   push:
-    branches:
-      - deployment-test
+#    branches:
+#      - deployment-test
     paths:
-      - 'services/frontend'
+      - 'services/frontend/**'
 
 env:
   SERVICE_NAME: frontend
