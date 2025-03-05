@@ -75,7 +75,7 @@ const Sales = () => {
                     {sale.name}
                   </h3>
                   <h5 className="highest-bid">
-                    {sale.max_bid !== null ? "Highest Bid" : "Current Price"}: £
+                    {sale.max_bid !== null ? "Highest Bid" : "Starting Price"}: £
                     {sale.max_bid !== null ? sale.max_bid : sale.starting_price}
                   </h5>
 
