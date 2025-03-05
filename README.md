@@ -50,7 +50,7 @@ docker compose -f docker-compose-local.yml up -d --build
 
 ### Local Unit Tests
 ```
-docker compose -f docker-compose-local.yml -f docker-compose-test.yml up --abort-on-container-exit
+docker compose -f docker-compose-local.yml -f docker-compose-test.yml up
 ```
 
 ### Local - Shut down all services

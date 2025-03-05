@@ -20,6 +20,7 @@ dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust th
 load_dotenv(dotenv_path)
 
 RUN_MODE = os.getenv("RUN_MODE", "local")  # Default to local if not set
+AZURE_BID_EMAIL_FUNCTION = os.getenv("AZURE_BID_EMAIL_FUNCTION")
 
 if RUN_MODE == "docker":
     API_GATEWAY_URL = os.getenv("API_GATEWAY_DOCKER_URL")
@@ -224,7 +225,7 @@ def notifyUsers(product_price, auction_id, user_id):
 
         try:
             # Send request to Azure Function
-            response = requests.post("https://bid-email-notification-function.azurewebsites.net/api/sendBidNotification?code=uMhBNELPM7hG5Xt4gfQ_rnmJhm_EDOlzoU5W2D6jPBK_AzFut_m4lw==", json=payload)
+            response = requests.post(AZURE_BID_EMAIL_FUNCTION, json=payload)
             response.raise_for_status()  # Raise an error for bad responses
 
             print("Sent all emails successfully")
