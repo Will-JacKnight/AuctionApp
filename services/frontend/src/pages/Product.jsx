@@ -139,7 +139,7 @@ function Product() {
             <span className="price-date-info-text">Starting Price (£)</span>
             <span className="starting-price-placeholder">{auctionData[0].starting_price}</span>
             <span className="price-date-info-text">Current Price (£)</span>
-            <span className="current-price-placeholder">{auctionData[0].ax_bid?.toLocaleString() || auctionData[0].starting_price}</span>
+            <span className="current-price-placeholder">{auctionData[0].max_bid?.toLocaleString() || auctionData[0].starting_price}</span>
             <span className="price-date-info-text">Bidding Start</span>
             <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`).toLocaleDateString()} ${new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`).toLocaleTimeString()}`}</span>
             <span className="price-date-info-text">Bidding End</span>
