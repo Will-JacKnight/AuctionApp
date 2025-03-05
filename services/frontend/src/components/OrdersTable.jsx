@@ -63,8 +63,7 @@ const OrderTable = ({ data }) => {
               <tr key={index} className={`${groupNum % 2 === 0 ? "group-even" : "group-odd"} ${isWinningExpiredBid ? "highlight-row" : ""}`}>
                 <td>
                   <div className="item-cell">
-                    <span className="item-name">{order.item_name}</span>
-                    {isWinningExpiredBid && <span className="winning-badge">Winning Bid</span>}
+                    {order.item_name}
                   </div>
                 </td>
                 <td>£{order.bid_amount?.toLocaleString() || '0'}</td>
