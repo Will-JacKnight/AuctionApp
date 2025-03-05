@@ -2,7 +2,7 @@ import pandas as pd
 import random
 import sys
 from flask import Flask, request, Blueprint, jsonify
-from supabase_client import supabase # need to modify
+from supabaseClient import supabase
 from datetime import datetime, timezone
 # *************  DESCRIPTION: ********************************
 # This page handles requests from the user to search items

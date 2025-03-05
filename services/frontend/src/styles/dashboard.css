@@ -70,9 +70,8 @@
   flex-direction: row;
   align-items: flex-start;
   width: 100%;
-  max-width: 600px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 15px;
   background-color: #f4f7fc;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -84,6 +83,7 @@
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   border: none;
+
 }
 
 .listing img {
@@ -103,18 +103,22 @@
   align-items: flex-start;
   text-align: left;
   height: 100%;
+  position: relative;
+  width: 100%;
+ 
 }
 
 .item-name {
   margin-bottom: auto;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: #1a237e;
   font-weight: 600;
+  margin-top: -10px;
 }
 
 .item-description {
   color: #666;
-  margin: 10px 0;
+  margin: 5px 0;
   line-height: 1.5;
 }
 
@@ -123,7 +127,7 @@
 }
 
 .highest-bid {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #2e7d32;
   font-weight: 600;
 }
@@ -131,7 +135,7 @@
 .time-left {
   color: #f57c00;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-top: 10px;
 }
 
@@ -257,7 +261,7 @@
 
 .listing {
     display: flex;
-    width: 600px;
+    width: 650px;
     margin: 50px auto;
     font-family: "Inter", sans-serif;
     background-color: #DEDEDE;
@@ -289,20 +293,21 @@
 
   .listing .item-description {
     margin-top: 60px;
-    width: 90%;
+    width: 100%;
     overflow: hidden;
     text-align: center;
+    text-align: left;
   }
 
   .listing .highest-bid {
     position: absolute;
-    top: 10px;
+    top: 30px;
     right: 20px;
   }
 
   .listing .time-left {
     position: absolute;
-    top: 27px;
+    top: 50px;
     right: 20px;
     font-family: "Kiwi Maru", serif;
   }

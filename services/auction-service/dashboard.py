@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
-from supabase import create_client, Client
+from supabaseClient import supabase
 import os
 import datetime
 import uuid
@@ -19,12 +19,7 @@ load_dotenv(dotenv_path)
  
 dashboard = Blueprint("dashboard", __name__)
  
-# Supabase Settings
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
- 
- 
+
 # app = Flask(__name__)
 # CORS(app)
  
@@ -94,6 +89,7 @@ def dashboard_bid():
             created_at TIMESTAMP WITHOUT TIME ZONE,
             status TEXT,
             max_bid NUMERIC
+            product_id UUID
         ) AS $$
         BEGIN
             RETURN QUERY
@@ -103,6 +99,7 @@ def dashboard_bid():
                 b.created_at::TIMESTAMP WITHOUT TIME ZONE,
                 a.status,
                 (SELECT MAX(b2.bid_amount) FROM bids b2 WHERE b2.auction_id = b.auction_id) AS max_bid
+                a.id
             FROM bids b
             JOIN auctions a ON a.id = b.auction_id
             WHERE b.user_id = user_id_param;
@@ -126,7 +123,8 @@ def dashboard_bid():
                 "created_at": bid["created_at"],
                 "status": bid["status"],
                 "item_name": auction_name,
-                "max_bid": bid["max_bid"]
+                "max_bid": bid["max_bid"],
+                "product_id": bid["product_id"]
             })
 
         return jsonify([{name: history} for name, history in auction_bids.items()]), 200
