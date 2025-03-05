@@ -2,8 +2,8 @@ name: Only Build Frontend When Updated
 
 on:
   push:
-#    branches:
-#      - deployment-test
+    branches:
+      - deployment-test
     paths:
       - 'services/frontend/**'
 
