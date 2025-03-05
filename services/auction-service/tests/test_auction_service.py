@@ -304,65 +304,66 @@ class TestDashboardPageAPI(unittest.TestCase):
         self.assertEqual(data[2]["name"], "Antique Painting")
         self.assertEqual(data[2]["max_bid"], 5000.00)
 
-# class TestProductPageAPI(unittest.TestCase):
+class TestProductPageAPI(unittest.TestCase):
 
-#     def setUp(self):
-#         """Setup the test client and Flask application context."""
-#         self.app = app
-#         self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-#         self.client = self.app.test_client()
-#         self.app_context = self.app.app_context()
-#         self.app_context.push() 
+    def setUp(self):
+        """Setup the test client and Flask application context."""
+        self.app = app
+        self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+        self.client = self.app.test_client()
+        self.app_context = self.app.app_context()
+        self.app_context.push() 
 
-#     def tearDown(self):
-#         """Remove the Flask app context after each test."""
-#         self.app_context.pop()
+    def tearDown(self):
+        """Remove the Flask app context after each test."""
+        self.app_context.pop()
 
-#     @patch('productPage.supabase')  # Mock Supabase
-#     def test_get_product_by_id_success(self, mock_supabase):
-#         """Test GET /product/<auction_id> API when auction exists."""
+    @patch('productPage.supabase')  # Mock Supabase
+    def test_get_product_by_id_success(self, mock_supabase):
+        """Test GET /product/<auction_id> API when auction exists."""
 
-#         auction_id = "test-auction-123"
+        auction_id = "test-auction-123"
 
-#         mock_auction_response = MagicMock()
-#         mock_auction_response.execute.return_value.data = [
-#             {
-#                 "id": "test-auction-123", 
-#                 "name": "Test Item",
-#                 "description": "A test auction item",
-#                 "status": "active",
-#                 "start_date": "2025-05-01",
-#                 "start_time": "09:00",
-#                 "starting_price": 100,
-#                 "end_date": "2025-05-02",
-#                 "end_time": "10:00",
-#                 "auction_type": "standard",
-#                 "image_url": "http://someexample.com"
-#             }
-#         ]
+        mock_auction_response = MagicMock()
+        mock_auction_response.execute.return_value.data = [
+            {
+                "id": "test-auction-123", 
+                "name": "Test Item",
+                "description": "A test auction item",
+                "status": "active",
+                "start_date": "2025-05-01",
+                "start_time": "09:00",
+                "starting_price": 100,
+                "end_date": "2025-05-02",
+                "end_time": "10:00",
+                "auction_type": "standard",
+                "image_url": "http://someexample.com"
+            }
+        ]
 
-#         mock_bid_response = MagicMock()
-#         mock_bid_response.execute.return_value.data = [
-#             {"bid_amount": 500}
-#         ]
+        mock_bid_response = MagicMock()
+        mock_bid_response.execute.return_value.data = [
+            {"bid_amount": 500}
+        ]
 
-#         mock_supabase.table.return_value.select.return_value.eq.return_value.execute.side_effect = [
-#             mock_auction_response.execute(),  
-#             mock_bid_response.execute() 
-#         ]
-
-#         response = self.client.get(f'/product/{auction_id}')
+        mock_supabase.table.return_value.select.return_value.eq.return_value.execute.side_effect = [
+            mock_auction_response.execute(),  
+            mock_bid_response.execute() 
+        ]
 
 
-#         print("Response Status:", response.status_code)
-#         print("Response JSON:", response.get_json())
+        response = self.client.get(f'/product/{auction_id}')
 
-#         self.assertEqual(response.status_code, 200)
+  
+        print("Response Status:", response.status_code)
+        print("Response JSON:", response.get_json())
 
-#         data = response.get_json()
-#         self.assertIsInstance(data, dict)
+        self.assertEqual(response.status_code, 200)
 
-#         self.assertEqual(data["name"], "Test Item")
+        data = response.get_json()
+        self.assertIsInstance(data, dict)
 
-#         self.assertIn("max_bid", data)
-#         self.assertEqual(data["max_bid"], 500)
+        self.assertEqual(data["name"], "Test Item")
+
+        self.assertIn("max_bid", data)
+        self.assertEqual(data["max_bid"], 500)

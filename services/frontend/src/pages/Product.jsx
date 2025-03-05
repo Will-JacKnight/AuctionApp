@@ -31,6 +31,7 @@ function Product() {
         }
         const data = await response.json();
         console.log(data)
+
         setAuctionData(data);
       } catch (err) {
         console.error("Error fetching auction details:", err);
@@ -42,6 +43,8 @@ function Product() {
 
     fetchAuctionDetails();
   }, [id]);
+
+
 
   useEffect(() => {
     const socket = io(API_URL, {
@@ -122,24 +125,25 @@ function Product() {
       <NavBar />
       <div className="bidding-container">
         <div className="auction-info">
-          <img src={auctionData.image_url} alt={auctionData.name} className="auction-image" />
+
+          <img src={auctionData[0].image_url} alt={auctionData[0].name} className="auction-image" />
         </div>
 
         <div className="bidding-section">
           <div className="product-details">
-            <h2 className="product-name">{auctionData.name}</h2>
-            <p className="product-description">{auctionData.description}</p>
+            <h2 className="product-name">{auctionData[0].name}</h2>
+            <p className="product-description">{auctionData[0].description}</p>
           </div>
 
           <div className="price-date-container">
             <span className="price-date-info-text">Starting Price (£)</span>
-            <span className="starting-price-placeholder">{auctionData.starting_price.toLocaleString()}</span>
+            <span className="starting-price-placeholder">{auctionData[0].sarting_price}</span>
             <span className="price-date-info-text">Current Price (£)</span>
-            <span className="current-price-placeholder">{auctionData.max_bid?.toLocaleString() || auctionData.starting_price.toLocaleString()}</span>
+            <span className="current-price-placeholder">{auctionData[0].ax_bid?.toLocaleString() || auctionData[0].starting_price}</span>
             <span className="price-date-info-text">Bidding Start</span>
-            <span className="bidding-date-placeholder">{`${new Date(`${auctionData.start_date}T${auctionData.start_time}`).toLocaleDateString()} ${new Date(`${auctionData.start_date}T${auctionData.start_time}`).toLocaleTimeString()}`}</span>
+            <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`).toLocaleDateString()} ${new Date(`${auctionData.start_date}T${auctionData.start_time}`).toLocaleTimeString()}`}</span>
             <span className="price-date-info-text">Bidding End</span>
-            <span className="bidding-date-placeholder">{`${new Date(`${auctionData.end_date}T${auctionData.end_time}`).toLocaleDateString()} ${new Date(`${auctionData.end_date}T${auctionData.end_time}`).toLocaleTimeString()}`}</span>
+            <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].end_date}T${auctionData[0].end_time}`).toLocaleDateString()} ${new Date(`${auctionData.end_date}T${auctionData.end_time}`).toLocaleTimeString()}`}</span>
           </div>
 
           <div className="bid-input">

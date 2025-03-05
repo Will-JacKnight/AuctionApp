@@ -52,7 +52,7 @@ def get_product_by_id(auction_id):
         if not response.data:
             print("⚠️ Auction not found for ID:", auction_id)
             return jsonify({"error": "Auction not found"}), 404
-
+        
         item = response.data[0] # Get the first and only one item
 
         bid_response = (
@@ -66,11 +66,14 @@ def get_product_by_id(auction_id):
         max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
         item["max_bid"] = max_bid # Add the max bidding price to the item
 
+        itemList = []
+        itemList.append(item)
+
         if not polling_thread_started:
             polling_thread_started = True
             threading.Thread(target=poll_for_new_bids, daemon=True).start()
 
-        return jsonify(item), 200
+        return jsonify(itemList), 200
     except Exception as e:
         print(f"🔥 Error retrieving auction: {e}")
         return jsonify({'error': str(e)}), 500
