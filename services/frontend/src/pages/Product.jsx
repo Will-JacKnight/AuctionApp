@@ -60,10 +60,16 @@ function Product() {
 
     socket.on("bid_update", (updatedBid) => {
       console.log("🔔 Received bid update:", updatedBid);
-      setAuctionData((prevData) => ({
-        ...prevData,
-        max_bid: updatedBid.max_bid,
-      }));
+      setAuctionData((prevData) => {
+        if (!prevData || prevData.length === 0) return prevData; 
+    
+        return [
+          {
+            ...prevData[0], 
+            max_bid: updatedBid.max_bid, 
+          }
+        ];
+      });
     });
 
     return () => {
