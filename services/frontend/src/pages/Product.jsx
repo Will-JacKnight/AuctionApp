@@ -78,7 +78,7 @@ function Product() {
         return;
       }
 
-    if (!bidPrice || isNaN(bidPrice) || bidPrice <= auctionData.max_bid) {
+    if (!bidPrice || isNaN(bidPrice) || bidPrice <= auctionData.starting_price) {
       alert("Invalid bid amount");
       return;
     }
