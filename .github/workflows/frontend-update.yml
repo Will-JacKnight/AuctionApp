@@ -5,11 +5,11 @@ on:
     branches:
       - deployment-test
     paths:
-      - 'services/frontend/**'
+      - 'services/frontend'
 
 env:
   SERVICE_NAME: frontend
-  SERVICE_DIR: services/$SERVICE_NAM
+  SERVICE_DIR: services/$SERVICE_NAME
 
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
@@ -53,7 +53,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      if: env.changed == 'true'
+      # if: env.changed == 'true'
       run: |
         docker compose -f docker-compose.yml build $SERVICE_NAME
 

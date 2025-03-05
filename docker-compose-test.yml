@@ -17,4 +17,4 @@ services:
     command: [ "pytest", "tests/test_auction_service.py" ]
 
   frontend:
-    command: ["npm", "run", "dev"]
+    command: ["npm", "test"]
