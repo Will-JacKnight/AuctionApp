@@ -13,9 +13,6 @@ services:
       - USER_SERVICE_HEROKU_URL=${USER_SERVICE_HEROKU_URL}
     ports:
       - "4000:4000"
-    depends_on:
-      - user-service
-      - auction-service
     networks:
       - auction-network
 
@@ -30,6 +27,8 @@ services:
       - API_GATEWAY_HEROKU_URL=${API_GATEWAY_HEROKU_URL}
     ports:
        - "7070:7070"
+    depends_on:
+      - api-gateway
     networks:
       - auction-network
 
@@ -42,6 +41,8 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "8080:8080"
+    depends_on:
+      - api-gateway
     networks:
       - auction-network
 

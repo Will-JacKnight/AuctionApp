@@ -15,3 +15,6 @@ services:
     volumes:
       - ./services/auction-service/tests:/app/tests  # Mount test files
     command: [ "pytest", "tests/test_auction_service.py" ]
+
+  frontend:
+    command: ["npm", "run", "dev"]
