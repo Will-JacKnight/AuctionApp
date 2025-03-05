@@ -72,12 +72,20 @@ function Product() {
   const handleBidSubmit = async () => {
     const token = sessionStorage.getItem("token");
       console.log(token);
-      if (!token) {
+    if (!token) {
         // sessionStorage.setItem("lastVisited", location.pathname);
         alert("Please log in!");
         navigate("/login");
         return;
       }
+
+    const now = new Date();
+    const startTime = new Date(`${auctionData.start_date}T${auctionData.start_time}`);
+    
+    if (now < startTime) {
+        alert("Bidding has not started yet. Please wait until the auction starts.");
+        return;
+    }
 
     if (!bidPrice || isNaN(bidPrice) || bidPrice <= auctionData.starting_price) {
       alert("Invalid bid amount");
