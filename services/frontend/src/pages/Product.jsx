@@ -137,13 +137,13 @@ function Product() {
 
           <div className="price-date-container">
             <span className="price-date-info-text">Starting Price (£)</span>
-            <span className="starting-price-placeholder">{auctionData[0].sarting_price}</span>
+            <span className="starting-price-placeholder">{auctionData[0].starting_price}</span>
             <span className="price-date-info-text">Current Price (£)</span>
             <span className="current-price-placeholder">{auctionData[0].ax_bid?.toLocaleString() || auctionData[0].starting_price}</span>
             <span className="price-date-info-text">Bidding Start</span>
-            <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`).toLocaleDateString()} ${new Date(`${auctionData.start_date}T${auctionData.start_time}`).toLocaleTimeString()}`}</span>
+            <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`).toLocaleDateString()} ${new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`).toLocaleTimeString()}`}</span>
             <span className="price-date-info-text">Bidding End</span>
-            <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].end_date}T${auctionData[0].end_time}`).toLocaleDateString()} ${new Date(`${auctionData.end_date}T${auctionData.end_time}`).toLocaleTimeString()}`}</span>
+            <span className="bidding-date-placeholder">{`${new Date(`${auctionData[0].end_date}T${auctionData[0].end_time}`).toLocaleDateString()} ${new Date(`${auctionData[0].end_date}T${auctionData[0].end_time}`).toLocaleTimeString()}`}</span>
           </div>
 
           <div className="bid-input">
