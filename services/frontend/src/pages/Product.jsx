@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import "./../styles/bidding.css";
 import NavBar from "../components/NavBar";
+import { useNavigate } from "react-router-dom";
 
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -17,23 +18,17 @@ function Product() {
   const [bidPrice, setBidPrice] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) return;
 
     async function fetchAuctionDetails() {
       try {
-        const response = await fetch(`${API_URL}/product/${id}`, { method: "GET", headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      });
+        const response = await fetch(`${API_URL}/product/${id}`, { method: "GET"});
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-              throw new Error("Received non-JSON response. Check API response.");
-            }
         const data = await response.json();
         setAuctionData(data);
       } catch (err) {
@@ -74,6 +69,15 @@ function Product() {
   }, []);
 
   const handleBidSubmit = async () => {
+    const token = sessionStorage.getItem("token");
+      console.log(token);
+      if (!token) {
+        // sessionStorage.setItem("lastVisited", location.pathname);
+        alert("Please log in!");
+        navigate("/login");
+        return;
+      }
+
     if (!bidPrice || isNaN(bidPrice) || bidPrice <= auctionData.max_bid) {
       alert("Invalid bid amount");
       return;
@@ -81,14 +85,18 @@ function Product() {
     try {
       const response = await fetch(`${API_URL}/place_bid`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                  "Content-Type": "application/json"},
         body: JSON.stringify({ bidPrice: Number(bidPrice), auctionId: id}),
       });
 
       if (!response.ok) {
         throw new Error("Failed to place bid");
       }
-
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Received non-JSON response. Check API response.");
+      }
       alert("Bid placed successfully!");
       setBidPrice("");
     } catch (err) {

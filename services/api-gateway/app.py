@@ -101,16 +101,16 @@ def serach_byTag():
 
 @app.route('/product/<auction_id>', methods=['GET'])
 def bidding(auction_id):
-    headers = {
-        "Authorization": request.headers.get("Authorization"),  # Forward the token
-        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
-    }
-    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}", headers=headers)
+    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}")
     return jsonify(response.json()), response.status_code
 
 @app.route('/place_bid', methods=['POST'])
 def place_bid():
-    response = requests.post(f"{AUCTION_SERVICE_URL}/place_bid", json=request.json)
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
+    response = requests.post(f"{AUCTION_SERVICE_URL}/place_bid", json=request.json, headers=headers)
     return jsonify(response.json()), response.status_code
 
 @app.route('/dashboard_sell', methods=['GET'])

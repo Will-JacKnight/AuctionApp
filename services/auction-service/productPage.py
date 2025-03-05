@@ -37,14 +37,11 @@ current_auction_id = None # Track the auction ID being monitoreda
 socketio = SocketIO() # Initialize the Websocket server
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False # Ensure to fetch data first before pulling bids
-current_user_id = None
+
 # Get the proudction information
 @productPage.route('/product/<auction_id>', methods=['GET'])
-@jwt_required()
 def get_product_by_id(auction_id):
-    global current_auction_id, polling_thread_started, latest_max_bid, current_user_id
-    user_id = get_jwt_identity()
-    current_user_id = user_id
+    global current_auction_id, polling_thread_started, latest_max_bid
     current_auction_id = auction_id # Assign the current auction id
     print(f"📩 Received request for auction_id: {auction_id}")
 
@@ -85,10 +82,9 @@ def get_product_by_id(auction_id):
 
 # Place the bid
 @productPage.route('/place_bid', methods=['POST'])
+@jwt_required()
 def place_bid():
-    global current_user_id
-    if current_user_id is None:
-        print("User id needed!")
+    user_id = get_jwt_identity()
     # Get the auctionId and bidPrice from frontend
     data = request.json
     print("Received bid request:", data)
@@ -103,7 +99,7 @@ def place_bid():
 
     try:
         new_bid = {
-            'user_id': current_user_id, 
+            'user_id': user_id, 
             'auction_id': auction_id,
             'bid_amount': bid_price,
             'created_at': datetime.datetime.utcnow().isoformat() 
