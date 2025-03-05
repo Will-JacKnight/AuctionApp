@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
-from supabase import create_client, Client
+from supabaseClient import supabase
 import os
 import datetime
 import uuid
@@ -17,8 +17,6 @@ listingPage = Blueprint("listingPage", __name__)
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 BUCKET_NAME = "product_images"
 
