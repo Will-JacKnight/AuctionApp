@@ -65,11 +65,24 @@ class TestListingPageAPI(unittest.TestCase):
     def setUp(self):
         """Setup the test client."""
         self.app = app
+        self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
         self.client = self.app.test_client()
+        self.app_context = self.app.app_context()  # ✅ Create an application context
+        self.app_context.push()  # ✅ Push the context
+
+    def tearDown(self):
+        """Remove the Flask app context after each test."""
+        self.app_context.pop()  # ✅ Pop the context to clean up
 
     @patch('listingPage.supabase')  # Patch Supabase in the listingPage module
     def test_create_listing(self, mock_supabase):
         """Test the /listing POST route."""
+        with self.app.app_context():
+            test_token = create_access_token(identity="test_seller_id")  # Mock a seller ID
+        auth_header = {
+        "Authorization": f"Bearer {test_token}",
+        "Content-Type": "application/json",  # ✅ Explicitly set Content-Type
+        }
         
         # Mock Supabase table insert response
         mock_insert_response = MagicMock()
@@ -89,7 +102,7 @@ class TestListingPageAPI(unittest.TestCase):
             "end_time": "10:00",
             "image_url": "http://someexample.com"
         }
-        response = self.client.post('/listing', data=payload, content_type='multipart/form-data')
+        response = self.client.post('/listing', data=payload, content_type='multipart/form-data', headers=auth_header)
 
         # Assert response
         self.assertEqual(response.status_code, 201)
@@ -100,6 +113,12 @@ class TestListingPageAPI(unittest.TestCase):
     @patch('listingPage.supabase')  # Mock Supabase
     def test_create_listing_with_image(self, mock_supabase):
         """ Testing listing POST request with jpg file"""
+        with self.app.app_context():
+            test_token = create_access_token(identity="test_seller_id")  # Mock a seller ID
+        auth_header = {
+        "Authorization": f"Bearer {test_token}",
+        "Content-Type": "application/json",  # ✅ Explicitly set Content-Type
+        }
 
         # Mock Supabase Storage upload
         mock_supabase.storage.from_.return_value.upload.return_value = True
@@ -124,7 +143,7 @@ class TestListingPageAPI(unittest.TestCase):
         image = (io.BytesIO(b"fake image data"), "test-image.jpg")
 
         # Send request
-        response = self.client.post('/listing', data={**payload, "productImage": image}, content_type='multipart/form-data')
+        response = self.client.post('/listing', data={**payload, "productImage": image}, content_type='multipart/form-data', headers=auth_header)
 
         # Validate respond
         self.assertEqual(response.status_code, 201)
