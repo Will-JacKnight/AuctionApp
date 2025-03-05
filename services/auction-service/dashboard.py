@@ -85,14 +85,39 @@ def dashboard_bid():
         return jsonify({'error': 'seller_id is required'}), 400
 
     try:
-        # use `rpc()` to call the function stored in Supabase
+        # Raw SQL in Supabase SQL Function Editor
+        """
+        CREATE OR REPLACE FUNCTION get_user_bids(user_id_param UUID)
+        RETURNS TABLE (
+            auction_name TEXT,
+            bid_amount NUMERIC,
+            created_at TIMESTAMP WITHOUT TIME ZONE,
+            status TEXT,
+            max_bid NUMERIC
+        ) AS $$
+        BEGIN
+            RETURN QUERY
+            SELECT 
+                a.name AS auction_name,
+                b.bid_amount,
+                b.created_at::TIMESTAMP WITHOUT TIME ZONE,
+                a.status,
+                (SELECT MAX(b2.bid_amount) FROM bids b2 WHERE b2.auction_id = b.auction_id) AS max_bid
+            FROM bids b
+            JOIN auctions a ON a.id = b.auction_id
+            WHERE b.user_id = user_id_param;
+        END;
+        $$ LANGUAGE plpgsql;
+        """
+
+        # use `rpc()` to call the SQL function stored in Supabase
         bids_response = supabase.rpc("get_user_bids", {"user_id_param": seller_id}).execute()
         bids = bids_response.data
 
         if not bids:
             return jsonify({'message': 'No bids found for this user'}), 200
 
-        # Formating Output
+        # Formating output
         auction_bids = defaultdict(list)
         for bid in bids:
             auction_name = bid["auction_name"]
