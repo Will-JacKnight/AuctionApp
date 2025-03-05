@@ -40,7 +40,8 @@ def dashboard_sell():
             description TEXT,
             image_url TEXT,
             status TEXT,
-            max_bid NUMERIC
+            max_bid NUMERIC,
+            starting_price NUMERIC
         ) AS $$
         BEGIN
             RETURN QUERY
@@ -50,6 +51,7 @@ def dashboard_sell():
                 a.description,
                 a.image_url,
                 a.status,
+                a.starting_price,
                 (SELECT MAX(b.bid_amount) FROM bids b WHERE b.auction_id = a.id) AS max_bid
             FROM auctions a
             WHERE a.seller_id = seller_id_param;
