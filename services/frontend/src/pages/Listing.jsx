@@ -31,7 +31,7 @@ function AuctionUpload() {
   const tags = [
     "electronics", "furniture", "clothing", "jewelry", "art", "books", "toys", "vehicles",
     "sports", "musical", "antiques", "homeDecor", "kitchenware", "tools",
-    "outdoors", "pets", "gaming", "office"
+    "outdoors", "pet supplies", "gaming", "office"
   ];
 
   const handleChange = (e) => {

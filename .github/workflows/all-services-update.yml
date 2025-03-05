@@ -1,4 +1,4 @@
-name: Build, Test and Deploy to Heroku
+name: All Services Deployment
  
 on:
   push:

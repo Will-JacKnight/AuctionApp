@@ -27,7 +27,7 @@ const tagIcons = {
   kitchenware: "/images/tag_icons/kitchenware.svg",
   tools: "/images/tag_icons/tools.svg",
   outdoors: "/images/tag_icons/outdoors.svg",
-  pets: "/images/tag_icons/pets.svg",
+  petSupplies: "/images/tag_icons/petSupplies.svg",
   gaming: "/images/tag_icons/gaming.svg",
   office: "/images/tag_icons/office.svg"
 };

@@ -1,4 +1,4 @@
-name: Only Build api-gateway When Updated
+name: Api Gateway Sole Deployment
 
 on:
   push:

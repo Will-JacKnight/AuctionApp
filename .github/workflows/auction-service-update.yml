@@ -1,4 +1,4 @@
-name: Only Build auction-service When Updated
+name: Auction Service Sole Deployment
 
 on:
   push:

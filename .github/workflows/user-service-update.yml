@@ -1,4 +1,4 @@
-name: Only Build user-service When Updated
+name: User Service Sole Deployment
 
 on:
   push:
