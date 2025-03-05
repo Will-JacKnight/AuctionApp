@@ -124,7 +124,7 @@ function Product() {
           </div>
 
           <div className="price-date-container">
-            <h3>Starting Price: ${auctionData.starting_price.toLocaleString()}</h3>
+            <h3>Starting Price: ${Math.round(auctionData.starting_price).toLocaleString()}</h3>
             <h3 className="bid-price">Current Price: ${auctionData.max_bid?.toLocaleString() || "N/A"}</h3>
             <p>Bidding Start: {new Date(auctionData.start_date).toLocaleString()}</p>
             <p>Bidding End: {new Date(auctionData.end_date).toLocaleString()}</p>
