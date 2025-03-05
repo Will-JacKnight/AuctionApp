@@ -29,43 +29,53 @@ def dashboard_sell():
     seller_id = get_jwt_identity()  # Extract user data from JWT
     if not seller_id:
         return jsonify({'error': 'seller_id is required'}), 400
- 
+
     try:
-        # get the username
+        # Raw SQL function definition in Supabase SQL Function Editor
+        """
+        CREATE OR REPLACE FUNCTION getting_seller_auctions(seller_id_param UUID)
+        RETURNS TABLE (
+            id UUID,
+            name TEXT,
+            description TEXT,
+            image_url TEXT,
+            status TEXT,
+            max_bid NUMERIC
+        ) AS $$
+        BEGIN
+            RETURN QUERY
+            SELECT 
+                a.id,
+                a.name,
+                a.description,
+                a.image_url,
+                a.status,
+                (SELECT MAX(b.bid_amount) FROM bids b WHERE b.auction_id = a.id) AS max_bid
+            FROM auctions a
+            WHERE a.seller_id = seller_id_param;
+        END;
+        $$ LANGUAGE plpgsql;
+        """
+
+        # Get seller's username
         username_response = supabase.table('users').select('username').eq('id', seller_id).execute()
-        username = username_response.data  
- 
-        # If no user is found, return a 404 response
+        username = username_response.data
+
         if not username:
             return jsonify({'error': 'Seller not found'}), 404
- 
-        # get the selling items
-        items_response = supabase.table('auctions').select('id', 'name', 'description', 'image_url', 'status').eq('seller_id', seller_id).execute()
-        items = items_response.data
- 
+
+        # Use `rpc()` to call the SQL function stored in Supabase
+        items_response = supabase.rpc("getting_seller_auctions", {"seller_id_param": seller_id}).execute()
+        items = items_response.data if items_response.data else []
+        print(items)
+
         if not items:
             return jsonify({'message': 'No items found for this seller'}), 200
- 
-        bids = {}
+        items_list = []
         for item in items:
-            auction_id = item['id']
-            bid_response = (
-                supabase.table('bids')
-                .select('bid_amount')
-                .eq('auction_id', auction_id)
-                .order('bid_amount', desc=True)  # Sort by bid_amount in descending order
-                .limit(1)  # Get the highest bid
-                .execute()
-            )
-            max_bid = bid_response.data[0]['bid_amount'] if bid_response.data else None
-            bids[auction_id] = max_bid  # Store max bid for each auction
- 
-        # Combine items with their max bid amount
-        for item in items:
-            item['max_bid'] = bids.get(item['id'], None)
-            
- 
-        return jsonify({'username': username, 'items': items}), 200
+            items_list.append(item)
+        return jsonify(items_list), 200
+
     except Exception as e:
         print("Error:", e, flush=True)
         traceback.print_exc()

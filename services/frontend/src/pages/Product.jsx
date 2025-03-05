@@ -30,6 +30,7 @@ function Product() {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log(data)
         setAuctionData(data);
       } catch (err) {
         console.error("Error fetching auction details:", err);
