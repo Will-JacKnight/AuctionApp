@@ -1,9 +1,9 @@
-name: Build, Test and Deploy to Heroku
+name: All Services Deployment
  
 on:
   push:
     branches:
-#      - main
+      - main
   workflow_dispatch:  # Allows manual deployment
  
 env:
