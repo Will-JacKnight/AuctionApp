@@ -21,7 +21,9 @@
     display: flex;
     gap: 15px;
     padding-right: 75px;
-
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
   
 .navbar li {
@@ -60,11 +62,12 @@
 }
 
 .logout-icon {
-    width: 25px; /* Make the icon a bit smaller */
+    width: 25px; 
     height: 25px;
-    filter: invert(1); /* Change color to white */
-    vertical-align: middle; /* Align vertically with other items */
-    transition: filter 0.3s ease; /* Add transition for hover effect */
+    filter: invert(1); 
+    vertical-align: middle; 
+    transition: filter 0.3s ease;
+    cursor: pointer;
 }
 
 .logout-icon:hover {

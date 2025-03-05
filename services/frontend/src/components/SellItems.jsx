@@ -36,6 +36,7 @@ const Sales = () => {
               throw new Error("Received non-JSON response. Check API response.");
             }
             const data = await response.json()
+            console.log(data)
             if(data != "No items found for this seller") {
               const extracted_data = data["items"];
               setSales(extracted_data)
@@ -75,7 +76,10 @@ const Sales = () => {
                   <h3 className="item-name">
                     {sale.name}
                   </h3>
-                  <h5 className="highest-bid">Highest Bid: £{sale.max_bid}</h5>
+                  <h5 className="highest-bid">Highest Bid: £
+                    {/* {sale.max_bid} */}
+                    500
+                    </h5>
                   <h6 className="time-left">Time Left: 12 hrs</h6>
                   <p className="item-description">{sale.description.slice(0, 150)}</p>
                 </div>

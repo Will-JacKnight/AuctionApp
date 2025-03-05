@@ -34,6 +34,7 @@ const Biddings = () => {
         }
 
         const data = await response.json();
+        console.log(data)
         if(data.message  != "No bids found for this user") {
           const extracted_data = data.flatMap(obj => Object.values(obj).flat());
           setBiddings(extracted_data);

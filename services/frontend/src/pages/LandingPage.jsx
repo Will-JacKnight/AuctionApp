@@ -27,7 +27,7 @@ const tagIcons = {
   kitchenware: "/images/tag_icons/kitchenware.svg",
   tools: "/images/tag_icons/tools.svg",
   outdoors: "/images/tag_icons/outdoors.svg",
-  pets: "/images/tag_icons/pets.svg",
+  petSupplies: "/images/tag_icons/petSupplies.svg",
   gaming: "/images/tag_icons/gaming.svg",
   office: "/images/tag_icons/office.svg"
 };
@@ -38,6 +38,7 @@ function formatTagName(tag) {
 
 function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [status, setStatus] = useState('original status')
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -80,7 +81,29 @@ function LandingPage() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      setStatus('original status');
+      try {
+        setLoading(true);
+        // Fetch all items from the API when search query is empty
+        const response = await fetch(`${API_URL}/display_mainPage`, {
+          method: "GET", // Assuming you use a GET request to fetch all items
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setData(data); // Show all items
+      } catch (err) {
+        console.error("Error fetching items:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+      return
+    }
 
     try {
       setLoading(true);

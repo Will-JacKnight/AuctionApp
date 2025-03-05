@@ -1,0 +1,93 @@
+name: Only Build Frontend When Updated
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/frontend/**'
+      - '.github/workflows/frontend-update.yml'
+
+env:
+  SERVICE_NAME: frontend
+  SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+  SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
+  JWT_KEY: ${{secrets.JWT_KEY}}
+  AUCTION_SERVICE_HEROKU_URL: ${{secrets.AUCTION_SERVICE_HEROKU_URL}}
+  USER_SERVICE_HEROKU_URL: ${{secrets.USER_SERVICE_HEROKU_URL}}
+  API_GATEWAY_HEROKU_URL: ${{secrets.API_GATEWAY_HEROKU_URL}}
+
+jobs:
+  build-and-test-image:
+    name: Run Frontend Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run frontend tests
+        run: |
+          echo "Running tests for $SERVICE_NAME"
+          docker compose -f docker-compose.yml -f docker-compose-test.yml up --abort-on-container-exit $SERVICE_NAME
+
+      - name: Stop and Clean Up After Testing
+        run: |
+          docker compose -f docker-compose.yml down -v
+
+  deploy-to-heroku:
+    name: Deploy Changed Image to Heroku
+    needs: build-and-test-image
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_REGISTRY_PREFIX: registry.heroku.com
+      HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+      HEROKU_USERNAME: ${{secrets.HEROKU_USERNAME}}
+
+      HEROKU_FRONTEND_APP_NAME: ${{secrets.HEROKU_FRONTEND_APP_NAME}}
+      HEROKU_API_GATEWAY_APP_NAME: ${{secrets.HEROKU_API_GATEWAY_APP_NAME}}
+      HEROKU_AUCTION_SERVICE_APP_NAME: ${{secrets.HEROKU_AUCTION_SERVICE_APP_NAME}}
+      HEROKU_USER_SERVICE_APP_NAME: ${{secrets.HEROKU_USER_SERVICE_APP_NAME}}
+
+      RUN_MODE: heroku
+      CR_PREFIX: ""
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Login to docker
+        run: |
+          echo ${{ env.HEROKU_API_KEY }} | docker login --username ${{env.HEROKU_USERNAME}} --password-stdin registry.heroku.com
+
+      - name: Authenticate with Heroku
+        run: |
+          echo "machine api.heroku.com login ${{env.HEROKU_USERNAME}} password ${{ env.HEROKU_API_KEY }}" > ~/.netrc
+          echo "machine git.heroku.com login ${{env.HEROKU_USERNAME}} password ${{ env.HEROKU_API_KEY }}" >> ~/.netrc
+          chmod 600 ~/.netrc
+          heroku auth:token
+          heroku auth:whoami
+
+      - name: Build Docker image
+        run: |
+          docker compose -f docker-compose.yml build $SERVICE_NAME
+
+      - name: Tag Image
+        run: |
+          echo "Tag the image..."
+          docker tag ${SERVICE_NAME} ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+
+      - name: Push Image
+        run: |
+          echo "Push the image..."
+          docker push ${HEROKU_REGISTRY_PREFIX}/${HEROKU_FRONTEND_APP_NAME}/web
+
+      - name: Release pushed images to Heroku
+        run: |
+          heroku container:release web -a ${{env.HEROKU_FRONTEND_APP_NAME}}
+
+      - name: Scale dynos
+        run: |
+          heroku ps:scale web=1 -a ${{env.HEROKU_FRONTEND_APP_NAME}}
