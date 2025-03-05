@@ -6,6 +6,7 @@ on:
       - deployment-test
     paths:
       - 'services/frontend/**'
+      - '.github/workflows/frontend-update.yml'
 
 env:
   SERVICE_NAME: frontend
@@ -19,48 +20,9 @@ env:
   API_GATEWAY_HEROKU_URL: ${{secrets.API_GATEWAY_HEROKU_URL}}
 
 jobs:
-#  check_changes:
-#    runs-on: ubuntu-latest
-#    outputs:
-#      changes: ${{ steps.check.outputs.changed }}
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Check for changes
-#        id: check
-#        run: |
-#          if git diff --quiet HEAD^ HEAD -- $SERVICE_DIR; then
-#            echo "No changes in $SERVICE_DIR"
-#            echo "::set-output name=changed::false"
-#          else
-#            echo "Changes detected in $SERVICE_DIR"
-#            echo "::set-output name=changed::true"
-#          fi
-
-  build-image:
-    name: Build only the frontend service
-    runs-on: ubuntu-latest
-#    needs: check_changes
-#    if: needs.check_changes.outputs.changes == 'true'
-    env:
-      CR_PREFIX: ""
-      RUN_MODE: local
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Build Docker image
-      # if: env.changed == 'true'
-      run: |
-        docker compose -f docker-compose.yml build $SERVICE_NAME
-
-  test-image:
+  build-and-test-image:
     name: Run Test
     runs-on: ubuntu-latest
-    needs: build-image
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -76,7 +38,7 @@ jobs:
 
   deploy-to-heroku:
     name: Deploy Changed Image to Heroku
-    needs: test-image
+    needs: build-and-test-image
     runs-on: ubuntu-latest
     env:
       HEROKU_REGISTRY_PREFIX: registry.heroku.com
@@ -89,6 +51,7 @@ jobs:
       HEROKU_USER_SERVICE_APP_NAME: ${{secrets.HEROKU_USER_SERVICE_APP_NAME}}
 
       RUN_MODE: heroku
+      CR_PREFIX: ""
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -108,7 +71,11 @@ jobs:
           chmod 600 ~/.netrc
           heroku auth:token
           heroku auth:whoami
-      
+
+      - name: Build Docker image
+        run: |
+          docker compose -f docker-compose.yml build $SERVICE_NAME
+
       - name: Tag Image
         run: |
           echo "Tag the image..."
