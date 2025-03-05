@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import "./../styles/bidding.css";
 import NavBar from "../components/NavBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -76,10 +76,10 @@ function Product() {
     const token = sessionStorage.getItem("token");
       console.log(token);
     if (!token) {
-        // sessionStorage.setItem("lastVisited", location.pathname);
+        sessionStorage.setItem("lastVisited", location.pathname);
         alert("Please log in!");
         navigate("/login");
-        return;
+        return <Outlet />;
       }
 
     const now = new Date();
