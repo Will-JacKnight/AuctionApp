@@ -49,7 +49,7 @@ def get_product_by_id(auction_id):
     try:
         response = supabase.table('auctions').select(
             'name', 'description', 'status', 'start_date', 'start_time', 
-            'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url'
+            'starting_price', 'end_date', 'end_time', 'auction_type', 'image_url', 'seller_id'
         ).eq('id', auction_id).execute()
 
         if not response.data:

@@ -6,3 +6,5 @@ python-dotenv==1.0.1
 supabase==2.13.0
 Flask-SocketIO==5.5.1
 eventlet==0.39.0
+Flask-JWT-Extended==4.7.1
+pytest-mock==3.14.0
