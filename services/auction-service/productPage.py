@@ -1,24 +1,24 @@
-from flask import Flask, request, jsonify, Blueprint
-from supabaseClient import supabase
 import os
 import datetime
 import uuid
-from dotenv import load_dotenv
-from flask_cors import CORS
 import traceback
-from collections import defaultdict
 import threading
-from flask_socketio import SocketIO, emit
 import time
 import requests
-from flask_jwt_extended import jwt_required, get_jwt_identity
 import sys
-import threading
+from flask import Flask, request, jsonify, Blueprint
+from supabaseClient import supabase
+from dotenv import load_dotenv
+from flask_cors import CORS
+from collections import defaultdict
+from flask_socketio import SocketIO, emit
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 load_dotenv(dotenv_path)
 
+# Environment settings
 RUN_MODE = os.getenv("RUN_MODE", "local")  # Default to local if not set
 AZURE_BID_EMAIL_FUNCTION = os.getenv("AZURE_BID_EMAIL_FUNCTION")
 
@@ -29,14 +29,20 @@ elif RUN_MODE == "heroku":
 else:  # Default to local
     API_GATEWAY_URL = os.getenv("API_GATEWAY_LOCAL_URL")
 
+# Initialize Blueprint
 productPage = Blueprint("productPage", __name__)
 
+# Initialize the Websocket server
+socketio = SocketIO()
+
 current_auction_id = None # Track the auction ID being monitoreda
-socketio = SocketIO() # Initialize the Websocket server
 latest_max_bid = None  # Store last highest bid
 polling_thread_started = False # Ensure to fetch data first before pulling bids
 
-# Get the proudction information
+###############################
+#   Fetch Auction Product    #
+###############################
+
 @productPage.route('/product/<auction_id>', methods=['GET'])
 def get_product_by_id(auction_id):
     global current_auction_id, polling_thread_started, latest_max_bid
@@ -53,7 +59,7 @@ def get_product_by_id(auction_id):
         ).eq('id', auction_id).execute()
 
         if not response.data:
-            print("⚠️ Auction not found for ID:", auction_id)
+            print("Auction not found for ID:", auction_id)
             return jsonify({"error": "Auction not found"}), 404
         
         item = response.data[0] # Get the first and only one item
@@ -78,10 +84,13 @@ def get_product_by_id(auction_id):
 
         return jsonify(itemList), 200
     except Exception as e:
-        print(f"🔥 Error retrieving auction: {e}")
+        print(f"Error retrieving auction: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Place the bid
+###############################
+#       Place a Bid          #
+###############################
+
 @productPage.route('/place_bid', methods=['POST'])
 @jwt_required()
 def place_bid():
@@ -127,7 +136,10 @@ def place_bid():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
-# Polling new bids by Websocket
+###############################
+#   Poll for New Bids        #
+###############################
+
 def poll_for_new_bids():
     global current_auction_id, latest_max_bid
     while True:
@@ -163,6 +175,9 @@ def poll_for_new_bids():
 
         time.sleep(2)  # Wait 5 seconds before checking again
 
+###############################
+#   Notify Users on New Bids #
+###############################
 
 def notifyUsers(product_price, auction_id, user_id):
     
