@@ -1,12 +1,13 @@
 import pytest
 import json
-from unittest.mock import patch, MagicMock
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 from app import app
 from flask_socketio import SocketIOTestClient
 from flask_jwt_extended import create_access_token
+from unittest.mock import patch, MagicMock
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 @pytest.fixture
 def client():
@@ -14,6 +15,10 @@ def client():
     app.config["TESTING"] = True
     client = app.test_client()
     return client
+
+###############################
+#        Test Login          #
+###############################
 
 def test_login(client, mocker):
     """Test the login API"""
@@ -26,6 +31,10 @@ def test_login(client, mocker):
     assert response.status_code == 200
     assert response.get_json()["message"] == "Login successful"
 
+###############################
+#        Test Search         #
+###############################
+
 def test_search(client, mocker):
     """Test the search API"""
     mock_response = mocker.patch("requests.post")
@@ -37,6 +46,9 @@ def test_search(client, mocker):
     assert response.status_code == 200
     assert response.get_json() == {"results": ["item1", "item2"]}
 
+###############################
+#    Test Product Details    #
+###############################
 
 def test_product_details(client, mocker):
     """Test the product details API"""
