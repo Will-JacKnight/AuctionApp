@@ -1,18 +1,17 @@
 import eventlet
+# Enable eventlet for async operations
+eventlet.monkey_patch()
+
 import requests
 import sys
 import os
 import logging
-import uuid
 from dotenv import load_dotenv
 from supabase import create_client
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify
-
-# Enable eventlet for async operations
-eventlet.monkey_patch()
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
