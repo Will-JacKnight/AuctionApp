@@ -3,8 +3,9 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock
 from flask import json
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
 from app import app
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
 
 class TestUserLogin(unittest.TestCase):
 
