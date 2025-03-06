@@ -1,12 +1,13 @@
 import pytest
 import json
-from unittest.mock import patch, MagicMock
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
-from app import app
+from unittest.mock import patch, MagicMock
 from flask_socketio import SocketIOTestClient
 from flask_jwt_extended import create_access_token
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
+from app import app
 
 @pytest.fixture
 def client():
