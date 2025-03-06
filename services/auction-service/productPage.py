@@ -205,35 +205,27 @@ def notifyUsers(product_price, auction_id, user_id):
         bidder_email = bidder_email_response.data[0]['email']
 
     # using emails 
-
-    # payload = {
-    #     "email": "kumar.yashrana1718@gmail.com",
-    #     "item": product_name,
-    #     "bid": product_price
-    # }
     
-    for email in emails:
-        if email  == bidder_email:
-            continue
-        payload = {
-        "email": email,
+    if bidder_email in emails:
+        emails.remove(bidder_email)
+
+    payload = {
+        "emails": emails,
         "item": product_name,
-        "bid": product_price
-        }
-        print(payload)
+        "bid": product_price    
+    }
+
+    try:
+        # Send request to Azure Function
+        response = requests.post(AZURE_BID_EMAIL_FUNCTION, json=payload)
+        response.raise_for_status()  # Raise an error for bad responses
+
+        print("Sent all emails successfully")
         sys.stdout.flush()
 
-        try:
-            # Send request to Azure Function
-            response = requests.post(AZURE_BID_EMAIL_FUNCTION, json=payload)
-            response.raise_for_status()  # Raise an error for bad responses
-
-            print("Sent all emails successfully")
-            sys.stdout.flush()
-
-        except requests.exceptions.RequestException as e:
-            print("Exception occured when sending emails: ", str(e))
-            sys.stdout.flush()
+    except requests.exceptions.RequestException as e:
+        print("Exception occured when sending emails: ", str(e))
+        sys.stdout.flush()
 
 
 
