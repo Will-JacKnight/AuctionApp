@@ -24,9 +24,6 @@ MODE = os.getenv("RUN_MODE")
 if MODE == "heroku":
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_HEROKU_URL")
     USER_SERVICE_URL = os.getenv("USER_SERVICE_HEROKU_URL")
-else:
-    AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_LOCAL_URL")
-    USER_SERVICE_URL = os.getenv("USER_SERVICE_LOCAL_URL")
  
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -180,4 +177,4 @@ def handle_bid_update(data):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 4000))
-    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=port, debug=False, allow_unsafe_werkzeug=True)

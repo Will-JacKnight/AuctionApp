@@ -26,7 +26,6 @@ auction-app/
 │   │ ├── styles/          # CSS styles  
 │   │ └── App.jsx          # Main React application file  
 │   ├──  package.json      # Node.js dependencies for frontend  
-│   ├──  vite.config.js    # Vite configuration file  
 │   └──  Dockerfile        # Dockerfile for building the frontend image  
 │
 ├── .env-repo/ # Private environment variables repository
