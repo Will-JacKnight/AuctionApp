@@ -23,7 +23,7 @@ function Card({data}) {
             <div className="item-card-title-container">
               <p className="item-card-name">{data.name}</p>
               <p className="item-card-time">
-                {data.remaining_days <= 1 ? 'Less than 24 hours' : `${data.remaining_days} Days`}
+                {data.remaining_days < 1 ? 'Less than 24 hours' : `${data.remaining_days} Days`}
               </p>
             </div>
             <p className="item-card-price">
