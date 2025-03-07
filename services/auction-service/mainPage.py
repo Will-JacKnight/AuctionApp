@@ -80,8 +80,8 @@ def search_item():
     # Fetch items matching the search query
     response = (
         supabase.table('auctions')
-        .select('name', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
-        .ilike('name', f"%{keyword}%")
+        .select('name', 'description', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
+        .ilike('description', f"%{keyword}%")
         .execute()
     )
     

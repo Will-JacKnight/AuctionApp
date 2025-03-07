@@ -25,6 +25,7 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - RUN_MODE=${RUN_MODE}
       - API_GATEWAY_HEROKU_URL=${API_GATEWAY_HEROKU_URL}
+      - AZURE_BID_EMAIL_FUNCTION=${AZURE_BID_EMAIL_FUNCTION}
     ports:
        - "7070:7070"
     depends_on:

@@ -1,14 +1,10 @@
+import os
+import traceback
 from flask import Flask, request, jsonify, Blueprint
 from supabaseClient import supabase
-import os
-import datetime
-import uuid
 from dotenv import load_dotenv
 from flask_cors import CORS
-import traceback
 from collections import defaultdict
-import logging
-import sys
 from flask_jwt_extended import jwt_required, get_jwt_identity
  
  
@@ -17,11 +13,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 # dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
 # load_dotenv(dotenv_path)
  
+# Initialize Blueprint for Dashboard API
 dashboard = Blueprint("dashboard", __name__)
  
-
-# app = Flask(__name__)
-# CORS(app)
+###############################
+#   Dashboard Sell Route     #
+###############################
  
 @dashboard.route('/dashboard_sell', methods=['GET'])
 @jwt_required()
@@ -83,7 +80,10 @@ def dashboard_sell():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
  
- 
+ ###############################
+#   Dashboard Bid Route      #
+###############################
+
 @dashboard.route('/dashboard_bid', methods=['GET'])
 @jwt_required()
 def dashboard_bid():
@@ -145,8 +145,3 @@ def dashboard_bid():
         print("Error:", e, flush=True)
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
-
-
- 
-# if __name__ == "__main__":
-#     app.run(debug=True)

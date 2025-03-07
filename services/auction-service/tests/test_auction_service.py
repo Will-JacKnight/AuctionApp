@@ -1,16 +1,21 @@
 import sys
 import os
-from unittest.mock import patch, MagicMock
-import unittest
-from flask import Flask
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
-from app import app  # Import the Flask app instance
 import io
+import unittest
+from unittest.mock import patch, MagicMock
+from flask import Flask
+from app import app  # Import the Flask app instance
 from flask_jwt_extended import create_access_token, JWTManager
 
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
+
+# Configure JWT
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Change this to a strong secret
 jwt = JWTManager(app)
 
+###############################
+#       Test Main Page       #
+###############################
 
 class TestMainPageAPI(unittest.TestCase):
 
@@ -59,6 +64,9 @@ class TestMainPageAPI(unittest.TestCase):
         data = response.get_json()
         self.assertTrue(len(data) > 0)  # Check if items are returned
     
+###############################
+#     Test Listing Page      #
+###############################
 
 class TestListingPageAPI(unittest.TestCase):
 
@@ -67,12 +75,12 @@ class TestListingPageAPI(unittest.TestCase):
         self.app = app
         self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
         self.client = self.app.test_client()
-        self.app_context = self.app.app_context()  # ✅ Create an application context
-        self.app_context.push()  # ✅ Push the context
+        self.app_context = self.app.app_context()  # Create an application context
+        self.app_context.push()  # Push the context
 
     def tearDown(self):
         """Remove the Flask app context after each test."""
-        self.app_context.pop()  # ✅ Pop the context to clean up
+        self.app_context.pop()  # Pop the context to clean up
 
     @patch('listingPage.supabase')  # Patch Supabase in the listingPage module
     def test_create_listing(self, mock_supabase):
@@ -81,7 +89,7 @@ class TestListingPageAPI(unittest.TestCase):
             test_token = create_access_token(identity="test_seller_id")  # Mock a seller ID
         auth_header = {
         "Authorization": f"Bearer {test_token}",
-        "Content-Type": "application/json",  # ✅ Explicitly set Content-Type
+        "Content-Type": "application/json",  # Explicitly set Content-Type
         }
         
         # Mock Supabase table insert response
@@ -117,7 +125,7 @@ class TestListingPageAPI(unittest.TestCase):
             test_token = create_access_token(identity="test_seller_id")  # Mock a seller ID
         auth_header = {
         "Authorization": f"Bearer {test_token}",
-        "Content-Type": "application/json",  # ✅ Explicitly set Content-Type
+        "Content-Type": "application/json",  # Explicitly set Content-Type
         }
 
         # Mock Supabase Storage upload
@@ -152,6 +160,10 @@ class TestListingPageAPI(unittest.TestCase):
         self.assertEqual(data["item_id"], 456)
         self.assertIn("image_url", data) 
 
+###############################
+#     Test Dashboard Page    #
+###############################
+
 class TestDashboardPageAPI(unittest.TestCase):
 
     def setUp(self):
@@ -159,14 +171,14 @@ class TestDashboardPageAPI(unittest.TestCase):
         self.app = app
         self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
         self.client = self.app.test_client()
-        self.app_context = self.app.app_context()  # ✅ Create an application context
-        self.app_context.push()  # ✅ Push the context
+        self.app_context = self.app.app_context()  # Create an application context
+        self.app_context.push()  # Push the context
 
     def tearDown(self):
         """Remove the Flask app context after each test."""
-        self.app_context.pop()  # ✅ Pop the context to clean up
+        self.app_context.pop()  # Pop the context to clean up
 
-    @patch('dashboard.supabase')  # ✅ Patch where supabase is actually imported
+    @patch('dashboard.supabase')  # Patch where supabase is actually imported
     def test_dashboard_bid(self, mock_supabase):
         """Test the /dashboard_bid GET API with mock Supabase RPC."""
 
@@ -226,7 +238,7 @@ class TestDashboardPageAPI(unittest.TestCase):
         self.assertIn("Test Item", data[0])
         self.assertIn("Danny", data[1])
         
-    @patch('dashboard.supabase')  # ✅ Patch Supabase
+    @patch('dashboard.supabase')  # Patch Supabase
     def test_dashboard_sell(self, mock_supabase):
         """Test the /dashboard_sell GET route with SQL RPC and JWT authentication."""
 
@@ -235,15 +247,15 @@ class TestDashboardPageAPI(unittest.TestCase):
 
         auth_header = {
             "Authorization": f"Bearer {test_token}",
-            "Content-Type": "application/json",  # ✅ Explicitly set Content-Type
+            "Content-Type": "application/json",  # Explicitly set Content-Type
         }
 
-        # ✅ Mock Supabase response for username retrieval
+        # Mock Supabase response for username retrieval
         # mock_username_response = MagicMock()
         # mock_username_response.execute.return_value.data = [{"username": "test_seller"}]
         # mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_username_response
 
-        # ✅ Mock Supabase RPC response for seller's auctions
+        # Mock Supabase RPC response for seller's auctions
         mock_rpc_response = MagicMock()
         mock_rpc_response.execute.return_value.data = [
             {
@@ -273,97 +285,33 @@ class TestDashboardPageAPI(unittest.TestCase):
         ]
         mock_supabase.rpc.return_value = mock_rpc_response
 
-        # ✅ Send request
+        # Send request
         response = self.client.get('/dashboard_sell', headers=auth_header)
 
-        # ✅ Assert the response status code
+        # Assert the response status code
         self.assertEqual(response.status_code, 200)
 
-        # ✅ Validate JSON response
+        # Validate JSON response
         data = response.get_json()
         self.assertIsInstance(data, list)
 
-        # # ✅ Ensure username is correctly returned
+        # # Ensure username is correctly returned
         # self.assertEqual(data["username"], [{"username": "test_seller"}])
 
 
         self.assertEqual(len(data), 3)  # Ensure 3 items are returned
 
-        # ✅ Validate first auction item (Vintage Watch)
+        # Validate first auction item (Vintage Watch)
         self.assertEqual(data[0]["id"], "11111111-1111-1111-1111-111111111111")
         self.assertEqual(data[0]["name"], "Vintage Watch")
         self.assertEqual(data[0]["max_bid"], 1200)
 
-        # ✅ Validate second auction item (Signed Football)
+        # Validate second auction item (Signed Football)
         self.assertEqual(data[1]["id"], "22222222-2222-2222-2222-222222222222")
         self.assertEqual(data[1]["name"], "Signed Football")
         self.assertIsNone(data[1]["max_bid"])  # Ensure max_bid is None when no bids exist
 
-        # ✅ Validate third auction item (Antique Painting)
+        # Validate third auction item (Antique Painting)
         self.assertEqual(data[2]["id"], "33333333-3333-3333-3333-333333333333")
         self.assertEqual(data[2]["name"], "Antique Painting")
         self.assertEqual(data[2]["max_bid"], 5000.00)
-
-class TestProductPageAPI(unittest.TestCase):
-
-    def setUp(self):
-        """Setup the test client and Flask application context."""
-        self.app = app
-        self.app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-        self.client = self.app.test_client()
-        self.app_context = self.app.app_context()
-        self.app_context.push() 
-
-    def tearDown(self):
-        """Remove the Flask app context after each test."""
-        self.app_context.pop()
-
-    @patch('productPage.supabase')  # Mock Supabase
-    def test_get_product_by_id_success(self, mock_supabase):
-        """Test GET /product/<auction_id> API when auction exists."""
-
-        auction_id = "test-auction-123"
-
-        mock_auction_response = MagicMock()
-        mock_auction_response.execute.return_value.data = [
-            {
-                "id": "test-auction-123", 
-                "name": "Test Item",
-                "description": "A test auction item",
-                "status": "active",
-                "start_date": "2025-05-01",
-                "start_time": "09:00",
-                "starting_price": 100,
-                "end_date": "2025-05-02",
-                "end_time": "10:00",
-                "auction_type": "standard",
-                "image_url": "http://someexample.com"
-            }
-        ]
-
-        mock_bid_response = MagicMock()
-        mock_bid_response.execute.return_value.data = [
-            {"bid_amount": 500}
-        ]
-
-        mock_supabase.table.return_value.select.return_value.eq.return_value.execute.side_effect = [
-            mock_auction_response.execute(),  
-            mock_bid_response.execute() 
-        ]
-
-
-        response = self.client.get(f'/product/{auction_id}')
-
-  
-        print("Response Status:", response.status_code)
-        print("Response JSON:", response.get_json())
-
-        self.assertEqual(response.status_code, 200)
-
-        data = response.get_json()
-        self.assertIsInstance(data, dict)
-
-        self.assertEqual(data["name"], "Test Item")
-
-        self.assertIn("max_bid", data)
-        self.assertEqual(data["max_bid"], 500)

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import "./../styles/bidding.css";
 import NavBar from "../components/NavBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 
 const API_URL =
   import.meta.env.VITE_RUN_MODE === "docker"
@@ -60,10 +60,16 @@ function Product() {
 
     socket.on("bid_update", (updatedBid) => {
       console.log("🔔 Received bid update:", updatedBid);
-      setAuctionData((prevData) => ({
-        ...prevData,
-        max_bid: updatedBid.max_bid,
-      }));
+      setAuctionData((prevData) => {
+        if (!prevData || prevData.length === 0) return prevData; 
+    
+        return [
+          {
+            ...prevData[0], 
+            max_bid: updatedBid.max_bid, 
+          }
+        ];
+      });
     });
 
     return () => {
@@ -76,20 +82,27 @@ function Product() {
     const token = sessionStorage.getItem("token");
       console.log(token);
     if (!token) {
-        // sessionStorage.setItem("lastVisited", location.pathname);
+        sessionStorage.setItem("lastVisited", location.pathname);
         alert("Please log in!");
         navigate("/login");
-        return;
+        return <Outlet />;
       }
 
     const now = new Date();
-    const startTime = new Date(`${auctionData.start_date}T${auctionData.start_time}`);
+    const startTime = new Date(`${auctionData[0].start_date}T${auctionData[0].start_time}`);
+    const endTime = new Date(`${auctionData[0].end_date}T${auctionData[0].end_time}`);
+
     if (now < startTime) {
-        alert("Bidding has not started yet. Please wait until the auction starts.");
-        return;
+      alert("Auction has not started yet. Please wait until the auction starts.");
+      return;
     }
 
-    if (!bidPrice || isNaN(bidPrice) || bidPrice <= auctionData.starting_price) {
+    if (now > endTime) {
+      alert("Auction has finished!");
+      return;
+    }
+
+    if (!bidPrice || isNaN(bidPrice) || bidPrice <= auctionData[0].starting_price || bidPrice <= auctionData[0].max_bid) {
       alert("Invalid bid amount");
       return;
     }
