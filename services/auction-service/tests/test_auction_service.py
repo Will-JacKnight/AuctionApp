@@ -250,11 +250,6 @@ class TestDashboardPageAPI(unittest.TestCase):
             "Content-Type": "application/json",  # Explicitly set Content-Type
         }
 
-        # Mock Supabase response for username retrieval
-        # mock_username_response = MagicMock()
-        # mock_username_response.execute.return_value.data = [{"username": "test_seller"}]
-        # mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_username_response
-
         # Mock Supabase RPC response for seller's auctions
         mock_rpc_response = MagicMock()
         mock_rpc_response.execute.return_value.data = [
@@ -294,10 +289,6 @@ class TestDashboardPageAPI(unittest.TestCase):
         # Validate JSON response
         data = response.get_json()
         self.assertIsInstance(data, list)
-
-        # # Ensure username is correctly returned
-        # self.assertEqual(data["username"], [{"username": "test_seller"}])
-
 
         self.assertEqual(len(data), 3)  # Ensure 3 items are returned
 
