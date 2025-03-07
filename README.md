@@ -28,7 +28,8 @@ auction-app/
 │   ├──  package.json      # Node.js dependencies for frontend  
 │   ├──  vite.config.js    # Vite configuration file  
 │   └──  Dockerfile        # Dockerfile for building the frontend image  
-│  
+│
+├── .env-repo/ # Private environment variables repository
 ├── .github/               # GitHub Actions for CI/CD  
 │ └── workflows/           # GitHub Actions workflows  
 │ └── heroku-deploy.yml    # Workflow for deploying to Heroku  
@@ -50,7 +51,7 @@ docker compose -f docker-compose-local.yml up -d --build
 
 ### Local Unit Tests
 ```
-docker compose -f docker-compose-local.yml -f docker-compose-test.yml up --abort-on-container-exit
+docker compose -f docker-compose-local.yml -f docker-compose-test.yml up
 ```
 
 ### Local - Shut down all services

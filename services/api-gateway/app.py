@@ -24,10 +24,10 @@ CORS(app, supports_credentials=True)
 # AUCTION_SERVICE_URL = "http://auction-service:7070"
 
 MODE = os.getenv("RUN_MODE")
-if MODE == "docker":
-    AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_DOCKER_URL")
-    USER_SERVICE_URL = os.getenv("USER_SERVICE_DOCKER_URL")
-elif MODE == "heroku":
+# if MODE == "docker":
+#     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_DOCKER_URL")
+#     USER_SERVICE_URL = os.getenv("USER_SERVICE_DOCKER_URL")
+if MODE == "heroku":
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_HEROKU_URL")
     USER_SERVICE_URL = os.getenv("USER_SERVICE_HEROKU_URL")
 else:

@@ -13,9 +13,9 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
  
  
  
-# Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-load_dotenv(dotenv_path)
+# # Load environment variables
+# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+# load_dotenv(dotenv_path)
  
 dashboard = Blueprint("dashboard", __name__)
  
