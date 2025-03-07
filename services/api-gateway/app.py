@@ -24,6 +24,9 @@ if MODE == "docker":
 elif MODE == "heroku":
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_HEROKU_URL")
     USER_SERVICE_URL = os.getenv("USER_SERVICE_HEROKU_URL")
+else:
+    AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_LOCAL_URL")
+    USER_SERVICE_URL = os.getenv("USER_SERVICE_LOCAL_URL")
  
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")

@@ -21,6 +21,8 @@ jobs:
   build-and-test-image:
     name: Run API Gateway Build and Test
     runs-on: ubuntu-latest
+    env:
+      RUN_MODE: docker
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
