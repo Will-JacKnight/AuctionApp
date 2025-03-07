@@ -8,14 +8,14 @@
     padding: 40px;
     width: 70%; /* Scale down overall section size */
     margin: 0 auto; /* Center the section */
-    background-color: #d9e8f7; /* Lighten background for better contrast */
+    background-color: transparent;
 }
  
 .auction-info {
     width: 55%; /* Reduce left section width */
     padding: 15px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 20px;
     border: 1px solid #ddd;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -42,7 +42,7 @@
     align-items: center;
     padding: 20px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 20px;
     border: 1px solid #ddd;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     height: auto; /* Adjust section height based on content */
@@ -51,13 +51,28 @@
  
 .price-date-container {
     width: 90%;
-    padding: 15px;
-    background-color: #f1f1f1;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
     margin-bottom: 15px;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.price-date-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.price-date-container h3 {
+    font-weight: bold;
+}
+
+.price-date-container h3::placeholder {
+    font-weight: bold;
+    font-size: 18px;
 }
  
 .bid-info {
@@ -125,3 +140,42 @@
 .bid-input button:hover {
     background-color: #073f7b;
 }
+
+.product-description {
+  font-size: 16px;
+  color: #7b7b7b;
+  line-height: 1.4;
+  margin-top: 10px;
+  text-align: justify;
+}
+
+.price-date-info-text {
+    display: block;
+    font-weight: normal;
+    font-size: 14px;
+    color: #434343;
+}
+
+.starting-price-placeholder {
+  display: block;
+  font-weight: bold;
+  font-size: 25px;
+  margin-bottom: 5px;
+}
+
+.current-price-placeholder {
+  display: block;
+  font-weight: bold;
+  font-size: 25px;
+  margin-bottom: 5px;
+  color: #fd3636;
+}
+
+.bidding-date-placeholder {
+  display: block;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+

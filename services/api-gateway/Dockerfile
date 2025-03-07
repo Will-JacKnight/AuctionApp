@@ -12,8 +12,8 @@ COPY ./requirements.txt .
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app.py
-COPY ./app.py .
+# Copy files
+COPY . .
 
 # Expose the port the app runs on
 EXPOSE 4000

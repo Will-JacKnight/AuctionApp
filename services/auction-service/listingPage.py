@@ -1,25 +1,23 @@
-from flask import Flask, request, jsonify, Blueprint
-from supabase import create_client, Client
 import os
 import datetime
 import uuid
+import traceback
+from flask import Flask, request, jsonify, Blueprint
+from supabaseClient import supabase
 from dotenv import load_dotenv
 from flask_cors import CORS
-import traceback
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 # Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-load_dotenv(dotenv_path)
+# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+# load_dotenv(dotenv_path)
 
+# Initialize Blueprint for Listing API
 listingPage = Blueprint("listingPage", __name__)
 
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 BUCKET_NAME = "product_images"
 
 # Allowed file types
@@ -29,6 +27,9 @@ def allowed_file(filename):
     """ Check if file extension is allowed """
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+###############################
+#   Create Listing Route     #
+###############################
 
 @listingPage.route('/listing', methods=['POST'])
 @jwt_required()

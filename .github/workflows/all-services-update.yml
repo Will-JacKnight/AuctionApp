@@ -1,15 +1,15 @@
-name: Build, Test and Deploy to Heroku
+name: All Services Deployment
  
 on:
   push:
     branches:
-#      - main
+      - production
   workflow_dispatch:  # Allows manual deployment
  
 env:
   SUPABASE_URL: ${{secrets.SUPABASE_URL}}
   SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
-  JWT_KEY: ${{secrets.JWT_KEY}}
+  JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
   AUCTION_SERVICE_HEROKU_URL: ${{secrets.AUCTION_SERVICE_HEROKU_URL}}
   USER_SERVICE_HEROKU_URL: ${{secrets.USER_SERVICE_HEROKU_URL}}
   API_GATEWAY_HEROKU_URL: ${{secrets.API_GATEWAY_HEROKU_URL}}

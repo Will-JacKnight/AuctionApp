@@ -1,47 +1,44 @@
 import eventlet
+# Enable eventlet for async operations
 eventlet.monkey_patch()
-from flask import Flask, request, jsonify
+
 import requests
-from flask_cors import CORS
-from werkzeug.utils import secure_filename
+import sys
 import os
-import uuid
+import logging
 from dotenv import load_dotenv
 from supabase import create_client
-import logging
 from flask_socketio import SocketIO, emit
-import sys
-
-# Load environment variables
-# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-# load_dotenv(dotenv_path)
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# Microservices URLs
-# USER_SERVICE_URL = "http://user-service:8080"
-# AUCTION_SERVICE_URL = "http://auction-service:7070"
-
+# Determine Microservices URLs based on environment mode
 MODE = os.getenv("RUN_MODE")
-if MODE == "docker":
-    AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_DOCKER_URL")
-    USER_SERVICE_URL = os.getenv("USER_SERVICE_DOCKER_URL")
-elif MODE == "heroku":
+# if MODE == "docker":
+#     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_DOCKER_URL")
+#     USER_SERVICE_URL = os.getenv("USER_SERVICE_DOCKER_URL")
+if MODE == "heroku":
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_HEROKU_URL")
     USER_SERVICE_URL = os.getenv("USER_SERVICE_HEROKU_URL")
 else:
     AUCTION_SERVICE_URL = os.getenv("AUCTION_SERVICE_LOCAL_URL")
     USER_SERVICE_URL = os.getenv("USER_SERVICE_LOCAL_URL")
  
-
 # Supabase Settings
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Initialize SocketIO with eventlet
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet", logger=True, engineio_logger=True)
 
+###############################
+#       API ROUTES           #
+###############################
 
 @app.route('/signup', methods=['POST'])
 def register():
@@ -66,16 +63,13 @@ def listing():
             return jsonify({"error": "No selected file"}), 400
         
         form_data = {key: request.form[key] for key in request.form}
- 
         files = {"productImage": (file.filename, file.stream, file.content_type)}
-        
         headers = {
         "Authorization": request.headers.get("Authorization")  
         }
 
         response = requests.post(f"{AUCTION_SERVICE_URL}/listing", files=files, data=form_data, headers=headers)
         return jsonify(response.json()), response.status_code
- 
     except Exception as e:
         logging.error(f"Error forwarding request: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -101,16 +95,16 @@ def serach_byTag():
 
 @app.route('/product/<auction_id>', methods=['GET'])
 def bidding(auction_id):
-    headers = {
-        "Authorization": request.headers.get("Authorization"),  # Forward the token
-        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
-    }
-    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}", headers=headers)
+    response = requests.get(f"{AUCTION_SERVICE_URL}/product/{auction_id}")
     return jsonify(response.json()), response.status_code
 
 @app.route('/place_bid', methods=['POST'])
 def place_bid():
-    response = requests.post(f"{AUCTION_SERVICE_URL}/place_bid", json=request.json)
+    headers = {
+        "Authorization": request.headers.get("Authorization"),  # Forward the token
+        "Content-Type": request.headers.get("Content-Type", "application/json"),  # Forward Content-Type
+    }
+    response = requests.post(f"{AUCTION_SERVICE_URL}/place_bid", json=request.json, headers=headers)
     return jsonify(response.json()), response.status_code
 
 @app.route('/dashboard_sell', methods=['GET'])
@@ -136,6 +130,10 @@ def bid():
 
     response = requests.get(f"{AUCTION_SERVICE_URL}/dashboard_bid", headers=headers)
     return jsonify(response.json()), response.status_code
+
+###############################
+#   WebSocket Handlers       #
+###############################
 
 # HTTP route to handle bid updates from the backend
 @app.route('/bid_update', methods=['POST'])

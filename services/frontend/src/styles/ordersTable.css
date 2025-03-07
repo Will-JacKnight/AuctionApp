@@ -137,9 +137,10 @@
 
 /* Item Cell Styling */
 .item-cell {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   gap: 12px;
+  color: #1a237e;
 }
 
 .item-name {

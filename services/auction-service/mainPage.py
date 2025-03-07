@@ -2,7 +2,7 @@ import pandas as pd
 import random
 import sys
 from flask import Flask, request, Blueprint, jsonify
-from supabase_client import supabase # need to modify
+from supabaseClient import supabase
 from datetime import datetime, timezone
 # *************  DESCRIPTION: ********************************
 # This page handles requests from the user to search items
@@ -80,8 +80,8 @@ def search_item():
     # Fetch items matching the search query
     response = (
         supabase.table('auctions')
-        .select('name', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
-        .ilike('name', f"%{keyword}%")
+        .select('name', 'description', 'starting_price', 'image_url', 'id', 'category', 'end_date', 'end_time', 'status')
+        .ilike('description', f"%{keyword}%")
         .execute()
     )
     

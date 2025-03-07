@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import "./../styles/ordersTable.css";
-
+import { NavLink } from "react-router-dom";
 const OrderTable = ({ data }) => {  
   let groupNum = -1;
   let lastName = null;
@@ -20,7 +20,6 @@ const OrderTable = ({ data }) => {
       </div>
     );
   }
-
   // Filter out any null or invalid items
   const validData = data.filter(item => item && typeof item === 'object');
 
@@ -60,11 +59,13 @@ const OrderTable = ({ data }) => {
             const isWinningExpiredBid = order.status === "expired" && order.bid_amount === order.max_bid;
 
             return (
+             
               <tr key={index} className={`${groupNum % 2 === 0 ? "group-even" : "group-odd"} ${isWinningExpiredBid ? "highlight-row" : ""}`}>
                 <td>
                   <div className="item-cell">
-                    <span className="item-name">{order.item_name}</span>
-                    {isWinningExpiredBid && <span className="winning-badge">Winning Bid</span>}
+                    <NavLink to={`/product/${order.product_id}`}>
+                      {order.item_name}
+                    </NavLink>
                   </div>
                 </td>
                 <td>£{order.bid_amount?.toLocaleString() || '0'}</td>
@@ -75,6 +76,7 @@ const OrderTable = ({ data }) => {
                   </span>
                 </td>
               </tr>
+              
             );
           })}
         </tbody>
