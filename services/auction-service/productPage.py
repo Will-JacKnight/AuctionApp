@@ -22,9 +22,9 @@ load_dotenv(dotenv_path)
 RUN_MODE = os.getenv("RUN_MODE", "local")  # Default to local if not set
 AZURE_BID_EMAIL_FUNCTION = os.getenv("AZURE_BID_EMAIL_FUNCTION")
 
-if RUN_MODE == "docker":
-    API_GATEWAY_URL = os.getenv("API_GATEWAY_DOCKER_URL")
-elif RUN_MODE == "heroku":
+# if RUN_MODE == "docker":
+#     API_GATEWAY_URL = os.getenv("API_GATEWAY_DOCKER_URL")
+if RUN_MODE == "heroku":
     API_GATEWAY_URL = os.getenv("API_GATEWAY_HEROKU_URL")
 else:  # Default to local
     API_GATEWAY_URL = os.getenv("API_GATEWAY_LOCAL_URL")

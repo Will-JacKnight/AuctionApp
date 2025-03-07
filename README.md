@@ -26,9 +26,9 @@ auction-app/
 │   │ ├── styles/          # CSS styles  
 │   │ └── App.jsx          # Main React application file  
 │   ├──  package.json      # Node.js dependencies for frontend  
-│   ├──  vite.config.js    # Vite configuration file  
 │   └──  Dockerfile        # Dockerfile for building the frontend image  
-│  
+│
+├── .env-repo/ # Private environment variables repository
 ├── .github/               # GitHub Actions for CI/CD  
 │ └── workflows/           # GitHub Actions workflows  
 │ └── heroku-deploy.yml    # Workflow for deploying to Heroku  

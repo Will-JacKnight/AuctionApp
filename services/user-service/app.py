@@ -8,8 +8,8 @@ from functools import wraps
 from dotenv import load_dotenv
 from flask_cors import CORS
 # Load environment variables
-# dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
-# load_dotenv(dotenv_path)
+dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")  # Adjust this path as needed
+load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 CORS(app) # Allow cross-origin request between frontend and backend
@@ -115,4 +115,4 @@ def protected():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
