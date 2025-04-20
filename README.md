@@ -1,3 +1,9 @@
+## About
+The demonstration app was once deployed on Heroku. It was taken down on 19/04/2025.
+You can still explore the implemented features with our intro [video](https://www.youtube.com/watch?v=zzumh5iMX88).
+
+<img width="1840" alt="Screenshot 2025-03-06 at 19 06 13" src="https://github.com/user-attachments/assets/b6179333-1347-4993-9ef3-57a8264c3903" />
+
 # Project Structure
 
 ```
